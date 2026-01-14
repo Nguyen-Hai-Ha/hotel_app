@@ -1,0 +1,183 @@
+{
+  "nav": {
+    "home": "ទំព័រដើម",
+    "rooms": "បន្ទប់",
+    "contact": "ទំនាក់ទំនង",
+    "login": "ចូលប្រើប្រាស់",
+    "signup": "ចុះឈ្មោះ",
+    "logout": "ចាកចេញ",
+    "admin": "ទំព័រគ្រប់គ្រង",
+    "information": "ព័ត៌មាន"
+  },
+  "auth": {
+    "hi": "សួស្តី",
+    "welcome": "សូមស្វាគមន៍",
+    "username": "ឈ្មោះអ្នកប្រើប្រាស់",
+    "email": "អ៊ីមែល",
+    "password": "ពាក្យសម្ងាត់",
+    "confirmPassword": "បញ្ជាក់ពាក្យសម្ងាត់",
+    "forgotPassword": "ភ្លេចពាក្យសម្ងាត់?",
+    "rememberMe": "ចងចាំខ្ញុំ",
+    "loginButton": "ចូលប្រើប្រាស់",
+    "signupButton": "ចុះឈ្មោះ",
+    "alreadyHaveAccount": "មានគណនីរួចហើយ?",
+    "dontHaveAccount": "មិនទាន់មានគណនី?",
+    "createAccount": "បង្កើតគណនី"
+  },
+  "home": {
+    "welcome": "សូមស្វាគមន៍មកកាន់ The Secret Hotel",
+    "subtitle": "ជួបប្រទះនឹងភាពប្រណីត និងផាសុកភាពដូចមិនធ្លាប់មាន",
+    "bookNow": "កក់បន្ទប់ឥឡូវ",
+    "exploreRooms": "ស្វែងយល់បន្ទប់",
+    "featuredRooms": "បន្ទប់ពិសេស",
+    "amenities": "សេវាកម្ម",
+    "testimonials": "អតិថិជននិយាយអ្វីអំពីយើង"
+  },
+  "rooms": {
+    "title": "បន្ទប់របស់យើង",
+    "subtitle": "ជ្រើសរើសពីបន្ទប់ស្នាក់នៅប្រណីតរបស់យើង",
+    "available": "មាន",
+    "unavailable": "អស់",
+    "bookRoom": "កក់បន្ទប់",
+    "viewDetails": "មើលព័ត៌មានលម្អិត",
+    "pricePerNight": "ក្នុងមួយយប់",
+    "guests": "ភ្ញៀវ",
+    "beds": "គ្រែ",
+    "bathroom": "បន្ទប់ទឹក"
+  },
+  "contact": {
+    "title": "ទាក់ទងមកយើង",
+    "subtitle": "ទាក់ទងជាមួយបុគ្គលិកស្និទ្ធស្នាលរបស់យើង",
+    "address": "អាសយដ្ឋាន",
+    "phone": "ទូរស័ព្ទ",
+    "email": "អ៊ីមែល",
+    "name": "ឈ្មោះ",
+    "subject": "ប្រធានបទ",
+    "message": "សារ",
+    "sendMessage": "ផ្ញើសារ"
+  },
+  "booking": {
+    "title": "កក់បន្ទប់របស់អ្នក",
+    "checkIn": "ចូលស្នាក់",
+    "checkOut": "ចេញ",
+    "guests": "ចំនួនភ្ញៀវ",
+    "rooms": "ចំនួនបន្ទប់",
+    "search": "ស្វែងរក",
+    "book": "កក់",
+    "total": "សរុប",
+    "confirm": "បញ្ជាក់ការកក់",
+    "cancel": "បោះបង់"
+  },
+  "common": {
+    "loading": "កំពុងផ្ទុក...",
+    "error": "កំហុស",
+    "success": "ជោគជ័យ",
+    "close": "បិទ",
+    "save": "រក្សាទុក",
+    "edit": "កែសម្រួល",
+    "delete": "លុប",
+    "confirm": "បញ្ជាក់",
+    "cancel": "បោះបង់",
+    "yes": "បាទ/ចាស",
+    "no": "ទេ",
+    "back": "ត្រលប់",
+    "next": "បន្ទាប់",
+    "previous": "មុន"
+  },
+  "footer": {
+    "aboutUs": "អំពីយើង",
+    "services": "សេវាកម្ម",
+    "contact": "ទំនាក់ទំនង",
+    "followUs": "តាមដានយើង",
+    "allRightsReserved": "រក្សាសិទ្ធិទាំងអស់",
+    "privacyPolicy": "គោលការណ៍ភាពឯកជន",
+    "termsOfService": "លក្ខខណ្ឌសេវាកម្ម"
+  },
+  "checkout": {
+    "title": "បញ្ចប់ការកក់",
+    "subtitle": "បញ្ចូលព័ត៌មានទំនាក់ទំនង និងជម្រើសបង់ប្រាក់ដើម្បីបញ្ជាក់ការកក់។",
+    "contact": {
+      "header": "ព័ត៌មានទំនាក់ទំនង",
+      "sub": "យើងនឹងផ្ញើការបញ្ជាក់ទៅអ៊ីមែល/ទូរស័ព្ទរបស់អ្នក"
+    },
+    "labels": {
+      "fullName": "ឈ្មោះពេញ",
+      "email": "អ៊ីមែល",
+      "phone": "លេខទូរស័ព្ទ",
+      "country": "ប្រទេស",
+      "selectCountry": "ជ្រើសរើសប្រទេស",
+      "address": "អាសយដ្ឋាន",
+      "note": "កំណត់ចំណាំ"
+    },
+    "placeholders": {
+      "fullName": "ឧទាហរណ៍៖ Sok Dara",
+      "phone": "ឧទាហរណ៍៖ 0912345678",
+      "note": "ឧទាហរណ៍៖ បន្ទប់ស្ងប់ស្ងាត់ ជាន់លើ"
+    },
+    "payment": {
+      "header": "ជម្រើសបង់ប្រាក់",
+      "sub": "ជ្រើសរើសវិធីដែលអ្នកចូលចិត្ត",
+      "cardTitle": "បង់ដោយកាត",
+      "cardDesc": "Visa, MasterCard, JCB",
+      "hotelTitle": "បង់នៅសណ្ឋាគារ",
+      "hotelDesc": "រក្សាទុកបន្ទប់ បង់ពេលមកដល់"
+    },
+    "cardFields": {
+      "number": "លេខកាត",
+      "name": "ឈ្មោះនៅលើកាត",
+      "expiry": "ផុតកំណត់",
+      "cvc": "CVC"
+    },
+    "actions": {
+      "completeBooking": "បញ្ចប់ការកក់",
+      "makeDeposit": "បន្តដាក់ប្រាក់កក់"
+    },
+    "policy": {
+      "header": "គោលការណ៍"
+    },
+    "sidebar": {
+      "selectedRoomFallback": "បន្ទប់ដែលបានជ្រើស",
+      "badge": "ការលុបបោះបង់នឹងបាត់ប្រាក់កក់"
+    },
+    "dates": {
+      "checkIn": "ចូលស្នាក់",
+      "checkOut": "ចេញស្នាក់",
+      "stayLength": "រយៈពេលស្នាក់នៅ",
+      "nights": "យប់"
+    },
+    "coupon": {
+      "placeholder": "កូដបញ្ចុះតម្លៃ",
+      "apply": "អនុវត្ត"
+    },
+    "pricing": {
+      "roomPrice": "តម្លៃបន្ទប់",
+      "servicePerDay": "សេវា / ថ្ងៃ",
+      "taxes": "ពន្ធ & ថ្លៃ",
+      "discount": "បញ្ចុះតម្លៃ",
+      "total": "សរុប",
+      "deposit30": "ប្រាក់កក់ (30%)"
+    },
+    "qr": {
+      "note": "សូមបញ្ចូលមាតិកា៖",
+      "cardText": "បង់ប្រាក់បន្ទប់ {number} - {name}",
+      "depositText": "ដាក់ប្រាក់កក់បន្ទប់ {number} - {name}"
+    }
+  },
+  "detail": {
+    "features": "គ្រឿងបរិក្ខារ",    
+    "availableRooms": "បន្ទប់ទំនេរ", 
+    "bookRoom": "កក់បន្ទប់",
+    "selectRoom": "ជ្រើសរើសបន្ទប់",     
+    "unavailable": "មិនមាន",
+    "available": "មាន",            
+    "occupied": "កំពុងប្រើប្រាស់",      
+    "maintenance": "កំពុងថែទាំ",       
+    "selectDate": "ជ្រើសរើសកាលបរិច្ឆេទ", 
+    "checkIn": "ថ្ងៃចូល",               
+    "checkOut": "ថ្ងៃចេញ",          
+    "total": "សរុប",        
+    "selectRoomFirst": "សូមជ្រើសរើសបន្ទប់ជាមុន",
+    "services": "សេវាកម្ម", 
+    "night": "យប់"          
+  }
+}

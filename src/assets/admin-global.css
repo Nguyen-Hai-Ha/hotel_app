@@ -1,0 +1,6 @@
+/* 
+ * Global Admin CSS 
+ * Import this file in all admin pages: @import '@/assets/admin-global.css';
+ */
+
+@import './admin-shared.css';

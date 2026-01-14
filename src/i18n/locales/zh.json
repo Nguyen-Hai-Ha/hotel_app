@@ -1,0 +1,184 @@
+{
+  "nav": {
+    "home": "首页",
+    "rooms": "客房",
+    "contact": "联系我们",
+    "login": "登录",
+    "signup": "注册",
+    "logout": "退出",
+    "admin": "管理页面",
+    "information": "信息"
+  },
+  "auth": {
+    "hi": "您好",
+    "welcome": "欢迎",
+    "username": "用户名",
+    "email": "邮箱",
+    "password": "密码",
+    "confirmPassword": "确认密码",
+    "forgotPassword": "忘记密码？",
+    "rememberMe": "记住我",
+    "loginButton": "登录",
+    "signupButton": "注册",
+    "alreadyHaveAccount": "已有账户？",
+    "dontHaveAccount": "还没有账户？",
+    "createAccount": "创建账户"
+  },
+  "home": {
+    "welcome": "欢迎来到神秘酒店",
+    "subtitle": "体验前所未有的奢华与舒适",
+    "bookNow": "立即预订",
+    "exploreRooms": "探索客房",
+    "featuredRooms": "特色客房",
+    "amenities": "设施服务",
+    "testimonials": "客户评价"
+  },
+  "rooms": {
+    "title": "我们的客房",
+    "subtitle": "从我们的豪华住宿中选择",
+    "available": "可预订",
+    "unavailable": "已满房",
+    "bookRoom": "预订客房",
+    "viewDetails": "查看详情",
+    "pricePerNight": "每晚",
+    "guests": "客人",
+    "beds": "床位",
+    "bathroom": "浴室"
+  },
+  "contact": {
+    "title": "联系我们",
+    "subtitle": "与我们友好的工作人员取得联系",
+    "address": "地址",
+    "phone": "电话",
+    "email": "邮箱",
+    "name": "姓名",
+    "subject": "主题",
+    "message": "留言",
+    "sendMessage": "发送消息"
+  },
+  "booking": {
+    "title": "预订您的住宿",
+    "checkIn": "入住",
+    "checkOut": "退房",
+    "guests": "客人数量",
+    "rooms": "房间数量",
+    "search": "搜索",
+    "book": "预订",
+    "total": "总计",
+    "confirm": "确认预订",
+    "cancel": "取消"
+  },
+  "common": {
+    "loading": "加载中...",
+    "error": "错误",
+    "success": "成功",
+    "close": "关闭",
+    "save": "保存",
+    "edit": "编辑",
+    "delete": "删除",
+    "confirm": "确认",
+    "cancel": "取消",
+    "yes": "是",
+    "no": "否",
+    "back": "返回",
+    "next": "下一步",
+    "previous": "上一步"
+  },
+  "footer": {
+    "aboutUs": "关于我们",
+    "services": "服务",
+    "contact": "联系方式",
+    "followUs": "关注我们",
+    "allRightsReserved": "版权所有",
+    "privacyPolicy": "隐私政策",
+    "termsOfService": "服务条款"
+  },
+  "checkout": {
+    "title": "完成预订",
+    "subtitle": "填写联系信息和支付选项以确认预订。",
+    "contact": {
+      "header": "联系信息",
+      "sub": "我们将把确认信息发送到您的邮箱/手机号"
+    },
+    "labels": {
+      "fullName": "姓名",
+      "email": "邮箱",
+      "phone": "电话号码",
+      "country": "国家",
+      "selectCountry": "选择国家",
+      "address": "地址",
+      "note": "备注"
+    },
+    "placeholders": {
+      "fullName": "例如：张三",
+
+      "phone": "例如：0912345678",
+      "note": "例如：安静房间，高楼层"
+    },
+    "payment": {
+      "header": "支付选项",
+      "sub": "选择您偏好的方式",
+      "cardTitle": "银行卡支付",
+      "cardDesc": "Visa、MasterCard、JCB",
+      "hotelTitle": "到店支付",
+      "hotelDesc": "保留房间，入住时支付"
+    },
+    "cardFields": {
+      "number": "卡号",
+      "name": "持卡人姓名",
+      "expiry": "有效期",
+      "cvc": "CVC"
+    },
+    "actions": {
+      "completeBooking": "完成预订",
+      "makeDeposit": "进行预付定金"
+    },
+    "policy": {
+      "header": "政策"
+    },
+    "sidebar": {
+      "selectedRoomFallback": "已选房间",
+      "badge": "取消将不退还定金"
+    },
+    "dates": {
+      "checkIn": "入住",
+      "checkOut": "退房",
+      "stayLength": "入住时长",
+      "nights": "晚"
+    },
+    "coupon": {
+      "placeholder": "优惠码",
+      "apply": "应用"
+    },
+    "pricing": {
+      "roomPrice": "房价",
+      "servicePerDay": "服务 / 天",
+      "taxes": "税费",
+      "discount": "折扣",
+      "total": "合计",
+      "deposit30": "定金（30%）"
+    },
+    "qr": {
+      "note": "请输入转账备注：",
+      "cardText": "支付房间 {number} - {name}",
+      "depositText": "预付定金 房间 {number} - {name}"
+    }
+  },
+  "detail": {
+    "features": "设施",
+    "availableRooms": "空房",
+    "bookRoom": "预订房间",
+    "selectRoom": "选择房间",
+    "unavailable": "不可用",
+    "available": "可用",
+    "occupied": "已入住",
+    "maintenance": "维护中",
+    "selectDate": "选择日期",
+    "checkIn": "入住日期",
+    "checkOut": "退房日期",
+    "total": "总计",
+    "selectRoomFirst": "请先选择房间",
+    "services": "服务",
+    "night": "晚"
+  }
+}

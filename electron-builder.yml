@@ -1,0 +1,20 @@
+appId: com.hotel.admin
+productName: Hotel Admin Panel
+directories:
+  output: dist-electron
+files:
+  - dist/**/*
+  - electron/**/*
+win:
+  target:
+    - target: dir
+      arch:
+        - x64
+  artifactName: ${productName}-${version}-${arch}
+  forceCodeSigning: false
+  verifyUpdateCodeSignature: false
+compression: store
+nodeGypRebuild: false
+buildDependenciesFromSource: false
+npmRebuild: false
+publish: null

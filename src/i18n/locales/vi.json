@@ -1,0 +1,184 @@
+{
+  "nav": {
+    "home": "Trang chủ",
+    "rooms": "Phòng",
+    "contact": "Liên hệ",
+    "login": "Đăng nhập",
+    "signup": "Đăng ký",
+    "logout": "Đăng xuất",
+    "admin": "Trang quản trị",
+    "information": "Thông tin"
+  },
+  "auth": {
+    "hi": "Xin chào",
+    "welcome": "Chào mừng",
+    "username": "Tên đăng nhập",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "confirmPassword": "Xác nhận mật khẩu",
+    "forgotPassword": "Quên mật khẩu?",
+    "rememberMe": "Ghi nhớ đăng nhập",
+    "loginButton": "Đăng nhập",
+    "signupButton": "Đăng ký",
+    "alreadyHaveAccount": "Đã có tài khoản?",
+    "dontHaveAccount": "Chưa có tài khoản?",
+    "createAccount": "Tạo tài khoản"
+  },
+  "home": {
+    "welcome": "Chào mừng đến với The Secret Hotel",
+    "subtitle": "Trải nghiệm sự sang trọng và thoải mái như chưa từng có",
+    "bookNow": "Đặt phòng ngay",
+    "exploreRooms": "Khám phá phòng",
+    "featuredRooms": "Phòng nổi bật",
+    "amenities": "Tiện nghi",
+    "testimonials": "Khách hàng nói gì về chúng tôi"
+  },
+  "rooms": {
+    "title": "Phòng của chúng tôi",
+    "subtitle": "Lựa chọn từ các phòng nghỉ sang trọng của chúng tôi",
+    "available": "Còn trống",
+    "unavailable": "Hết phòng",
+    "bookRoom": "Đặt phòng",
+    "viewDetails": "Xem chi tiết",
+    "pricePerNight": "mỗi đêm",
+    "guests": "khách",
+    "beds": "giường",
+    "bathroom": "phòng tắm"
+  },
+  "contact": {
+    "title": "Liên hệ với chúng tôi",
+    "subtitle": "Liên lạc với đội ngũ nhân viên thân thiện của chúng tôi",
+    "address": "Địa chỉ",
+    "phone": "Điện thoại",
+    "email": "Email",
+    "name": "Họ tên",
+    "subject": "Chủ đề",
+    "message": "Tin nhắn",
+    "sendMessage": "Gửi tin nhắn"
+  },
+  "booking": {
+    "title": "Đặt phòng của bạn",
+    "checkIn": "Nhận phòng",
+    "checkOut": "Trả phòng",
+    "guests": "Số khách",
+    "rooms": "Số phòng",
+    "search": "Tìm kiếm",
+    "book": "Đặt phòng",
+    "total": "Tổng cộng",
+    "confirm": "Xác nhận đặt phòng",
+    "cancel": "Hủy"
+  },
+  "common": {
+    "loading": "Đang tải...",
+    "error": "Lỗi",
+    "success": "Thành công",
+    "close": "Đóng",
+    "save": "Lưu",
+    "edit": "Chỉnh sửa",
+    "delete": "Xóa",
+    "confirm": "Xác nhận",
+    "cancel": "Hủy",
+    "yes": "Có",
+    "no": "Không",
+    "back": "Quay lại",
+    "next": "Tiếp theo",
+    "previous": "Trước đó"
+  },
+  "footer": {
+    "aboutUs": "Về chúng tôi",
+    "services": "Dịch vụ",
+    "contact": "Liên hệ",
+    "followUs": "Theo dõi chúng tôi",
+    "allRightsReserved": "Bảo lưu mọi quyền",
+    "privacyPolicy": "Chính sách bảo mật",
+    "termsOfService": "Điều khoản dịch vụ"
+  },
+  "checkout": {
+    "title": "Hoàn tất đặt phòng",
+    "subtitle": "Điền thông tin liên hệ và tuỳ chọn thanh toán để xác nhận đặt phòng.",
+    "contact": {
+      "header": "Thông tin liên hệ",
+      "sub": "Chúng tôi sẽ gửi xác nhận về email/số điện thoại của bạn"
+    },
+    "labels": {
+      "fullName": "Họ Và Tên",
+      "email": "Email",
+      "phone": "Số điện thoại",
+      "country": "Quốc gia",
+      "selectCountry": "Chọn quốc gia",
+      "address": "Địa chỉ",
+      "note": "Ghi chú"
+    },
+    "placeholders": {
+      "fullName": "Ví dụ: Nguyen Van A",
+
+      "phone": "Ví dụ: 0912345678",
+      "note": "Ví dụ: Phòng yên tĩnh, tầng cao"
+    },
+    "payment": {
+      "header": "Tuỳ chọn thanh toán",
+      "sub": "Chọn phương thức bạn muốn",
+      "cardTitle": "Thanh toán bằng thẻ",
+      "cardDesc": "Visa, MasterCard, JCB",
+      "hotelTitle": "Thanh toán tại khách sạn",
+      "hotelDesc": "Giữ phòng, trả tiền khi nhận phòng"
+    },
+    "cardFields": {
+      "number": "Số thẻ",
+      "name": "Tên in trên thẻ",
+      "expiry": "Hết hạn",
+      "cvc": "CVC"
+    },
+    "actions": {
+      "completeBooking": "Hoàn tất đặt phòng",
+      "makeDeposit": "Tiến hành đặt cọc"
+    },
+    "policy": {
+      "header": "Chính sách"
+    },
+    "sidebar": {
+      "selectedRoomFallback": "Phòng đã chọn",
+      "badge": "Hủy sẽ mất tiền cọc"
+    },
+    "dates": {
+      "checkIn": "Nhận phòng",
+      "checkOut": "Trả phòng",
+      "stayLength": "Thời gian lưu trú",
+      "nights": "đêm"
+    },
+    "coupon": {
+      "placeholder": "Mã giảm giá",
+      "apply": "Áp dụng"
+    },
+    "pricing": {
+      "roomPrice": "Giá phòng",
+      "servicePerDay": "Dịch vụ / Ngày",
+      "taxes": "Thuế & phí",
+      "discount": "Giảm giá",
+      "total": "Tổng",
+      "deposit30": "Đặt cọc (30%)"
+    },
+    "qr": {
+      "note": "Vui lòng nhập nội dung:",
+      "cardText": "Thanh toan phong {number} - {name}",
+      "depositText": "Dat coc phong {number} - {name}"
+    }
+  },
+  "detail": {
+    "features": "Tiện nghi",
+    "availableRooms": "Phòng trống",
+    "bookRoom": "Đặt phòng",
+    "selectRoom": "Chọn phòng",
+    "unavailable": "Hết phòng",
+    "available": "Còn phòng",
+    "occupied": "Đang thuê",
+    "maintenance": "Đang bảo trì",
+    "selectDate": "Chọn ngày",
+    "checkIn": "Ngày nhận phòng",
+    "checkOut": "Ngày trả phòng",
+    "total": "Tổng",
+    "selectRoomFirst": "Chọn phòng trước",
+    "services": "Dịch vụ",
+    "night": "đêm"
+  }
+}

@@ -1,0 +1,184 @@
+{
+  "nav": {
+    "home": "Home",
+    "rooms": "Rooms",
+    "contact": "Contact",
+    "login": "Login",
+    "signup": "Sign Up",
+    "logout": "Logout",
+    "admin": "Admin page",
+    "information": "Information"
+  },
+  "auth": {
+    "hi": "Hi",
+    "welcome": "Welcome",
+    "username": "Username",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "forgotPassword": "Forgot Password?",
+    "rememberMe": "Remember Me",
+    "loginButton": "Login",
+    "signupButton": "Sign Up",
+    "alreadyHaveAccount": "Already have an account?",
+    "dontHaveAccount": "Don't have an account?",
+    "createAccount": "Create Account"
+  },
+  "home": {
+    "welcome": "Welcome to The Secret Hotel",
+    "subtitle": "Experience luxury and comfort like never before",
+    "bookNow": "Book Now",
+    "exploreRooms": "Explore Rooms",
+    "featuredRooms": "Featured Rooms",
+    "amenities": "Amenities",
+    "testimonials": "What Our Guests Say"
+  },
+  "rooms": {
+    "title": "Our Rooms",
+    "subtitle": "Choose from our selection of luxury accommodations",
+    "available": "Available",
+    "unavailable": "Unavailable",
+    "bookRoom": "Book Room",
+    "viewDetails": "View Details",
+    "pricePerNight": "per night",
+    "guests": "guests",
+    "beds": "beds",
+    "bathroom": "bathroom"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Get in touch with our friendly staff",
+    "address": "Address",
+    "phone": "Phone",
+    "email": "Email",
+    "name": "Name",
+    "subject": "Subject",
+    "message": "Message",
+    "sendMessage": "Send Message"
+  },
+  "booking": {
+    "title": "Book Your Stay",
+    "checkIn": "Check In",
+    "checkOut": "Check Out",
+    "guests": "Guests",
+    "rooms": "Rooms",
+    "search": "Search",
+    "book": "Book",
+    "total": "Total",
+    "confirm": "Confirm Booking",
+    "cancel": "Cancel"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "close": "Close",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "yes": "Yes",
+    "no": "No",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous"
+  },
+  "footer": {
+    "aboutUs": "About Us",
+    "services": "Services",
+    "contact": "Contact",
+    "followUs": "Follow Us",
+    "allRightsReserved": "All rights reserved",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service"
+  },
+  "checkout": {
+    "title": "Complete your booking",
+    "subtitle": "Enter contact details and payment options to confirm your reservation.",
+    "contact": {
+      "header": "Contact information",
+      "sub": "We will send confirmation to your email/phone"
+    },
+    "labels": {
+      "fullName": "Full Name",
+      "email": "Email",
+      "phone": "Phone number",
+      "country": "Country",
+      "selectCountry": "Select country",
+      "address": "Address",
+      "note": "Note"
+    },
+    "placeholders": {
+      "fullName": "e.g., John Doe",
+
+      "phone": "e.g., 0912345678",
+      "note": "e.g., Quiet room, high floor"
+    },
+    "payment": {
+      "header": "Payment options",
+      "sub": "Choose your preferred method",
+      "cardTitle": "Pay by card",
+      "cardDesc": "Visa, MasterCard, JCB",
+      "hotelTitle": "Pay at hotel",
+      "hotelDesc": "Keep the room, pay on arrival"
+    },
+    "cardFields": {
+      "number": "Card number",
+      "name": "Name on card",
+      "expiry": "Expiry",
+      "cvc": "CVC"
+    },
+    "actions": {
+      "completeBooking": "Complete booking",
+      "makeDeposit": "Proceed to deposit"
+    },
+    "policy": {
+      "header": "Policy"
+    },
+    "sidebar": {
+      "selectedRoomFallback": "Selected room",
+      "badge": "Deposit is non-refundable"
+    },
+    "dates": {
+      "checkIn": "Check-in",
+      "checkOut": "Check-out",
+      "stayLength": "Length of stay",
+      "nights": "nights"
+    },
+    "coupon": {
+      "placeholder": "Discount code",
+      "apply": "Apply"
+    },
+    "pricing": {
+      "roomPrice": "Room price",
+      "servicePerDay": "Service / Day",
+      "taxes": "Taxes & fees",
+      "discount": "Discount",
+      "total": "Total",
+      "deposit30": "Deposit (30%)"
+    },
+    "qr": {
+      "note": "Please enter content:",
+      "cardText": "Pay room",
+      "depositText": "Deposit room"
+    }
+  },
+  "detail": {
+    "features": "Room Features",
+    "availableRooms": "Available Rooms",
+    "bookRoom": "Book This Room",
+    "selectRoom": "Select a room",
+    "unavailable": "Unavailable",
+    "available": "Available",
+    "occupied": "Occupied",
+    "maintenance": "Maintenance",
+    "selectDate": "Select Dates",
+    "checkIn": "Check-in Date",
+    "checkOut": "Check-out Date",
+    "total": "Total for",
+    "selectRoomFirst": "Select a room first",
+    "services": "Additional Services",
+    "night": "nights"
+  }
+}

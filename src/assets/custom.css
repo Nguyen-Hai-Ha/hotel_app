@@ -1,0 +1,137 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.hero {
+  position: relative;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+}
+
+section.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('/images/newyork.jpg') no-repeat center center/cover;
+  filter: brightness(0.6);
+  z-index: -1;
+
+}
+
+.hero-content h1 {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+}
+
+.hero-content p {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.booking-form {
+  background-color: #2c2c2c;
+  padding: 2rem;
+  border-radius: 10px;
+  color: white;
+}
+
+.booking-form h3 {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.booking-form .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.booking-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.booking-form input[type="text"],
+.booking-form input[type="date"] {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #555;
+  background-color: #3c3c3c;
+  color: white;
+  border-radius: 5px;
+}
+
+.booking-form .checkbox-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.booking-form .checkbox-group input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+
+.booking-form .btn-primary {
+  width: 100%;
+  padding: 1rem;
+  background-color: #ff6b6b;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.booking-form .btn-primary:hover {
+  background-color: #ff4757;
+}
+
+.booking-box .checkbox-group {
+  margin-bottom: 1rem;
+}
+
+.booking-box .checkbox-group label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+
+}
+
+.booking-box .checkbox-group input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+
+}
+.booking-box .checkbox-group input[type="checkbox"] {
+  margin-right: 0.5rem;
+  width: 20px;
+  height: 20px;
+  accent-color: #ff6b6b; /* Custom checkbox color */
+  border-radius: 5px;
+}
+.booking-box .checkbox-group label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+
+}
