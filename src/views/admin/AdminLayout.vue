@@ -4,7 +4,7 @@
         <UpdateNotification />
         <aside class="admin-sidebar">
             <div class="sidebar-header">
-                <h2>Hotel Admin HELLO KIỆT KHÔNG LẶC</h2>
+                <h2>Hotel Admin</h2>
             </div>
             <nav class="sidebar-nav">
                 <ul>
