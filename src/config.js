@@ -1,6 +1,6 @@
 /**
  * Application Configuration
- * 
+ *
  * This file manages environment detection and configuration
  * for the Hotel Admin application.
  */
@@ -10,8 +10,8 @@
  * @returns {boolean} True if running in Electron, false otherwise
  */
 export function isElectron() {
-    // Check if running in Electron environment
-    return window && window.process && window.process.type === 'renderer';
+  // Check if running in Electron environment
+  return window && window.process && window.process.type === "renderer";
 }
 
 /**
@@ -20,8 +20,8 @@ export function isElectron() {
  * @returns {boolean} True if admin-only mode is enabled
  */
 export function isAdminOnlyMode() {
-    // Enable admin-only mode when running in Electron
-    return isElectron();
+  // Enable admin-only mode when running in Electron
+  return isElectron();
 }
 
 /**
@@ -29,12 +29,12 @@ export function isAdminOnlyMode() {
  * @returns {string} The API base URL
  */
 export function getApiBaseUrl() {
-    // Use environment variable if available, otherwise use default
-    return import.meta.env.VITE_API_URL || 'https://api.thesecret-hotel.com/api';
+  // Use environment variable if available, otherwise use default
+  return import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api";
 }
 
 export default {
-    isElectron,
-    isAdminOnlyMode,
-    getApiBaseUrl
+  isElectron,
+  isAdminOnlyMode,
+  getApiBaseUrl,
 };

@@ -144,7 +144,7 @@ const editingTax = ref({
 
 const fetchTaxes = async () => {
     try {
-        const response = await axios.get('https://api.thesecret-hotel.com/api/taxes')
+        const response = await axios.get('http://127.0.0.1:8000/api/taxes')
         taxes.value = response.data
     } catch (error) {
         console.error('Error fetching taxes:', error)
@@ -169,7 +169,7 @@ const editTax = (tax) => {
 const deleteTax = async (taxId) => {
     if (confirm('Bạn có chắc muốn xóa thuế này?')) {
         try {
-            await axios.delete(`https://api.thesecret-hotel.com/api/taxes/${taxId}`)
+            await axios.delete(`http://127.0.0.1:8000/api/taxes/${taxId}`)
             await fetchTaxes()
 
         } catch (error) {
@@ -208,7 +208,7 @@ const submitAddTax = async () => {
             rate: parseFloat(newTax.value.rate)
         }
 
-        await axios.post('https://api.thesecret-hotel.com/api/taxes', taxData)
+        await axios.post('http://127.0.0.1:8000/api/taxes', taxData)
         await fetchTaxes()
         closeAddTaxModal()
     } catch (error) {
@@ -229,7 +229,7 @@ const submitEditTax = async () => {
             rate: parseFloat(editingTax.value.rate)
         }
 
-        await axios.put(`https://api.thesecret-hotel.com/api/taxes/${editingTax.value.id}`, taxData)
+        await axios.put(`http://127.0.0.1:8000/api/taxes/${editingTax.value.id}`, taxData)
         await fetchTaxes()
         closeEditTaxModal()
     } catch (error) {

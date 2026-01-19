@@ -140,7 +140,7 @@ export default {
       this.successMessage = ''
 
       try {
-        const response = await axios.post('https://api.thesecret-hotel.com/api/admin/login', {
+        const response = await axios.post('http://127.0.0.1:8000/api/admin/login', {
           email: this.loginForm.email,
           password: this.loginForm.password,
         })
@@ -220,7 +220,7 @@ export default {
       }
 
       try {
-        await axios.post('https://api.thesecret-hotel.com/api/admin/forgot-password', {
+        await axios.post('http://127.0.0.1:8000/api/admin/forgot-password', {
           email: this.forgotEmail
         })
 

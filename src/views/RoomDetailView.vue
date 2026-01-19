@@ -123,8 +123,8 @@ export default {
     onMounted(async () => {
       try {
         const [roomResponse, servicesResponse] = await Promise.all([
-          axios.get(`https://api.thesecret-hotel.com/api/rooms/${route.params.id}`),
-          axios.get(`https://api.thesecret-hotel.com/api/services`)
+          axios.get(`http://127.0.0.1:8000/api/rooms/${route.params.id}`),
+          axios.get(`http://127.0.0.1:8000/api/services`)
         ]);
 
         roomData.value = roomResponse.data;

@@ -3,6 +3,7 @@
 ## 📦 Kết quả Build
 
 Ứng dụng Electron đã được build thành công tại:
+
 ```
 d:\laragon\www\hotel\dist-packaged-new\hotel-admin-win32-x64\
 ```
@@ -16,13 +17,15 @@ d:\laragon\www\hotel\dist-packaged-new\hotel-admin-win32-x64\
 ## 🔐 Tính năng chính
 
 ### LoginAdmin.vue
+
 - **Trang đăng nhập độc lập** hoàn toàn
 - **Không có header/footer** của website khách sạn
 - **Glass morphism design** với background gradient
 - **Authentication** với backend Laravel
 - **Auto-redirect** sau khi đăng nhập thành công
 
-### AdminView.vue  
+### AdminView.vue
+
 - **Dashboard quản lý** đầy đủ chức năng
 - **Phân quyền**: Admin (id_role=1) và Staff (id_role=2)
 - **Quản lý**: Phòng, Đặt phòng, Khách hàng, Người dùng
@@ -31,17 +34,20 @@ d:\laragon\www\hotel\dist-packaged-new\hotel-admin-win32-x64\
 ## 🔧 Cấu hình kỹ thuật
 
 ### Frontend
+
 - **Vue 3** + Vite
 - **Vue Router** với navigation guards
 - **Axios** cho API calls
 - **FontAwesome** icons
 
 ### Backend Integration
-- **Laravel API** endpoint: `https://api.thesecret-hotel.com/api/admin/login`
+
+- **Laravel API** endpoint: `http://127.0.0.1:8000/api/admin/login`
 - **Token authentication** với Sanctum
 - **Role-based access** control
 
 ### Electron
+
 - **Version**: 37.4.0
 - **Target**: Windows x64
 - **Size**: ~205MB (bao gồm Chromium runtime)

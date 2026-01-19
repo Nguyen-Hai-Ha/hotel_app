@@ -47,7 +47,7 @@ export default {
 
     onMounted(async () => {
       try {
-        const response = await axios.get('https://api.thesecret-hotel.com/api/rooms');
+        const response = await axios.get('http://127.0.0.1:8000/api/rooms');
         rooms.value = response.data;
       } catch (error) {
         console.error('Error loading rooms:', error);

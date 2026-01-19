@@ -232,7 +232,7 @@ const getRoomStatusClass = (status) => {
 
 const fetchRooms = async () => {
     try {
-        const response = await axios.get('https://api.thesecret-hotel.com/api/admin/rooms')
+        const response = await axios.get('http://127.0.0.1:8000/api/admin/rooms')
         rooms.value = response.data
         console.log('Admin rooms data:', rooms.value)
     } catch (error) {
@@ -242,7 +242,7 @@ const fetchRooms = async () => {
 
 const fetchRoomDetail = async (roomId) => {
     try {
-        const response = await axios.get(`https://api.thesecret-hotel.com/api/admin/rooms/${roomId}`)
+        const response = await axios.get(`http://127.0.0.1:8000/api/admin/rooms/${roomId}`)
         return response.data
     } catch (error) {
         console.error('Error fetching room detail:', error)
@@ -277,7 +277,7 @@ const submitAddRoom = async () => {
 
         console.log('Sending room data with FormData')
 
-        const response = await axios.post('https://api.thesecret-hotel.com/api/admin/rooms', formData, {
+        const response = await axios.post('http://127.0.0.1:8000/api/admin/rooms', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
@@ -354,7 +354,7 @@ const submitEditRoom = async () => {
 
         console.log('Sending edit room data with FormData')
 
-        const response = await axios.post(`https://api.thesecret-hotel.com/api/admin/rooms/${editingRoom.value.id}`, formData, {
+        const response = await axios.post(`http://127.0.0.1:8000/api/admin/rooms/${editingRoom.value.id}`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
@@ -420,7 +420,7 @@ const editRoom = async (room) => {
 const deleteRoom = async (roomId) => {
     if (confirm('Bạn có chắc muốn xóa phòng này?')) {
         try {
-            await axios.delete(`https://api.thesecret-hotel.com/api/rooms/${roomId}`)
+            await axios.delete(`http://127.0.0.1:8000/api/rooms/${roomId}`)
             await fetchRooms()
         } catch (error) {
             console.error('Error deleting room:', error)
@@ -495,7 +495,7 @@ const goToNextPage = (section) => {
 
 const fetchRoomTypes = async () => {
     try {
-        const response = await axios.get('https://api.thesecret-hotel.com/api/admin/room-types')
+        const response = await axios.get('http://127.0.0.1:8000/api/admin/room-types')
         roomTypes.value = response.data
     } catch (error) {
         console.error('Error fetching room types:', error)

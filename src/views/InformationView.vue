@@ -73,7 +73,7 @@
               <div class="room-info">
                 <div class="room-image">
                   <img
-                    :src="'https://api.thesecret-hotel.com/hotelBE/public/' + (booking.room_image || 'images/hotel1.jpg')"
+                    :src="'http://127.0.0.1:8000/hotelBE/public/' + (booking.room_image || 'images/hotel1.jpg')"
                     :alt="'Phòng ' + booking.room_number">
                 </div>
                 <div class="room-details">
@@ -234,7 +234,7 @@ export default {
         const token = localStorage.getItem('auth_token')
         if (!token) return
 
-        const response = await axios.get('https://api.thesecret-hotel.com/api/user/profile', {
+        const response = await axios.get('http://127.0.0.1:8000/api/user/profile', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -252,7 +252,7 @@ export default {
         const token = localStorage.getItem('auth_token')
         if (!token) return
 
-        const response = await axios.get('https://api.thesecret-hotel.com/api/user/bookings', {
+        const response = await axios.get('http://127.0.0.1:8000/api/user/bookings', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -271,7 +271,7 @@ export default {
         const token = localStorage.getItem('auth_token')
         if (!token) return
 
-        const response = await axios.put('https://api.thesecret-hotel.com/api/user/profile', editForm.value, {
+        const response = await axios.put('http://127.0.0.1:8000/api/user/profile', editForm.value, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -301,7 +301,7 @@ export default {
 
       try {
         const token = localStorage.getItem('auth_token')
-        await axios.put(`https://api.thesecret-hotel.com/api/bookings/${booking.id}/cancel`, {}, {
+        await axios.put(`http://127.0.0.1:8000/api/bookings/${booking.id}/cancel`, {}, {
           headers: {
             'Authorization': `Bearer ${token}`
           }

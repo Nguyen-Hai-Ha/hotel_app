@@ -263,7 +263,7 @@ const formatDate = (date) => {
 
 const fetchPromotions = async () => {
     try {
-        const response = await axios.get('https://api.thesecret-hotel.com/api/promotions')
+        const response = await axios.get('http://127.0.0.1:8000/api/promotions')
         promotions.value = response.data
     } catch (error) {
         console.error('Error fetching promotions:', error)
@@ -293,7 +293,7 @@ const editPromotion = (promotion) => {
 const deletePromotion = async (promotionId) => {
     if (confirm('Bạn có chắc muốn xóa mã giảm giá này?')) {
         try {
-            await axios.delete(`https://api.thesecret-hotel.com/api/promotions/${promotionId}`)
+            await axios.delete(`http://127.0.0.1:8000/api/promotions/${promotionId}`)
             await fetchPromotions()
         } catch (error) {
             console.error('Error deleting promotion:', error)
@@ -345,7 +345,7 @@ const submitAddPromotion = async () => {
 
         console.log('Sending add promotion data:', promotionData)
 
-        const response = await axios.post('https://api.thesecret-hotel.com/api/promotions', promotionData)
+        const response = await axios.post('http://127.0.0.1:8000/api/promotions', promotionData)
         console.log('Success response:', response.data)
 
         await fetchPromotions()
@@ -402,7 +402,7 @@ const submitEditPromotion = async () => {
 
         console.log('Sending edit promotion data:', promotionData)
 
-        const response = await axios.put(`https://api.thesecret-hotel.com/api/promotions/${editingPromotion.value.id}`, promotionData)
+        const response = await axios.put(`http://127.0.0.1:8000/api/promotions/${editingPromotion.value.id}`, promotionData)
         console.log('Success response:', response.data)
 
         await fetchPromotions()

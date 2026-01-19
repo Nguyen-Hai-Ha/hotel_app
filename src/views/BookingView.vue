@@ -392,7 +392,7 @@ export default {
       updateDatesFromQuery()
       try {
         loading.value = true
-        const response = await axios.get(`https://api.thesecret-hotel.com/api/taxes`)
+        const response = await axios.get(`http://127.0.0.1:8000/api/taxes`)
         tax.value = Array.isArray(response.data) ? response.data : []
         const rate = tax.value.length ? Number(tax.value[0].rate) || 0 : 0
         const id_tax = tax.value.length ? tax.value[0].id : null
@@ -500,7 +500,7 @@ export default {
         formData.append('service_charge', (summary.value.service * summary.value.nights).toString() || 0);
 
         // Bước 1: Gửi dữ liệu booking để tạo một bản ghi tạm thời
-        const tempResponse = await axios.post('https://api.thesecret-hotel.com/api/bookings/temp', formData, {
+        const tempResponse = await axios.post('http://127.0.0.1:8000/api/bookings/temp', formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -514,7 +514,7 @@ export default {
         paymentFormData.append('bookingId', tempBookingId);
         console.log(tempBookingId);
 
-        const paymentResponse = await axios.post('https://api.thesecret-hotel.com/api/payments', paymentFormData, {
+        const paymentResponse = await axios.post('http://127.0.0.1:8000/api/payments', paymentFormData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -566,7 +566,7 @@ export default {
       }
 
       try {
-        const response = await axios.get('https://api.thesecret-hotel.com/api/promotions')
+        const response = await axios.get('http://127.0.0.1:8000/api/promotions')
         const promotions = response.data
 
         const foundPromotion = promotions.find(p => p.code === couponCode.value.trim())

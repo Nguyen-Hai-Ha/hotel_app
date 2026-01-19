@@ -180,7 +180,7 @@ const formatCurrency = (amount) => {
 
 const fetchFoods = async () => {
     try {
-        const response = await axios.get('https://api.thesecret-hotel.com/api/foods')
+        const response = await axios.get('http://127.0.0.1:8000/api/foods')
         foods.value = response.data
     } catch (error) {
         console.error('Error fetching foods:', error)
@@ -211,7 +211,7 @@ const editFood = (food) => {
 
 const addFood = async () => {
     try {
-        const response = await axios.post('https://api.thesecret-hotel.com/api/foods', {
+        const response = await axios.post('http://127.0.0.1:8000/api/foods', {
             name: newFood.value.name,
             price: newFood.value.price
         })
@@ -231,7 +231,7 @@ const addFood = async () => {
 
 const updateFood = async () => {
     try {
-        const response = await axios.put(`https://api.thesecret-hotel.com/api/foods/${editingFood.value.id}`, {
+        const response = await axios.put(`http://127.0.0.1:8000/api/foods/${editingFood.value.id}`, {
             name: editingFood.value.name,
             price: parseFloat(editingFood.value.price)
         })
@@ -260,7 +260,7 @@ const submitEditFood = async () => {
 const deleteFood = async (id) => {
     if (confirm('Bạn có chắc chắn muốn xóa thức ăn này?')) {
         try {
-            const response = await axios.delete(`https://api.thesecret-hotel.com/api/foods/${id}`)
+            const response = await axios.delete(`http://127.0.0.1:8000/api/foods/${id}`)
 
             if (response.data.success) {
                 console.log(response.data.message || 'Xóa thức ăn thành công!')

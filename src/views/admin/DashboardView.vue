@@ -65,7 +65,7 @@ const formatCurrency = (amount) => {
 
 const fetchStats = async () => {
     try {
-        const response = await axios.get('https://api.thesecret-hotel.com/api/admin/stats')
+        const response = await axios.get('http://127.0.0.1:8000/api/admin/stats')
         stats.value = response.data
     } catch (error) {
         console.error('Error fetching stats:', error)
