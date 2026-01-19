@@ -68,9 +68,8 @@
                             </button>
                         </td>
                         <td>
-                            <button v-if="booking.status !== 'done' && booking.id_user != 1"
-                                @click="addFoodToBooking(booking.id)" class="btn btn-sm btn-primary"
-                                title="Thêm thức ăn">
+                            <button v-if="booking.id_user != 1" @click="addFoodToBooking(booking.id)"
+                                class="btn btn-sm btn-primary" title="Thêm thức ăn">
                                 <FontAwesomeIcon :icon="['fas', 'utensils']"></FontAwesomeIcon>
                                 Thêm thức ăn
                             </button>
@@ -79,6 +78,10 @@
                             <button v-if="booking.status !== 'done'" @click="deleteeBooking(booking.id)"
                                 class="btn btn-sm btn-danger" title="Xóa đặt phòng">
                                 <FontAwesomeIcon :icon="['fas', 'times']" />
+                            </button>
+                            <button v-if="booking.status !== 'done'" @click="openEditBookingModal(booking.id)"
+                                class="btn btn-sm btn-warning" title="Sửa đặt phòng">
+                                <FontAwesomeIcon :icon="['fas', 'edit']" />
                             </button>
                             <span v-else class="text-muted" style="font-size: 0.75rem;">
                                 Không thể xóa
@@ -123,7 +126,7 @@
     </div>
 
     <!-- Add Booking Modal -->
-    <div v-if="showAddBookingModal" class="modal-overlay" @click="closeAddBookingModal">
+    <div v-if="openAddBookingModal" class="modal-overlay" @click="closeAddBookingModal">
         <div class="modal-contents" @click.stop>
             <div class="modal-header">
                 <h3>Thêm đặt phòng mới</h3>
@@ -140,7 +143,8 @@
                         <div class="form-group">
                             <label for="customerName">Tên khách hàng *</label>
                             <input ref="BookingNameInput" id="customerName" v-model="newBooking.customerName"
-                                type="text" required placeholder="Nhập tên khách hàng" />
+                                type="text" required placeholder="Nhập tên khách hàng" tabindex="1"
+                                @click="$event.target.focus()" @mousedown="$event.target.focus()" />
                         </div>
                         <div class="form-group">
                             <label for="customerPhone">Số điện thoại *</label>
@@ -269,9 +273,9 @@
                             style="display: flex; flex-direction: column; align-items: flex-end;">
                             <span style="text-decoration: line-through; color: #999; font-size: 0.9em;">{{
                                 formatCurrency(grandTotal)
-                            }}</span>
+                                }}</span>
                             <strong style="color: #27ae60; font-size: 1.1em;">{{ formatCurrency(finalGrandTotal)
-                            }}</strong>
+                                }}</strong>
                         </span>
                         <!-- Hiển thị giá gốc khi chưa discount -->
                         <span v-else><strong>{{ formatCurrency(grandTotal) }}</strong></span>
@@ -303,9 +307,9 @@
                             style="display: flex; flex-direction: column; align-items: flex-end;">
                             <span style="text-decoration: line-through; color: #999; font-size: 0.9em;">{{
                                 formatCurrency(grandTotal)
-                            }}</span>
+                                }}</span>
                             <strong style="color: #27ae60; font-size: 1.1em;">{{ formatCurrency(finalGrandTotal)
-                            }}</strong>
+                                }}</strong>
                         </span>
                         <!-- Hiển thị giá gốc khi chưa discount -->
                         <span v-else><strong>{{ formatCurrency(grandTotal) }}</strong></span>
@@ -324,6 +328,159 @@
             </form>
         </div>
     </div>
+
+    <!-- Edit Booking Modal -->
+    <!-- <div v-if="openEditBookingModal" class="modal-overlay" @click="closeEditBookingModal">
+        <div class="modal-contents" @click.stop>
+            <div class="modal-header">
+                <h3>Sửa đặt phòng</h3>
+                <button @click="closeEditBookingModal" class="modal-close">
+                    <FontAwesomeIcon :icon="['fas', 'times']" />
+                </button>
+            </div>
+
+            <form @submit.prevent="submitAddBooking" class="modal-form">
+                <div class="form-section">
+                    <h4>Thông tin khách hàng</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customerName">Tên khách hàng *</label>
+                            <input ref="BookingNameInput" id="customerName" v-model="editBookings.customerName"
+                                type="text" required placeholder="Nhập tên khách hàng" tabindex="1"
+                                @click="$event.target.focus()" @mousedown="$event.target.focus()" />
+                        </div>
+                        <div class="form-group">
+                            <label for="customerPhone">Số điện thoại *</label>
+                            <input id="customerPhone" v-model="editBookings.customerPhone" type="tel" required
+                                placeholder="Nhập số điện thoại" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customerEmail">Email</label>
+                            <input id="customerEmail" v-model="editBookings.customerEmail" type="email"
+                                placeholder="Nhập email" />
+                        </div>
+                        <div class="form-group">
+                            <label for="customerPassport">CMND/CCCD *</label>
+                            <input id="customerPassport" v-model="editBookings.customerPassport" type="text" required
+                                placeholder="Nhập CMND/CCCD" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h4>Thông tin phòng</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="roomType">Loại phòng *</label>
+                            <select id="roomType" v-model="editBookings.roomTypeId" @change="onRoomTypeChange" required
+                                class="form-select">
+                                <option value="">Chọn loại phòng</option>
+                                <option v-for="roomType in roomTypes" :key="roomType.id" :value="roomType.id" >
+                                    {{ roomType.name }} - {{ formatCurrency(roomType.base_price) }}/{{ roomType.type ===
+                                        'hourly' ? 'giờ' : 'đêm' }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="availableRooms">Phòng có sẵn *</label>
+                            <select id="availableRooms" v-model="editBookings.roomId" required class="form-select"
+                                :disabled="!editBookings.roomTypeId">
+                                <option value="">Chọn phòng</option>
+                                <option v-for="room in availableRooms" :key="room.id" :value="room.id">
+                                    Phòng {{ room.room_number }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div v-if="isHourlyRental" class="form-group">
+                            <label for="checkIn">Giờ nhận phòng *</label>
+                            <input id="checkIn" v-model="newBooking.checkIn" type="datetime-local" required />
+                        </div>
+                        <template v-else>
+                            <div class="form-group">
+                                <label for="checkIn">Ngày nhận phòng *</label>
+                                <input id="checkIn" v-model="newBooking.checkIn" type="datetime-local" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="checkOut">Ngày trả phòng *</label>
+                                <input id="checkOut" v-model="newBooking.checkOut" type="datetime-local" required />
+                            </div>
+                        </template>
+                    </div>
+
+                    <div class="form-group" v-if="!isHourlyRental">
+                        <label>Số đêm: <strong>{{ bookingNights }}</strong></label>
+                    </div>
+                </div>
+
+                <div class="form-section cost-breakdown" v-if="isHourlyRental">
+                    <h4>Chi tiết chi phí</h4>
+                    <div class="cost-item">
+                        <span>Tiền phòng:</span>
+                        <span>{{ formatCurrency(roomCost) }}</span>
+                    </div>
+                    <div class="cost-item total">
+                        <span><strong>Tổng cộng:</strong></span>
+                        <span v-if="finalGrandTotal > 0"
+                            style="display: flex; flex-direction: column; align-items: flex-end;">
+                            <span style="text-decoration: line-through; color: #999; font-size: 0.9em;">{{
+                                formatCurrency(grandTotal)
+                                }}</span>
+                            <strong style="color: #27ae60; font-size: 1.1em;">{{ formatCurrency(finalGrandTotal)
+                                }}</strong>
+                        </span>
+                        <span v-else><strong>{{ formatCurrency(grandTotal) }}</strong></span>
+                    </div>
+                </div>
+
+                <div class="form-section cost-breakdown" v-else>
+                    <h4>Chi tiết chi phí</h4>
+                    <div class="cost-item">
+                        <span>Tiền phòng ({{ bookingNights }} đêm):</span>
+                        <span>{{ formatCurrency(roomCost) }}</span>
+                    </div>
+                    <div class="cost-item" v-if="!isHourlyRental">
+                        <span>Dịch vụ:</span>
+                        <span>{{ formatCurrency(servicesCost) }}</span>
+                    </div>
+                    <div class="cost-item" v-if="!isHourlyRental">
+                        <span>Tổng phụ:</span>
+                        <span>{{ formatCurrency(subtotal) }}</span>
+                    </div>
+                    <div class="cost-item">
+                        <span>Thuế:</span>
+                        <span>{{ formatCurrency(taxAmount) }}</span>
+                    </div>
+                    <div class="cost-item total">
+                        <span><strong>Tổng cộng:</strong></span>
+                        <span v-if="finalGrandTotal > 0"
+                            style="display: flex; flex-direction: column; align-items: flex-end;">
+                            <span style="text-decoration: line-through; color: #999; font-size: 0.9em;">{{
+                                formatCurrency(grandTotal)
+                                }}</span>
+                            <strong style="color: #27ae60; font-size: 1.1em;">{{ formatCurrency(finalGrandTotal)
+                                }}</strong>
+                        </span>
+                        <span v-else><strong>{{ formatCurrency(grandTotal) }}</strong></span>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" @click="closeEditBookingModal" class="btn btn-outline">
+                        Hủy
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <FontAwesomeIcon :icon="['fas', 'save']" />
+                        Tạo đặt phòng
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div> -->
 
     <!-- Add Booking For Admin -->
     <div class="modal-overlay" v-if="showAddBookingForAdminModal" @click="closeAddBookingForAdminModal">
@@ -439,10 +596,21 @@ const roomTypes = ref([])
 const rooms = ref([])
 const selectedBookingId = ref(null)
 const selectedFoodItems = ref([])
+const editBookings = ref({
+    customerName: '',
+    customerPhone: '',
+    customerEmail: '',
+    customerPassport: '',
+    roomTypeId: '',
+    roomId: '',
+    checkIn: '',
+    checkOut: '',
+})
 
 const showAddBookingModal = ref(false)
 const showAddFoodToBookingModal = ref(false)
 const showAddBookingForAdminModal = ref(false)
+const showEditBookingModal = ref(false)
 
 const availableRooms = ref([])
 
@@ -450,14 +618,44 @@ const itemsPerPage = 12
 const currentPageBookings = ref(1)
 
 const BookingNameInput = ref(null)
+const editBookingNameInput = ref(null)
 
 const openAddBookingModal = async () => {
     showAddBookingModal.value = true
     await nextTick()
-    BookingNameInput.value?.focus()
+
+    // Force focus with multiple attempts
+    const focusInput = () => {
+        const input = BookingNameInput.value
+        if (input) {
+            // Remove any selection on body
+            window.getSelection()?.removeAllRanges()
+
+            // Blur anything that's currently focused
+            if (document.activeElement && document.activeElement !== input) {
+                document.activeElement.blur()
+            }
+
+            // Force click and focus
+            input.click()
+            input.focus()
+
+            // Verify focus worked, if not try again
+            if (document.activeElement !== input) {
+                requestAnimationFrame(() => {
+                    input.focus()
+                })
+            }
+        }
+    }
+
+    // Try multiple times with increasing delays
+    setTimeout(focusInput, 50)
+    setTimeout(focusInput, 150)
+    setTimeout(focusInput, 300)
 }
 
-const openAddBookingForAdmin = async () => {
+const openAddBookingForAdmin = async () => {``
     showAddBookingForAdminModal.value = true
 }
 
@@ -515,8 +713,15 @@ const bookingNights = computed(() => {
     if (!newBooking.value.checkIn || !newBooking.value.checkOut) return 0
     const checkIn = new Date(newBooking.value.checkIn)
     const checkOut = new Date(newBooking.value.checkOut)
-    const diffTime = Math.abs(checkOut - checkIn)
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
+    // Normalize to date only (remove time component) for proper night calculation
+    // In hotel industry, nights = difference between dates, not rounded hours
+    const checkInDate = new Date(checkIn.getFullYear(), checkIn.getMonth(), checkIn.getDate())
+    const checkOutDate = new Date(checkOut.getFullYear(), checkOut.getMonth(), checkOut.getDate())
+
+    const diffTime = checkOutDate - checkInDate
+    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24))
+
     return diffDays > 0 ? diffDays : 0
 })
 
@@ -562,7 +767,7 @@ const grandTotal = computed(() => {
 
 const fetchBookings = async () => {
     try {
-        const response = await axios.get('https://api.thesecret-hotel.com/api/admin/bookings')
+        const response = await axios.get('http://127.0.0.1:8000/api/admin/bookings')
         bookings.value = response.data
     } catch (error) {
         console.error('Error fetching bookings:', error)
@@ -571,7 +776,7 @@ const fetchBookings = async () => {
 
 const fetchServices = async () => {
     try {
-        const response = await axios.get('https://api.thesecret-hotel.com/api/services')
+        const response = await axios.get('http://127.0.0.1:8000/api/services')
         services.value = response.data
     } catch (error) {
         console.error('Error fetching services:', error)
@@ -580,7 +785,7 @@ const fetchServices = async () => {
 
 const fetchFoods = async () => {
     try {
-        const response = await axios.get('https://api.thesecret-hotel.com/api/foods')
+        const response = await axios.get('http://127.0.0.1:8000/api/foods')
         foods.value = response.data
     } catch (error) {
         console.error('Error fetching foods:', error)
@@ -589,7 +794,7 @@ const fetchFoods = async () => {
 
 const fetchRoomTypes = async () => {
     try {
-        const response = await axios.get('https://api.thesecret-hotel.com/api/admin/room-types')
+        const response = await axios.get('http://127.0.0.1:8000/api/admin/room-types')
         roomTypes.value = response.data
     } catch (error) {
         console.error('Error fetching room types:', error)
@@ -598,7 +803,7 @@ const fetchRoomTypes = async () => {
 
 const fetchTaxes = async () => {
     try {
-        const response = await axios.get('https://api.thesecret-hotel.com/api/taxes')
+        const response = await axios.get('http://127.0.0.1:8000/api/taxes')
         taxes.value = response.data
     } catch (error) {
         console.error('Error fetching taxes:', error)
@@ -607,7 +812,7 @@ const fetchTaxes = async () => {
 
 const fetchRooms = async () => {
     try {
-        const response = await axios.get('https://api.thesecret-hotel.com/api/admin/rooms')
+        const response = await axios.get('http://127.0.0.1:8000/api/admin/rooms')
         rooms.value = response.data
         console.log('Admin rooms data:', rooms.value)
     } catch (error) {
@@ -615,11 +820,20 @@ const fetchRooms = async () => {
     }
 }
 
+const fetchBookingDetail = async (bookingId) => {
+    try {
+        const response = await axios.get(`http://127.0.0.1:8000/api/admin/bookings/${bookingId}`)
+        return response.data
+    } catch (error) {
+        console.error('Error editing booking:', error)
+    }
+}
+
 const changeBookingStatus = async (booking, newStatus) => {
     try {
         const formData = new FormData()
         formData.append('status', newStatus)
-        const response = await fetch(`https://api.thesecret-hotel.com/api/admin/change-status-booking/${booking.id}`, {
+        const response = await fetch(`http://127.0.0.1:8000/api/admin/change-status-booking/${booking.id}`, {
             method: 'POST',
             body: formData
         })
@@ -638,7 +852,7 @@ const onRoomTypeChange = async () => {
     if (newBooking.value.roomTypeId || newBookingForAdmin.value.roomTypeId) {
         try {
             // Fetch room type details and available rooms using the show endpoint
-            const response = await axios.get(`https://api.thesecret-hotel.com/api/rooms/${newBooking.value.roomTypeId || newBookingForAdmin.value.roomTypeId}`)
+            const response = await axios.get(`http://127.0.0.1:8000/api/rooms/${newBooking.value.roomTypeId || newBookingForAdmin.value.roomTypeId}`)
             console.log('Room type response:', response.data)
 
             // Extract available rooms from the response
@@ -659,7 +873,7 @@ const onRoomTypeChange = async () => {
             // Fallback: filter from all rooms using admin endpoint
             try {
                 console.log('Trying fallback: filtering from admin rooms')
-                const allRoomsResponse = await axios.get('https://api.thesecret-hotel.com/api/admin/rooms')
+                const allRoomsResponse = await axios.get('http://127.0.0.1:8000/api/admin/rooms')
                 const allRooms = Array.isArray(allRoomsResponse.data) ? allRoomsResponse.data : allRoomsResponse.data.data || []
 
                 // Filter rooms by room type and status
@@ -693,7 +907,22 @@ const closeAddBookingModal = () => {
         selectedServices: [],
         selectedTaxes: [],
         discount: ''
-    }
+    },
+        availableRooms.value = []
+    finalGrandTotal.value = 0
+}
+
+const closeEditBookingModal = () => {
+    showEditBookingModal.value = false
+    editBookings.value = {
+        customerName: '',
+        customerPhone: '',
+        customerEmail: '',
+        roomTypeId: '',
+        roomId: '',
+        checkIn: '',
+        checkOut: '',
+    },
     availableRooms.value = []
     finalGrandTotal.value = 0
 }
@@ -751,7 +980,7 @@ const submitAddBooking = async () => {
 
         console.log('Sending booking data:', bookingData)
 
-        const response = await axios.post('https://api.thesecret-hotel.com/api/admin/bookings', bookingData)
+        const response = await axios.post('http://127.0.0.1:8000/api/admin/bookings', bookingData)
         console.log('Success response:', response.data)
 
         await fetchBookings()
@@ -812,7 +1041,7 @@ const submitAddBookingAdmin = async () => {
             booking_type: 'daily'
         }
 
-        const response = await axios.post('https://api.thesecret-hotel.com/api/admin/bookings', booking)
+        const response = await axios.post('http://127.0.0.1:8000/api/admin/bookings', booking)
         console.log('Success response:', response.data)
 
         await fetchBookings()
@@ -855,7 +1084,7 @@ const submitAddBookingAdmin = async () => {
 const deleteeBooking = async (bookingId) => {
     if (confirm('Bạn có chắc muốn xóa đặt phòng này?')) {
         try {
-            await axios.delete(`https://api.thesecret-hotel.com/api/admin/bookings/${bookingId}`)
+            await axios.delete(`http://127.0.0.1:8000/api/admin/bookings/${bookingId}`)
             await fetchBookings()
         } catch (error) {
             console.error('Error deleting booking:', error)
@@ -863,9 +1092,57 @@ const deleteeBooking = async (bookingId) => {
     }
 }
 
+const openEditBookingModal = async (bookingId) => {
+    const bookingDetail = await fetchBookingDetail(bookingId)
+    console.log('Booking detail:', bookingDetail)
+    if (bookingDetail) {
+        editBookings.value.customerName = bookingDetail.customer.name
+        editBookings.value.customerPhone = bookingDetail.customer.phone
+        editBookings.value.customerEmail = bookingDetail.customer.email
+        editBookings.value.customerPassport = bookingDetail.customer.passport
+        editBookings.value.roomTypeId = bookingDetail.roomType.id
+        editBookings.value.roomId = bookingDetail.room.id
+        editBookings.value.checkIn = bookingDetail.booking.check_in
+        editBookings.value.checkOut = bookingDetail.booking.check_out
+
+        showEditBookingModal.value = true
+        await nextTick()
+
+        const focusInput = () => {
+            const input = editBookingNameInput.value
+            if (input) {
+                // Remove any selection on body
+                window.getSelection()?.removeAllRanges()
+
+                // Blur anything that's currently focused
+                if (document.activeElement && document.activeElement !== input) {
+                    document.activeElement.blur()
+                }
+
+                // Force click and focus
+                input.click()
+                input.focus()
+
+                // Verify focus worked, if not try again
+                if (document.activeElement !== input) {
+                    requestAnimationFrame(() => {
+                        input.focus()
+                    })
+                }
+            }
+        }
+
+        // Try multiple times with increasing delays
+        setTimeout(focusInput, 50)
+        setTimeout(focusInput, 150)
+        setTimeout(focusInput, 300)
+    }
+}
+
+
 const printThermalBill = async (bookingId) => {
     try {
-        const apiUrl = 'https://api.thesecret-hotel.com/api/booking/' + bookingId + '/thermal-bill'
+        const apiUrl = 'http://127.0.0.1:8000/api/booking/' + bookingId + '/thermal-bill'
         const response = await fetch(apiUrl)
         const data = await response.json()
 
@@ -905,7 +1182,7 @@ const addFoodToBooking = async (bookingId) => {
 
     try {
         // Fetch existing foods for this booking
-        const response = await axios.get(`https://api.thesecret-hotel.com/api/admin/booking/${bookingId}/foods`)
+        const response = await axios.get(`http://127.0.0.1:8000/api/admin/booking/${bookingId}/foods`)
         const existingFoods = response.data.foods || []
 
         // Create a map of existing food quantities
@@ -960,7 +1237,7 @@ const submitFoodToBooking = async () => {
             return
         }
 
-        const response = await axios.post('https://api.thesecret-hotel.com/api/admin/update-invoice-foods', {
+        const response = await axios.post('http://127.0.0.1:8000/api/admin/update-invoice-foods', {
             id_booking: selectedBookingId.value,
             foods: foodsToUpdate
         })
