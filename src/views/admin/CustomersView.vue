@@ -48,12 +48,13 @@
                         <td>
                             <button @click="addTax(customer)"
                                 v-if="customer.booking_type === 'hourly' && customer.id_user != 1"
-                                class="btn btn-sm btn-primary">Thêm thuế</button>
+                                class="btn btn-sm btn-primary">Thêm thuế
+                            </button>
                         </td>
                         <td>
-                            <button @click="openAddOverTimeModal(customer)"
-                                v-if="customer.booking_type === 'daily' && customer.over_time != null && customer.id_user != 1"
-                                class="btn btn-sm btn-primary">Thêm phụ thu</button>
+                            <button @click="openAddOverTimeModal(customer)" v-if="customer.id_user != 1"
+                                class="btn btn-sm btn-primary">Thêm phụ thu
+                            </button>
                         </td>
                         <td>
                             <div class="action-buttons">
@@ -81,11 +82,11 @@
     </div>
 
     <!-- Add Overtime/Surcharge Modal -->
-    <div v-if="showAddOverTimeModal" class="modal-overlay" @click="showAddOverTimeModal = false">
+    <div v-if="showAddOverTimeModal" class="modal-overlay" @click="closeAddOverTimeModal">
         <div class="modal-content" @click.stop>
             <div class="modal-header">
                 <h3>Thêm phụ thu</h3>
-                <button @click="showAddOverTimeModal = false" class="modal-close">
+                <button @click="closeAddOverTimeModal" class="modal-close">
                     <FontAwesomeIcon :icon="['fas', 'times']" />
                 </button>
             </div>
@@ -98,7 +99,7 @@
                 </div>
 
                 <div class="modal-actions">
-                    <button type="button" @click="showAddOverTimeModal = false" class="btn btn-secondary">
+                    <button type="button" @click="closeAddOverTimeModal" class="btn btn-secondary">
                         <FontAwesomeIcon :icon="['fas', 'times']" />
                         Hủy
                     </button>
@@ -158,7 +159,7 @@ const formatDate = (date) => {
 const fetchCustomers = async () => {
     try {
         // For now, we'll use booking data and transform it to customer format
-        const response = await axios.get('https://api.thesecret-hotel.com/api/admin/bookings-customer')
+        const response = await axios.get('http://127.0.0.1:8000/api/admin/bookings-customer')
         customers.value = response.data.map(booking => ({
             id: booking.id,
             id_room: booking.id_room,
@@ -208,7 +209,7 @@ const getCurrentTimestamp = () => {
 const addTax = async (customer) => {
     if (confirm(`Xác nhận thêm thuế cho khách hàng ${customer.name}?`)) {
         try {
-            const response = await axios.post('https://api.thesecret-hotel.com/api/admin/add-tax-for-booking-hour/' + customer.id)
+            const response = await axios.post('http://127.0.0.1:8000/api/admin/add-tax-for-booking-hour/' + customer.id)
             if (response.status === 200) {
                 console.log('Thêm thuế thành công')
                 await fetchCustomers()
@@ -221,65 +222,61 @@ const addTax = async (customer) => {
 }
 
 const checkInCustomer = async (customer) => {
-    if (confirm(`Xác nhận check-in cho khách hàng ${customer.name}?`)) {
-        try {
-            const timestamp = getCurrentTimestamp()
-            const formData = new FormData()
-            formData.append('status', 'checked_in')
-            formData.append('timestamp', timestamp)
-            const response = await axios.post('https://api.thesecret-hotel.com/api/admin/change-status-room/' + customer.id_room, formData)
+    try {
+        const timestamp = getCurrentTimestamp()
+        const formData = new FormData()
+        formData.append('status', 'checked_in')
+        formData.append('timestamp', timestamp)
+        const response = await axios.post('http://127.0.0.1:8000/api/admin/change-status-room/' + customer.id_room, formData)
 
-            if (response.status === 200) {
-                // Cập nhật trạng thái trực tiếp trong mảng customers
+        if (response.status === 200) {
+            // Cập nhật trạng thái trực tiếp trong mảng customers
 
-                await fetchCustomers()
-                console.log(`Customer ${customer.name} checked in successfully at ${timestamp}`)
-                // Refresh customers data to ensure UI is updated
-            }
-        } catch (error) {
-            console.error('Error checking in customer:', error)
+            await fetchCustomers()
+            console.log(`Customer ${customer.name} checked in successfully at ${timestamp}`)
+            // Refresh customers data to ensure UI is updated
         }
+    } catch (error) {
+        console.error('Error checking in customer:', error)
     }
+
 }
 
 const checkOutCustomer = async (customer) => {
-    if (confirm(`Xác nhận check-out cho khách hàng ${customer.name}?`)) {
-        try {
-            const timestamp = getCurrentTimestamp()
-            const formData = new FormData()
-            formData.append('status', 'checked_out')
-            formData.append('timestamp', timestamp)
-            const response = await axios.post(`https://api.thesecret-hotel.com/api/admin/change-status-room/` + customer.id_room, formData)
+    try {
+        const timestamp = getCurrentTimestamp()
+        const formData = new FormData()
+        formData.append('status', 'checked_out')
+        formData.append('timestamp', timestamp)
+        const response = await axios.post(`http://127.0.0.1:8000/api/admin/change-status-room/` + customer.id_room, formData)
 
-            if (response.status === 200) {
-                // Cập nhật trạng thái trực tiếp trong mảng customers
-                await fetchCustomers()
-                console.log(`Customer ${customer.name} checked out successfully at ${timestamp}`)
-                // Refresh customers data to ensure UI is updated
-            }
-        } catch (error) {
-            console.error('Error checking out customer:', error)
+        if (response.status === 200) {
+            // Cập nhật trạng thái trực tiếp trong mảng customers
+            await fetchCustomers()
+            console.log(`Customer ${customer.name} checked out successfully at ${timestamp}`)
+            // Refresh customers data to ensure UI is updated
         }
+    } catch (error) {
+        console.error('Error checking out customer:', error)
     }
 }
 
 const markRoomCleaned = async (customer) => {
-    if (confirm(`Xác nhận phòng ${customer.room_number} đã được dọn sạch?`)) {
-        try {
-            const formData = new FormData()
-            formData.append('status', 'available')
-            const response = await axios.post('https://api.thesecret-hotel.com/api/admin/change-status-room/' + customer.id_room, formData)
+    try {
+        const formData = new FormData()
+        formData.append('status', 'available')
+        const response = await axios.post('http://127.0.0.1:8000/api/admin/change-status-room/' + customer.id_room, formData)
 
-            if (response.status === 200) {
-                // Cập nhật trạng thái trực tiếp trong mảng customers
-                await fetchCustomers()
-                console.log(`Room ${customer.room_number} marked as cleaned`)
-                // Refresh customers data to ensure UI is updated
-            }
-        } catch (error) {
-            console.error('Error marking room as cleaned:', error)
+        if (response.status === 200) {
+            // Cập nhật trạng thái trực tiếp trong mảng customers
+            await fetchCustomers()
+            console.log(`Room ${customer.room_number} marked as cleaned`)
+            // Refresh customers data to ensure UI is updated
         }
+    } catch (error) {
+        console.error('Error marking room as cleaned:', error)
     }
+
 }
 const openAddOverTimeModal = async (customers) => {
     customer.value = {
@@ -290,11 +287,16 @@ const openAddOverTimeModal = async (customers) => {
     SubChargeInput.value.focus()
 }
 
+const closeAddOverTimeModal = () => {
+    showAddOverTimeModal.value = false
+    sub_charge.value = ''
+}
+
 const addSubCharge = async (customer) => {
     try {
         const formData = new FormData()
         formData.append('sub_charge', sub_charge.value)
-        const response = await fetch(`https://api.thesecret-hotel.com/api/admin/add-sub-charge/${customer.id}`, {
+        const response = await fetch(`http://127.0.0.1:8000/api/admin/add-sub-charge/${customer.id}`, {
             method: 'POST',
             body: formData
         })
@@ -303,7 +305,7 @@ const addSubCharge = async (customer) => {
             // Cập nhật trạng thái trực tiếp trong mảng customers
             await fetchCustomers()
             console.log(`Sub charge added for customer ${customer.name}`)
-            showAddOverTimeModal.value = false
+            closeAddOverTimeModal()
             // Refresh customers data to ensure UI is updated
         }
     } catch (error) {
