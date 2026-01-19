@@ -367,7 +367,7 @@ const formatCurrency = (amount) => {
 
 const fetchRoomTypes = async () => {
     try {
-        const response = await axios.get('https://api.thesecret-hotel.com/api/admin/room-types')
+        const response = await axios.get('http://127.0.0.1:8000/api/admin/room-types')
         roomTypes.value = response.data
     } catch (error) {
         console.error('Error fetching room types:', error)
@@ -440,7 +440,7 @@ const submitAddRoomType = async () => {
 
         console.log('Sending room type data:', formData)
 
-        const response = await axios.post('https://api.thesecret-hotel.com/api/room_types', formData, {
+        const response = await axios.post('http://127.0.0.1:8000/api/room_types', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
@@ -564,7 +564,7 @@ const submitEditRoomType = async () => {
 
         console.log('Sending edit room type data:', formData)
 
-        const response = await axios.post(`https://api.thesecret-hotel.com/api/room_types/${editingRoomType.value.id}`, formData, {
+        const response = await axios.post(`http://127.0.0.1:8000/api/room_types/${editingRoomType.value.id}`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
@@ -657,7 +657,7 @@ const editRoomType = (roomType) => {
 const deleteRoomType = async (roomTypeId) => {
     if (confirm('Bạn có chắc muốn xóa thể loại phòng này?')) {
         try {
-            await axios.delete(`https://api.thesecret-hotel.com/api/room_types/${roomTypeId}`)
+            await axios.delete(`http://127.0.0.1:8000/api/room_types/${roomTypeId}`)
             await fetchRoomTypes()
         } catch (error) {
             console.error('Error deleting room type:', error)
