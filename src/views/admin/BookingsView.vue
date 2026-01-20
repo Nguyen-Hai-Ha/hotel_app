@@ -187,7 +187,7 @@
             </div>
             <div class="form-group">
               <label for="roomPrice">Giá phòng (điều chỉnh)</label>
-              <input id="roomPrice" v-model="newBooking.roomPrice" type="number" required />
+              <input id="roomPrice" v-model="newBooking.roomPrice" type="number" />
             </div>
           </div>
 
@@ -270,9 +270,9 @@
             <span v-if="finalGrandTotal > 0" style="display: flex; flex-direction: column; align-items: flex-end;">
               <span style="text-decoration: line-through; color: #999; font-size: 0.9em;">{{
                 formatCurrency(grandTotal)
-                }}</span>
+              }}</span>
               <strong style="color: #27ae60; font-size: 1.1em;">{{ formatCurrency(finalGrandTotal)
-                }}</strong>
+              }}</strong>
             </span>
             <!-- Hiển thị giá gốc khi chưa discount -->
             <span v-else><strong>{{ formatCurrency(grandTotal) }}</strong></span>
@@ -303,9 +303,9 @@
             <span v-if="finalGrandTotal > 0" style="display: flex; flex-direction: column; align-items: flex-end;">
               <span style="text-decoration: line-through; color: #999; font-size: 0.9em;">{{
                 formatCurrency(grandTotal)
-                }}</span>
+              }}</span>
               <strong style="color: #27ae60; font-size: 1.1em;">{{ formatCurrency(finalGrandTotal)
-                }}</strong>
+              }}</strong>
             </span>
             <!-- Hiển thị giá gốc khi chưa discount -->
             <span v-else><strong>{{ formatCurrency(grandTotal) }}</strong></span>
@@ -327,191 +327,8 @@
 
   <!-- Edit Booking Modal -->
   <div v-if="showEditBookingModal" class="modal-overlay" @click="closeEditBookingModal">
-    <div class="modal-contents" @click.stop>
-      <div class="modal-header">
-        <h3>Sửa đặt phòng</h3>
-        <button @click="closeEditBookingModal" class="modal-close">
-          <FontAwesomeIcon :icon="['fas', 'times']" />
-        </button>
-      </div>
-
-      <form @submit.prevent="submitEditBooking" class="modal-form">
-        <div class="form-section">
-          <h4>Thông tin khách hàng</h4>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="customerName">Tên khách hàng *</label>
-              <input ref="editBookingNameInput" id="customerName" v-model="editBookings.customerName" type="text"
-                required placeholder="Nhập tên khách hàng" tabindex="1" @click="$event.target.focus()"
-                @mousedown="$event.target.focus()" />
-            </div>
-            <div class="form-group">
-              <label for="customerPhone">Số điện thoại *</label>
-              <input id="customerPhone" v-model="editBookings.customerPhone" type="tel" required
-                placeholder="Nhập số điện thoại" />
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="customerEmail">Email</label>
-              <input id="customerEmail" v-model="editBookings.customerEmail" type="email" placeholder="Nhập email" />
-            </div>
-            <div class="form-group">
-              <label for="customerPassport">CMND/CCCD *</label>
-              <input id="customerPassport" v-model="editBookings.customerPassport" type="text" required
-                placeholder="Nhập CMND/CCCD" />
-            </div>
-          </div>
-        </div>
-
-        <div class="form-section">
-          <h4>Thông tin phòng</h4>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="roomType">Loại phòng *</label>
-              <select id="roomType" v-model="editBookings.roomTypeId" @change="onRoomTypeChange" required
-                class="form-select">
-                <option value="">Chọn loại phòng</option>
-                <option v-for="roomType in roomTypes" :key="roomType.id" :value="roomType.id">
-                  {{ roomType.name }} - {{ formatCurrency(roomType.base_price) }}/{{ roomType.type ===
-                    'hourly' ? 'giờ' : 'đêm' }}
-                </option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="availableRooms">Phòng có sẵn *</label>
-              <select id="availableRooms" v-model="editBookings.roomId" required class="form-select"
-                :disabled="!editBookings.roomTypeId">
-                <option value="">Chọn phòng</option>
-                <option v-for="room in availableRooms" :key="room.id" :value="room.id">
-                  Phòng {{ room.room_number }}
-                </option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div v-if="isHourlyRental" class="form-group">
-              <label for="checkIn">Giờ nhận phòng *</label>
-              <input id="checkIn" v-model="editBookings.checkIn" type="datetime-local" required />
-            </div>
-            <template v-else>
-              <div class="form-group">
-                <label for="checkIn">Ngày nhận phòng *</label>
-                <input id="checkIn" v-model="editBookings.checkIn" type="datetime-local" required />
-              </div>
-              <div class="form-group">
-                <label for="checkOut">Ngày trả phòng *</label>
-                <input id="checkOut" v-model="editBookings.checkOut" type="datetime-local" required />
-              </div>
-            </template>
-          </div>
-
-          <div class="form-group" v-if="!isHourlyRental">
-            <label>Số đêm: <strong>{{ countLastChange + bookingNightChange }}</strong></label>
-          </div>
-        </div>
-
-        <div class="form-section" v-if="!isHourlyRental">
-          <h4>Dịch vụ bổ sung</h4>
-          <div class="services-selection">
-            <div v-for="service in services" :key="service.id" class="service-item">
-              <div class="service-info">
-                <label class="service-checkbox">
-                  <input type="checkbox" :value="service.id" v-model="editBookings.selectedServices" />
-                  <div class="service-details">
-                    <strong>{{ service.name }}</strong>
-                    <p>{{ service.description }}</p>
-                    <span class="service-price">{{ formatCurrency(service.price) }}</span>
-                  </div>
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="form-section cost-breakdown" v-if="isHourlyRental">
-          <h4>Chi tiết chi phí</h4>
-          <div class="cost-item">
-            <span>Tiền phòng:</span>
-            <span>{{ formatCurrency(roomCost) }}</span>
-          </div>
-          <div class="cost-item total">
-            <span><strong>Tổng cộng:</strong></span>
-            <span v-if="finalGrandTotal > 0" style="display: flex; flex-direction: column; align-items: flex-end;">
-              <span style="text-decoration: line-through; color: #999; font-size: 0.9em;">{{
-                formatCurrency(grandTotal)
-              }}</span>
-              <strong style="color: #27ae60; font-size: 1.1em;">{{ formatCurrency(finalGrandTotal)
-              }}</strong>
-            </span>
-            <span v-else><strong>{{ formatCurrency(grandTotal) }}</strong></span>
-          </div>
-        </div>
-
-        <div class="form-section cost-breakdown" v-else>
-          <h4>Chi tiết chi phí</h4>
-          <div class="cost-item">
-            <span>Tiền phòng ({{ countLastChange + bookingNightChange }} đêm):</span>
-            <p v-if="newCost > 0" style="margin-bottom: 0;">
-              {{ formatCurrency(bookingDetail.invoice.subtotal) }}
-              <span style="color: #38a169; font-weight: 700;">
-                + {{ formatCurrency((bookingNightChange * bookingDetail.roomType.base_price) + ((bookingNightChange *
-                  bookingDetail.roomType.base_price) * bookingDetail.tax.rate / 100)) }}
-              </span>
-            </p>
-            <span v-else>{{ formatCurrency(bookingDetail.invoice.subtotal) }}</span>
-          </div>
-          <div class="cost-item" v-if="!isHourlyRental">
-            <span>Dịch vụ:</span>
-            <p v-if="newCost > 0" style="margin-bottom: 0;">
-              {{ formatCurrency(bookingDetail.invoice.service_charge) }}
-              <span style="color: #38a169; font-weight: 700;" v-if="servicesCost > 0">
-                + {{ formatCurrency(servicesCost * bookingNightChange) }}
-              </span>
-            </p>
-            <p v-else style="margin-bottom: 0;">
-              {{ formatCurrency(bookingDetail.invoice.service_charge) }}
-              <span style="color: #38a169; font-weight: 700;" v-if="servicesCost > 0">
-                + {{ formatCurrency(servicesCost) }}
-              </span>
-            </p>
-          </div>
-          <div class="cost-item" v-if="!isHourlyRental">
-            <span>Tổng phụ:</span>
-            <span v-if="newCost > 0">
-              {{ formatCurrency(bookingDetail.invoice.subtotal + newCost) }}
-            </span>
-            <span v-else>{{ formatCurrency(bookingDetail.invoice.subtotal) }}</span>
-          </div>
-          <!-- <div class="cost-item">
-            <span>Thuế:</span>
-            <span>{{ formatCurrency(taxAmount) }}</span>
-          </div> -->
-          <div class="cost-item total">
-            <span><strong>Tổng cộng:</strong></span>
-            <span v-if="finalGrandTotal > 0" style="display: flex; flex-direction: column; align-items: flex-end;">
-              <span style="text-decoration: line-through; color: #999; font-size: 0.9em;">{{
-                formatCurrency(grandTotal)
-              }}</span>
-              <strong style="color: #27ae60; font-size: 1.1em;">{{ formatCurrency(finalGrandTotal)
-              }}</strong>
-            </span>
-            <span v-else><strong>{{ formatCurrency(grandTotal) }}</strong></span>
-          </div>
-        </div>
-
-        <div class="modal-actions">
-          <button type="button" @click="closeEditBookingModal" class="btn btn-outline">
-            Hủy
-          </button>
-          <button type="submit" class="btn btn-primary">
-            <FontAwesomeIcon :icon="['fas', 'save']" />
-            Tạo đặt phòng
-          </button>
-        </div>
-      </form>
-    </div>
+    <EditBookingModal :show-modal="showEditBookingModal" :booking-id="selectedBookingIdForEdit"
+      @close="closeEditBookingModal" @refresh="fetchBookings" />
   </div>
 
   <!-- Add Booking For Admin -->
@@ -618,7 +435,8 @@
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import axios from 'axios'
-import { watch } from 'vue'
+
+import EditBookingModal from '@/components/booking-view/EditBookingModal.vue'
 
 const bookings = ref([])
 const services = ref([])
@@ -627,20 +445,8 @@ const foods = ref([])
 const roomTypes = ref([])
 const rooms = ref([])
 const selectedBookingId = ref(null)
+const selectedBookingIdForEdit = ref(null)
 const selectedFoodItems = ref([])
-const editBookings = ref({
-  id: null,
-  customerName: '',
-  customerPhone: '',
-  customerEmail: '',
-  customerPassport: '',
-  selectedServices: [],
-  roomTypeId: '',
-  roomId: '',
-  checkIn: '',
-  checkOut: '',
-})
-const bookingDetail = ref({})
 
 const showAddBookingModal = ref(false)
 const showAddFoodToBookingModal = ref(false)
@@ -653,11 +459,8 @@ const itemsPerPage = 12
 const currentPageBookings = ref(1)
 
 const BookingNameInput = ref(null)
-const editBookingNameInput = ref(null)
 
-const isEdit = ref(false)
-const newCost = ref(0)
-// const checkout_base = ref("")
+
 
 
 const openAddBookingModal = async () => {
@@ -748,7 +551,7 @@ const formatDate = (date) => {
 }
 
 const selectedRoomType = computed(() => {
-  return roomTypes.value.find(rt => rt.id == newBooking.value.roomTypeId || rt.id == editBookings.value.roomTypeId) || null
+  return roomTypes.value.find(rt => rt.id == newBooking.value.roomTypeId) || null
 })
 
 const bookingNights = computed(() => {
@@ -772,68 +575,19 @@ const bookingNights = computed(() => {
 const isHourlyRental = computed(() => selectedRoomType.value?.type === 'hourly')
 
 const roomCost = computed(() => {
-  if (isEdit.value) {
-    console.log('bookingDetail: ', bookingDetail.value);
-
-    // giờ
-    if (isHourlyRental.value && bookingDetail.value.invoice.room_price > 0) return bookingDetail.value.invoice.room_price
-
-    else if (isHourlyRental.value) return bookingDetail.value.roomType.base_price
-
-    // ngày
-    else if (bookingDetail.value.invoice.room_price > 0) return bookingDetail.value.invoice.room_price
-
-    return bookingDetail.value.roomType.base_price * bookingNights.value
+  if (isHourlyRental.value && newBooking.value.roomPrice > 0) {
+    return newBooking.value.roomPrice
+  } else if (isHourlyRental.value) {
+    return selectedRoomType.value.base_price
+  } else if (newBooking.value.roomPrice > 0) {
+    return newBooking.value.roomPrice * bookingNights.value
   } else {
-    if (isHourlyRental.value && newBooking.value.roomPrice > 0) {
-      return newBooking.value.roomPrice
-    } else if (isHourlyRental.value) {
-      return selectedRoomType.value.base_price
-    } else if (newBooking.value.roomPrice > 0) {
-      return newBooking.value.roomPrice * bookingNights.value
-    } else {
-      if (!selectedRoomType.value || !bookingNights.value) return 0
-      return selectedRoomType.value.base_price * bookingNights.value
-    }
+    if (!selectedRoomType.value || !bookingNights.value) return 0
+    return selectedRoomType.value.base_price * bookingNights.value
   }
-
 })
 
 const servicesCost = computed(() => {
-  if (isEdit.value && newCost.value > 0) {
-    console.log('SAIIIIIIIIII');
-    return editBookings.value.selectedServices.reduce((total, serviceId) => {
-      const service = services.value.find(s => s.id == serviceId)
-      return total + (service ? service.price : 0)
-    }, 0)
-  } else if (isEdit.value && newCost.value === 0) {
-    // nếu thêm dịch vụ nhưng không thêm ngày, sẽ lấy số ngày từ ngày hiện tại đến ngày checkout nhân với giá dịch vụ
-    const dateNow = new Date()
-    console.log('dateNow: ', dateNow);
-    console.log('date use getDay(): ', dateNow.getDate());
-
-    const dayDB = new Date(bookingDetail.value.booking.check_in)
-    console.log('dayDB: ', dayDB);
-    console.log('day use getDay(): ', dayDB.getDate());
-
-    if (dayDB.getDate() < dateNow.getDate()) {
-      const checkOut = new Date(bookingDetail.value.booking.check_out)
-      console.log('checkOut: ', checkOut.getDate());
-      
-      const diffTime = checkOut.getDate() - dateNow.getDate()
-      console.log('diffTime: ', diffTime);
-      
-      return editBookings.value.selectedServices.reduce((total, serviceId) => {
-        const service = services.value.find(s => s.id == serviceId)
-        return total + (service ? service.price : 0) * diffTime
-      }, 0)
-    } 
-
-    return editBookings.value.selectedServices.reduce((total, serviceId) => {
-      const service = services.value.find(s => s.id == serviceId)
-      return total + ((service ? service.price : 0) * (countLastChange.value + bookingNightChange.value))
-    }, 0)
-  }
   return newBooking.value.selectedServices.reduce((total, serviceId) => {
     const service = services.value.find(s => s.id == serviceId)
     return total + (service ? service.price : 0)
@@ -841,7 +595,6 @@ const servicesCost = computed(() => {
 })
 
 const subtotal = computed(() => {
-  if (isEdit.value && newCost.value > 0) return roomCost.value + newCost.value
   return roomCost.value
 })
 
@@ -856,14 +609,6 @@ const taxAmount = computed(() => {
 })
 
 const grandTotal = computed(() => {
-  if (isEdit.value) {
-    // Calculate additional service charge for extra nights
-    // const additionalServiceCharge = (bookingDetail.value.invoice.service_charge / countLastChange.value) * bookingNightChange.value
-    if (editBookings.value.checkOut != bookingDetail.value.booking.check_out) return bookingDetail.value.invoice.grand_total + newCost.value + (servicesCost.value * bookingNightChange.value)
-    else return bookingDetail.value.invoice.grand_total + servicesCost.value
-  } else if (isEdit.value) {
-    return bookingDetail.value.invoice.grand_total
-  }
   return subtotal.value + taxAmount.value + (servicesCost.value * bookingNights.value)
 })
 
@@ -922,14 +667,7 @@ const fetchRooms = async () => {
   }
 }
 
-const fetchBookingDetail = async (bookingId) => {
-  try {
-    const response = await axios.get(`http://127.0.0.1:8000/api/admin/bookings/${bookingId}`)
-    return response.data
-  } catch (error) {
-    console.error('Error editing booking:', error)
-  }
-}
+
 
 const changeBookingStatus = async (booking, newStatus) => {
   try {
@@ -952,17 +690,19 @@ const changeBookingStatus = async (booking, newStatus) => {
 
 const onRoomTypeChange = async () => {
 
-  if (newBooking.value.roomTypeId || newBookingForAdmin.value.roomTypeId || editBookings.value.roomTypeId) {
+  const roomTypeId = newBooking.value.roomTypeId || newBookingForAdmin.value.roomTypeId;
+
+  if (roomTypeId) {
     try {
       // Fetch room type details and available rooms using the show endpoint
-      const response = await axios.get(`http://127.0.0.1:8000/api/rooms/${newBooking.value.roomTypeId || newBookingForAdmin.value.roomTypeId || editBookings.value.roomTypeId}`)
+      const response = await axios.get(`http://127.0.0.1:8000/api/rooms/${roomTypeId}`)
       console.log('Room type response:', response.data)
 
       // Extract available rooms from the response
       if (response.data && response.data.available_rooms) {
         // Filter only available rooms
         availableRooms.value = response.data.available_rooms.filter(room =>
-          room.status === 'available' || room.status === 'Available' || room.id == editBookings.value.roomId
+          room.status === 'available' || room.status === 'Available'
         )
       } else {
         console.warn('No available_rooms in response:', response.data)
@@ -981,7 +721,7 @@ const onRoomTypeChange = async () => {
 
         // Filter rooms by room type and status
         availableRooms.value = allRooms.filter(room =>
-          room.id_room_type == newBooking.value.roomTypeId || room.id_room_type == newBookingForAdmin.value.roomTypeId &&
+          room.id_room_type == roomTypeId &&
           (room.status === 'available' || room.status === 'Available')
         )
 
@@ -1017,21 +757,7 @@ const closeAddBookingModal = () => {
 
 const closeEditBookingModal = () => {
   showEditBookingModal.value = false
-  editBookings.value = {
-    customerName: '',
-    customerPhone: '',
-    customerEmail: '',
-    roomTypeId: '',
-    roomId: '',
-    checkIn: '',
-    checkOut: '',
-    selectedServices: []
-  },
-  bookingDetail.value = {},
-  availableRooms.value = [],
-  newCost.value = 0,
-  finalGrandTotal.value = 0,
-  isEdit.value = false
+  selectedBookingIdForEdit.value = null
 }
 
 const submitAddBooking = async () => {
@@ -1128,34 +854,7 @@ const submitAddBooking = async () => {
   }
 }
 
-const submitEditBooking = async () => {
-  try {
-    const amountTax = ((bookingNightChange.value * bookingDetail.value.roomType.base_price) * bookingDetail.value.tax.rate / 100)
-    const booking_type = selectedRoomType.value.type
-    const bookingData = {
-      customer_name: editBookings.value.customerName.trim(),
-      customer_phone: editBookings.value.customerPhone.trim(),
-      customer_email: editBookings.value.customerEmail.trim() || null,
-      customer_passport: editBookings.value.customerPassport.trim(),
-      id_room: editBookings.value.roomId,
-      check_out: calculateTimeDiff(editBookings.value.checkOut),
-      tax_amount: amountTax,
-      subtotal: subtotal.value,
-      grand_total: grandTotal.value,
-      service_charge: (servicesCost.value * bookingNightChange.value) || 0,
-      booking_type: booking_type,
-    }
 
-    await axios.post(`http://127.0.0.1:8000/api/admin/update-booking/${editBookings.value.id}`, bookingData)
-
-    fetchBookings()
-    closeEditBookingModal()
-
-
-  } catch (error) {
-    console.log(error);
-  }
-}
 
 const submitAddBookingAdmin = async () => {
   try {
@@ -1230,56 +929,11 @@ const deleteeBooking = async (bookingId) => {
 }
 
 const openEditBookingModal = async (bookingId) => {
-  isEdit.value = true
-  bookingDetail.value = await fetchBookingDetail(bookingId)
-  if (bookingDetail.value) {
-    editBookings.value.id = bookingDetail.value.booking.id
-    editBookings.value.customerName = bookingDetail.value.customer.name
-    editBookings.value.customerPhone = bookingDetail.value.customer.phone
-    editBookings.value.customerEmail = bookingDetail.value.customer.email
-    editBookings.value.customerPassport = bookingDetail.value.customer.passport
-    editBookings.value.roomTypeId = bookingDetail.value.roomType.id
-    editBookings.value.roomId = bookingDetail.value.room.id
-    editBookings.value.checkIn = bookingDetail.value.booking.check_in
-    editBookings.value.checkOut = bookingDetail.value.booking.check_out
-    // checkout_base.value = bookingDetail.value.booking.check_out
-
-    showEditBookingModal.value = true
-
-    console.log(editBookings.value);
-
-    await nextTick()
-
-    const focusInput = () => {
-      const input = editBookingNameInput.value
-      if (input) {
-        // Remove any selection on body
-        window.getSelection()?.removeAllRanges()
-
-        // Blur anything that's currently focused
-        if (document.activeElement && document.activeElement !== input) {
-          document.activeElement.blur()
-        }
-
-        // Force click and focus
-        input.click()
-        input.focus()
-
-        // Verify focus worked, if not try again
-        if (document.activeElement !== input) {
-          requestAnimationFrame(() => {
-            input.focus()
-          })
-        }
-      }
-    }
-
-    // Try multiple times with increasing delays
-    setTimeout(focusInput, 50)
-    setTimeout(focusInput, 150)
-    setTimeout(focusInput, 300)
-  }
+  selectedBookingIdForEdit.value = bookingId
+  showEditBookingModal.value = true
 }
+
+
 
 
 const printThermalBill = async (bookingId) => {
@@ -1455,18 +1109,7 @@ const goToNextPage = (section) => {
 }
 
 //eslint-disable-next-line
-watch(editBookings, async (newValue) => {
-  await onRoomTypeChange()
-  if (isEdit.value) {
-    console.log('111111');
-    console.log('bookingDetail.value.booking.check_out ', bookingDetail.value.booking.check_out);
-    console.log('new: ', calculateTimeDiff(editBookings.value.checkOut));
 
-    if (editBookings.value.checkOut != bookingDetail.value.booking.check_out) {
-      newCost.value = (bookingNightChange.value * bookingDetail.value.roomType.base_price) + ((bookingNightChange.value * bookingDetail.value.roomType.base_price) * bookingDetail.value.tax.rate / 100)
-    }
-  }
-}, { immediate: true, deep: true })
 
 onMounted(() => {
   fetchBookings()
@@ -1477,51 +1120,7 @@ onMounted(() => {
   fetchRooms()
 })
 
-const calculateTimeDiff = (day1) => {
-  // 1. Chuyển đổi sang Date để tính toán (nếu cần dùng hiệu số sau này)
-  const dateNew = new Date(day1.replace(' ', 'T'));
 
-  // 2. Định dạng ngày day1 (hoặc bất kỳ ngày nào) thành yyyy-mm-dd HH:mm
-  const y = dateNew.getFullYear();
-  const m = String(dateNew.getMonth() + 1).padStart(2, '0');
-  const d = String(dateNew.getDate()).padStart(2, '0');
-  const hh = String(dateNew.getHours()).padStart(2, '0');
-  const mm = String(dateNew.getMinutes()).padStart(2, '0');
-
-  return `${y}-${m}-${d} ${hh}:${mm}`;
-};
-
-const bookingNightChange = computed(() => {
-  if (!isEdit.value) return 0
-  const checkIn = new Date(editBookings.value.checkOut.trim() == '' ? bookingDetail.value.booking.check_in : bookingDetail.value.booking.check_out)
-  const checkOut = new Date(editBookings.value.checkOut.trim() == '' ? bookingDetail.value.booking.check_out : editBookings.value.checkOut)
-
-  // Normalize to date only (remove time component) for proper night calculation
-  // In hotel industry, nights = difference between dates, not rounded hours
-  const checkInDate = new Date(checkIn.getFullYear(), checkIn.getMonth(), checkIn.getDate())
-  const checkOutDate = new Date(checkOut.getFullYear(), checkOut.getMonth(), checkOut.getDate())
-
-  const diffTime = checkOutDate - checkInDate
-  const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24))
-
-  return diffDays > 0 ? diffDays : 0
-})
-
-const countLastChange = computed(() => {
-  if (!isEdit.value) return 0
-  const checkIn = new Date(bookingDetail.value.booking.check_in)
-  const checkOut = new Date(bookingDetail.value.booking.check_out)
-
-  // Normalize to date only (remove time component) for proper night calculation
-  // In hotel industry, nights = difference between dates, not rounded hours
-  const checkInDate = new Date(checkIn.getFullYear(), checkIn.getMonth(), checkIn.getDate())
-  const checkOutDate = new Date(checkOut.getFullYear(), checkOut.getMonth(), checkOut.getDate())
-
-  const diffTime = checkOutDate - checkInDate
-  const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24))
-
-  return diffDays > 0 ? diffDays : 0
-})
 </script>
 
 <style scoped>
