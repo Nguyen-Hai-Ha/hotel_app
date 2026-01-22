@@ -6,6 +6,8 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
 import i18n from "./i18n";
+import { createPinia } from "pinia";
+import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 
 // FontAwesome imports
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -42,6 +44,10 @@ import {
   faConciergeBell,
   faUtensils,
   faFileExcel,
+  faUpload,
+  faSpinner,
+  faFolderOpen,
+  faDownload,
 } from "@fortawesome/free-solid-svg-icons";
 
 // Add icons to the library
@@ -77,6 +83,10 @@ library.add(
   faConciergeBell,
   faUtensils,
   faFileExcel,
+  faUpload,
+  faSpinner,
+  faFolderOpen,
+  faDownload
 );
 
 // // Initialize EmailJS
@@ -86,8 +96,13 @@ library.add(
 //     });
 // })();
 
+const pinia = createPinia();
 const app = createApp(App);
 app.component("FontAwesomeIcon", FontAwesomeIcon);
 app.use(router);
 app.use(i18n);
+
+pinia.use(piniaPluginPersistedstate);
+
+app.use(pinia);
 app.mount("#app");

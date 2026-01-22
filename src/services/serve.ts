@@ -1,5 +1,6 @@
 import type { ICellData, IStyleData, BooleanNumber } from "@univerjs/core";
 import type { ExcelCellData, ParsedExcelData } from "./importExcel";
+import slugify from "slugify";
 
 // Định nghĩa lại interface cho rõ ràng
 interface IWorkbookCellData {
@@ -14,12 +15,12 @@ interface IWorkbookCellData {
 const convertBorderStyle = (style?: string): number => {
   if (!style) return 0;
   const borderStyleMap: { [key: string]: number } = {
-    'thin': 1,
-    'medium': 2,
-    'thick': 3,
-    'double': 4,
-    'dotted': 5,
-    'dashed': 6,
+    thin: 1,
+    medium: 2,
+    thick: 3,
+    double: 4,
+    dotted: 5,
+    dashed: 6,
   };
   return borderStyleMap[style] || 1;
 };
@@ -29,11 +30,11 @@ const convertBorderStyle = (style?: string): number => {
  */
 const convertHorizontalAlign = (align?: string): number => {
   const alignMap: { [key: string]: number } = {
-    'left': 1,
-    'center': 2,
-    'right': 3,
+    left: 1,
+    center: 2,
+    right: 3,
   };
-  return alignMap[align || 'left'] || 1;
+  return alignMap[align || "left"] || 1;
 };
 
 /**
@@ -41,11 +42,11 @@ const convertHorizontalAlign = (align?: string): number => {
  */
 const convertVerticalAlign = (align?: string): number => {
   const alignMap: { [key: string]: number } = {
-    'top': 1,
-    'middle': 2,
-    'bottom': 3,
+    top: 1,
+    middle: 2,
+    bottom: 3,
   };
-  return alignMap[align || 'middle'] || 2;
+  return alignMap[align || "middle"] || 2;
 };
 
 /**
@@ -61,7 +62,7 @@ export const convertToDataUniver = (parsedData: ParsedExcelData): IWorkbookCellD
 
     for (let colIndex = 0; colIndex < data[rowIndex].length; colIndex++) {
       const excelCell = data[rowIndex][colIndex];
-      
+
       // Tạo cell data cơ bản
       const cellData: ICellData = {
         v: excelCell.value?.toString() || "",
@@ -88,12 +89,12 @@ export const convertToDataUniver = (parsedData: ParsedExcelData): IWorkbookCellD
           }
           if (style.font.color) {
             univerStyle.cl = {
-              rgb: style.font.color
+              rgb: style.font.color,
             };
           }
           if (style.font.underline) {
             univerStyle.ul = {
-              s: 1 // single underline
+              s: 1, // single underline
             };
           }
         }
@@ -101,7 +102,7 @@ export const convertToDataUniver = (parsedData: ParsedExcelData): IWorkbookCellD
         // Background fill
         if (style.fill?.fgColor) {
           univerStyle.bg = {
-            rgb: style.fill.fgColor
+            rgb: style.fill.fgColor,
           };
         }
 
@@ -121,29 +122,29 @@ export const convertToDataUniver = (parsedData: ParsedExcelData): IWorkbookCellD
         // Borders
         if (style.border) {
           const borderData: any = {};
-          
+
           if (style.border.top) {
             borderData.t = {
               s: convertBorderStyle(style.border.top.style),
-              cl: style.border.top.color ? { rgb: style.border.top.color } : undefined
+              cl: style.border.top.color ? { rgb: style.border.top.color } : undefined,
             };
           }
           if (style.border.bottom) {
             borderData.b = {
               s: convertBorderStyle(style.border.bottom.style),
-              cl: style.border.bottom.color ? { rgb: style.border.bottom.color } : undefined
+              cl: style.border.bottom.color ? { rgb: style.border.bottom.color } : undefined,
             };
           }
           if (style.border.left) {
             borderData.l = {
               s: convertBorderStyle(style.border.left.style),
-              cl: style.border.left.color ? { rgb: style.border.left.color } : undefined
+              cl: style.border.left.color ? { rgb: style.border.left.color } : undefined,
             };
           }
           if (style.border.right) {
             borderData.r = {
               s: convertBorderStyle(style.border.right.style),
-              cl: style.border.right.color ? { rgb: style.border.right.color } : undefined
+              cl: style.border.right.color ? { rgb: style.border.right.color } : undefined,
             };
           }
 
@@ -176,4 +177,14 @@ export const convertToDataUniver = (parsedData: ParsedExcelData): IWorkbookCellD
   }
 
   return result;
+};
+
+export const generateSlug = (string: string, replacement: string = "-") => {
+  return slugify(string, {
+    replacement, // replace spaces with replacement character, defaults to `-`
+    remove: undefined, // remove characters that match regex, defaults to `undefined`
+    lower: true, // convert to lower case, defaults to `false`
+    strict: false, // strip special characters except replacement, defaults to `false`
+    locale: "vi", // language code of the locale to use
+  });
 };

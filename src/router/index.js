@@ -10,6 +10,7 @@ import PaymentSuccessView from "../views/PaymentSuccessView.vue";
 import InformationView from "../views/InformationView.vue";
 import LoginAdminView from "../views/LoginAdmin.vue";
 import ExcelView from "@/views/admin/ExcelView.vue";
+import ListExcelView from "@/views/admin/ListExcelView.vue";
 
 // Define all routes
 const allRoutes = [
@@ -129,9 +130,15 @@ const allRoutes = [
       },
       {
         path: "excel",
-        name: "Excel",
+        name: "excel",
+        component: ListExcelView,
+        meta: { requiresAuth: true, requiresAdmin: true },
+      },
+      {
+        path: "excel/:slug",
+        name: "excel-current",
         component: ExcelView,
-        meta: { requiresAuth: true },
+        meta: { requiresAuth: true, requiresAdmin: true },
       },
     ],
   },
