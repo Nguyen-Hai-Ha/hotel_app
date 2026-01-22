@@ -58,6 +58,14 @@ const props = defineProps({
   subtotal: {
     type: Number,
     default: 0
+  },
+  earlyCheckOutCost: {
+    type: Number,
+    default: 0
+  },
+  daysStayed: {
+    type: Number,
+    default: 0
   }
 })
 // Helper function để format tiền tệ
@@ -67,7 +75,6 @@ const formatCurrency = (amount) => {
     currency: 'USD'
   }).format(amount)
 }
-console.log("Phòng đã đổi:", props.selectedRoomType);
 
 </script>
 <template>
@@ -75,41 +82,33 @@ console.log("Phòng đã đổi:", props.selectedRoomType);
     <h4>Chi tiết chi phí</h4>
 
     <div class="cost-item">
-      <span>Tiền phòng ({{ roomTypeChanged ? bookingNights : (countLastChange + bookingNightChange) }} đêm):</span>
-      <span v-if="roomTypeChanged && selectedRoomType">{{ formatCurrency(subtotal)
-      }}</span>
-      <span v-else>{{ formatCurrency(subtotal) }}</span>
+      <span>Tiền phòng ({{ daysStayed }} đêm):</span>
+      <p>{{  formatCurrency(bookingDetail.invoice?.subtotal ?? 0) }} ->
+        <span style="color: #C53030; font-weight: 700;">{{ formatCurrency(earlyCheckOutCost) }}</span>
+      </p>
     </div>
 
-    <div class="cost-item" >
+    <div class="cost-item" v-if="!isHourlyRental">
       <span>Dịch vụ:</span>
       <p style="margin-bottom: 0;">
-        {{ formatCurrency(bookingDetail.invoice?.service_charge ?? 0) }}
-        <span style="color: #38a169; font-weight: 700;" v-if="servicesCost > 0">
-          + {{ formatCurrency(servicesCost) }}
+        {{ formatCurrency(bookingDetail.invoice?.service_charge ?? 0) }} ->
+        <span style="color: #C53030; font-weight: 700;" v-if="servicesCost > 0">
+           {{ formatCurrency(servicesCost) }}
         </span>
       </p>
     </div>
 
-    <div class="cost-item" >
+    <div class="cost-item" v-if="!isHourlyRental">
       <span>Tổng phụ:</span>
       <span v-if="roomTypeChanged && selectedRoomType">{{ formatCurrency(subtotal) }}</span>
       <span v-else>{{ formatCurrency(subtotal ?? 0) }}</span>
     </div>
 
-    <div class="cost-item" v-if="bookingDetail.invoice?.discount_total > 0">
-      <span>Giảm giá:</span>
-      <span>{{ formatCurrency(bookingDetail.invoice?.discount_total) }}</span>
-    </div>
-
-    <div class="cost-item" v-if="bookingDetail.invoiceTax?.amount > 0 && roomTypeChanged === false">
+    <div class="cost-item" v-if="!isHourlyRental">
       <span>Thuế:</span>
-      <span>{{ formatCurrency(bookingDetail.invoiceTax?.amount) }}</span>
-    </div>
-
-    <div class="cost-item" v-if="roomTypeChanged && selectedRoomType">
-      <span>Thuế:</span>
-      <span>{{ formatCurrency(taxAmount) }}</span>
+      <p>{{ formatCurrency(bookingDetail.invoiceTax.amount ?? 0) }} ->
+        <span style="color: #C53030; font-weight: 700;" v-if="taxAmount > 0">{{ formatCurrency(taxAmount) }}</span>
+      </p>
     </div>
 
     <div class="cost-item total">
