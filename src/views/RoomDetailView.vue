@@ -103,6 +103,7 @@
 
 <script>
 import axios from "axios";
+import { apiUrl } from '@/environment';
 import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
@@ -123,8 +124,8 @@ export default {
     onMounted(async () => {
       try {
         const [roomResponse, servicesResponse] = await Promise.all([
-          axios.get(`http://127.0.0.1:8000/api/rooms/${route.params.id}`),
-          axios.get(`http://127.0.0.1:8000/api/services`)
+          axios.get(`${apiUrl}/api/rooms/${route.params.id}`),
+          axios.get(`${apiUrl}/api/services`)
         ]);
 
         roomData.value = roomResponse.data;

@@ -86,6 +86,7 @@
 
 <script>
 import { ref } from 'vue';
+import { apiUrl } from '@/environment';
 
 export default {
   name: 'SignUpModal',
@@ -137,7 +138,7 @@ export default {
       errorMessage.value = '';
 
       try {
-        const response = await fetch('http://127.0.0.1:8000/api/register', {
+        const response = await fetch(`${apiUrl}/api/register`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

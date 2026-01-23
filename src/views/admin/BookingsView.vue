@@ -450,6 +450,7 @@
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import axios from 'axios'
+import { apiUrl } from '@/environment'
 
 import EditBookingModal from '@/components/booking-view/EditBookingModal.vue'
 
@@ -629,70 +630,72 @@ const grandTotal = computed(() => {
 })
 
 const fetchBookings = async () => {
-    try {
-        const response = await axios.get('http://127.0.0.1:8000/api/admin/bookings')
-        bookings.value = response.data
-    } catch (error) {
-        console.error('Error fetching bookings:', error)
-    }
+  try {
+    const response = await axios.get(`${apiUrl}/api/admin/bookings`)
+    bookings.value = response.data
+  } catch (error) {
+    console.error('Error fetching bookings:', error)
+  }
 }
 
 const fetchServices = async () => {
-    try {
-        const response = await axios.get('http://127.0.0.1:8000/api/services')
-        services.value = response.data
-    } catch (error) {
-        console.error('Error fetching services:', error)
-    }
+  try {
+    const response = await axios.get(`${apiUrl}/api/services`)
+    services.value = response.data
+  } catch (error) {
+    console.error('Error fetching services:', error)
+  }
 }
 
 const fetchFoods = async () => {
-    try {
-        const response = await axios.get('http://127.0.0.1:8000/api/foods')
-        foods.value = response.data
-    } catch (error) {
-        console.error('Error fetching foods:', error)
-    }
+  try {
+    const response = await axios.get(`${apiUrl}/api/foods`)
+    foods.value = response.data
+  } catch (error) {
+    console.error('Error fetching foods:', error)
+  }
 }
 
 const fetchRoomTypes = async () => {
-    try {
-        const response = await axios.get('http://127.0.0.1:8000/api/admin/room-types')
-        roomTypes.value = response.data
-    } catch (error) {
-        console.error('Error fetching room types:', error)
-    }
+  try {
+    const response = await axios.get(`${apiUrl}/api/admin/room-types`)
+    roomTypes.value = response.data
+  } catch (error) {
+    console.error('Error fetching room types:', error)
+  }
 }
 
 const fetchTaxes = async () => {
-    try {
-        const response = await axios.get('http://127.0.0.1:8000/api/taxes')
-        taxes.value = response.data
-    } catch (error) {
-        console.error('Error fetching taxes:', error)
-    }
+  try {
+    const response = await axios.get(`${apiUrl}/api/taxes`)
+    taxes.value = response.data
+  } catch (error) {
+    console.error('Error fetching taxes:', error)
+  }
 }
 
 const fetchRooms = async () => {
-    try {
-        const response = await axios.get('http://127.0.0.1:8000/api/admin/rooms')
-        rooms.value = response.data
-        console.log('Admin rooms data:', rooms.value)
-    } catch (error) {
-        console.error('Error fetching rooms:', error)
-    }
+  try {
+    const response = await axios.get(`${apiUrl}/api/admin/rooms`)
+    rooms.value = response.data
+    console.log('Admin rooms data:', rooms.value)
+  } catch (error) {
+    console.error('Error fetching rooms:', error)
+  }
 }
 
 
 
 const changeBookingStatus = async (booking, newStatus) => {
-    try {
-        const formData = new FormData()
-        formData.append('status', newStatus)
-        const response = await fetch(`http://127.0.0.1:8000/api/admin/change-status-booking/${booking.id}`, {
-            method: 'POST',
-            body: formData
-        })
+
+  try {
+    const formData = new FormData()
+    formData.append('status', newStatus)
+    const response = await fetch(`${apiUrl}/api/admin/change-status-booking/${booking.id}`, {
+      method: 'POST',
+      body: formData
+    })
+
 
         if (response.status === 200) {
             await fetchBookings()
@@ -706,48 +709,44 @@ const changeBookingStatus = async (booking, newStatus) => {
 
 const onRoomTypeChange = async () => {
 
-    const roomTypeId = newBooking.value.roomTypeId || newBookingForAdmin.value.roomTypeId;
+  const roomTypeId = newBooking.value.roomTypeId || newBookingForAdmin.value.roomTypeId;
 
-    if (roomTypeId) {
-        try {
-            // Fetch room type details and available rooms using the show endpoint
-            const response = await axios.get(`http://127.0.0.1:8000/api/rooms/${roomTypeId}`)
-            console.log('Room type response:', response.data)
+  if (roomTypeId) {
+    try {
+      // Fetch room type details and available rooms using the show endpoint
+      const response = await axios.get(`${apiUrl}/api/rooms/${roomTypeId}`)
+      console.log('Room type response:', response.data)
 
-            // Extract available rooms from the response
-            if (response.data && response.data.available_rooms) {
-                // Filter only available rooms
-                availableRooms.value = response.data.available_rooms.filter(room =>
-                    room.status === 'available' || room.status === 'Available'
-                )
-            } else {
-                console.warn('No available_rooms in response:', response.data)
-                availableRooms.value = []
-            }
+      // Extract available rooms from the response
+      if (response.data && response.data.available_rooms) {
+        // Filter only available rooms
+        availableRooms.value = response.data.available_rooms.filter(room =>
+          room.status === 'available' || room.status === 'Available'
+        )
+      } else {
+        console.warn('No available_rooms in response:', response.data)
+        availableRooms.value = []
+      }
 
-            console.log('Available rooms set to:', availableRooms.value)
-        } catch (error) {
-            console.error('Error fetching available rooms:', error)
+      console.log('Available rooms set to:', availableRooms.value)
+    } catch (error) {
+      console.error('Error fetching available rooms:', error)
 
-            // Fallback: filter from all rooms using admin endpoint
-            try {
-                console.log('Trying fallback: filtering from admin rooms')
-                const allRoomsResponse = await axios.get('http://127.0.0.1:8000/api/admin/rooms')
-                const allRooms = Array.isArray(allRoomsResponse.data) ? allRoomsResponse.data : allRoomsResponse.data.data || []
+      // Fallback: filter from all rooms using admin endpoint
+      try {
+        console.log('Trying fallback: filtering from admin rooms')
+        const allRoomsResponse = await axios.get(`${apiUrl}/api/admin/rooms`)
+        const allRooms = Array.isArray(allRoomsResponse.data) ? allRoomsResponse.data : allRoomsResponse.data.data || []
 
-                // Filter rooms by room type and status
-                availableRooms.value = allRooms.filter(room =>
-                    room.id_room_type == roomTypeId &&
-                    (room.status === 'available' || room.status === 'Available')
-                )
+        // Filter rooms by room type and status
+        availableRooms.value = allRooms.filter(room =>
+          room.id_room_type == roomTypeId &&
+          (room.status === 'available' || room.status === 'Available')
+        )
 
-                console.log('Fallback available rooms:', availableRooms.value)
-            } catch (fallbackError) {
-                console.error('Fallback also failed:', fallbackError)
-                availableRooms.value = []
-            }
-        }
-    } else {
+        console.log('Fallback available rooms:', availableRooms.value)
+      } catch (fallbackError) {
+        console.error('Fallback also failed:', fallbackError)
         availableRooms.value = []
     }
     newBooking.value.roomId = ''
@@ -777,23 +776,61 @@ const closeEditBookingModal = () => {
 }
 
 const submitAddBooking = async () => {
-    try {
-        // Validate required fields
-        if (selectedRoomType.value?.type === 'daily') {
-            if (!newBooking.value.customerName || !newBooking.value.customerPhone ||
-                !newBooking.value.roomId || !newBooking.value.checkIn || !newBooking.value.checkOut
-                || !newBooking.value.customerPassport) {
-                alert('Vui lòng điền đầy đủ thông tin bắt buộc')
-                return
-            }
-        } else {
-            if (!newBooking.value.customerName || !newBooking.value.customerPhone ||
-                !newBooking.value.roomId || !newBooking.value.checkIn
-                || !newBooking.value.customerPassport) {
-                alert('Vui lòng điền đầy đủ thông tin bắt buộc')
-                return
-            }
-        }
+  try {
+    // Validate required fields
+    if (selectedRoomType.value?.type === 'daily') {
+      if (!newBooking.value.customerName || !newBooking.value.customerPhone ||
+        !newBooking.value.roomId || !newBooking.value.checkIn || !newBooking.value.checkOut
+        || !newBooking.value.customerPassport) {
+        alert('Vui lòng điền đầy đủ thông tin bắt buộc')
+        return
+      }
+    } else {
+      if (!newBooking.value.customerName || !newBooking.value.customerPhone ||
+        !newBooking.value.roomId || !newBooking.value.checkIn
+        || !newBooking.value.customerPassport) {
+        alert('Vui lòng điền đầy đủ thông tin bắt buộc')
+        return
+      }
+    }
+
+    // Validate dates
+    const checkIn = new Date(newBooking.value.checkIn)
+    const checkOut = new Date(newBooking.value.checkOut)
+    if (checkOut <= checkIn) {
+      console.error('Ngày trả phòng phải sau ngày nhận phòng')
+      return
+    }
+    const booking_type = selectedRoomType.value.type
+
+    const effectiveGrandTotal = finalGrandTotal.value > 0 ? finalGrandTotal.value : grandTotal.value
+    const discountAmount = grandTotal.value - effectiveGrandTotal
+
+    // Prepare booking data
+    const bookingData = {
+      customer_name: newBooking.value.customerName.trim(),
+      customer_phone: newBooking.value.customerPhone.trim(),
+      customer_email: newBooking.value.customerEmail.trim() || null,
+      customer_passport: newBooking.value.customerPassport.trim(),
+      id_room: newBooking.value.roomId,
+      check_in: newBooking.value.checkIn,
+      check_out: newBooking.value.checkOut,
+      tax_amount: taxAmount.value,
+      subtotal: subtotal.value,
+      grand_total: effectiveGrandTotal,
+      discount_total: discountAmount,
+      service_charge: (servicesCost.value * bookingNights.value) || 0,
+      id_tax: newBooking.value.selectedTaxes.length > 0 ? String(newBooking.value.selectedTaxes[0]) : '1',
+      status: 'check-in',
+      id_user: '4',
+      booking_type: booking_type,
+      room_price: newBooking.value.roomPrice || 0,
+    }
+
+    console.log('Sending booking data:', bookingData)
+
+    const response = await axios.post(`${apiUrl}/api/admin/bookings`, bookingData)
+    console.log('Success response:', response.data)
 
         // Validate dates
         const checkIn = new Date(newBooking.value.checkIn)
@@ -873,25 +910,35 @@ const submitAddBooking = async () => {
 
 
 const submitAddBookingAdmin = async () => {
-    try {
-        const booking = {
-            id_room: newBookingForAdmin.value.roomId,
-            customer_name: 'admin',
-            customer_phone: '',
-            customer_email: '',
-            customer_passport: 'admin',
-            check_in: newBookingForAdmin.value.checkIn,
-            check_out: '',
-            tax_amount: '0',
-            subtotal: '0',
-            grand_total: '0',
-            discount_total: '0',
-            service_charge: '0',
-            id_tax: '1',
-            status: 'success',
-            id_user: '1',
-            booking_type: 'daily'
-        }
+  try {
+    const booking = {
+      id_room: newBookingForAdmin.value.roomId,
+      customer_name: 'admin',
+      customer_phone: '',
+      customer_email: '',
+      customer_passport: 'admin',
+      check_in: newBookingForAdmin.value.checkIn,
+      check_out: '',
+      tax_amount: '0',
+      subtotal: '0',
+      grand_total: '0',
+      discount_total: '0',
+      service_charge: '0',
+      id_tax: '1',
+      status: 'success',
+      id_user: '1',
+      booking_type: 'daily'
+    }
+
+    const response = await axios.post(`${apiUrl}/api/admin/bookings`, booking)
+    console.log('Success response:', response.data)
+
+    await fetchBookings()
+    await fetchRooms()
+    closeAddBookingForAdminModal()
+
+  } catch (error) {
+    console.error('Error adding booking:', error)
 
         const response = await axios.post('http://127.0.0.1:8000/api/admin/bookings', booking)
         console.log('Success response:', response.data)
@@ -934,13 +981,13 @@ const submitAddBookingAdmin = async () => {
 }
 
 const deleteeBooking = async (bookingId) => {
-    if (confirm('Bạn có chắc muốn xóa đặt phòng này?')) {
-        try {
-            await axios.delete(`http://127.0.0.1:8000/api/admin/bookings/${bookingId}`)
-            await fetchBookings()
-        } catch (error) {
-            console.error('Error deleting booking:', error)
-        }
+
+  if (confirm('Bạn có chắc muốn xóa đặt phòng này?')) {
+    try {
+      await axios.delete(`${apiUrl}/api/admin/bookings/${bookingId}`)
+      await fetchBookings()
+    } catch (error) {
+      console.error('Error deleting booking:', error)
     }
 }
 
@@ -953,31 +1000,31 @@ const openEditBookingModal = async (bookingId) => {
 
 
 const printThermalBill = async (bookingId) => {
-    try {
-        const apiUrl = 'http://127.0.0.1:8000/api/booking/' + bookingId + '/thermal-bill'
-        const response = await fetch(apiUrl)
-        const data = await response.json()
+  try {
+    const api = `${apiUrl}/api/booking/` + bookingId + '/thermal-bill'
+    const response = await fetch(api)
+    const data = await response.json()
 
-        if (data.success) {
-            const printWindow = window.open('', '_blank', 'width=1000,height=1000')
+    if (data.success) {
+      const printWindow = window.open('', '_blank', 'width=1000,height=1000')
 
-            printWindow.document.write('<!DOCTYPE html>')
-            printWindow.document.write('<html><head>')
-            printWindow.document.write('<title>Hóa Đơn Khách Sạn</title>')
-            printWindow.document.write('<meta charset="UTF-8">')
-            printWindow.document.write('<style>')
-            printWindow.document.write('body { font-family: monospace; font-size: 12px; margin: 20px; }')
-            printWindow.document.write('.bill { white-space: pre-wrap; }')
-            printWindow.document.write('@media print { body { margin: 0; } }')
-            printWindow.document.write('</style>')
-            printWindow.document.write('</head><body>')
-            printWindow.document.write('<div class="bill">')
-            printWindow.document.write(data.thermal_bill)
-            printWindow.document.write('</div>')
-            setTimeout(function () { printWindow.print(); }, 500)
-            printWindow.document.write('</body></html>')
+      printWindow.document.write('<!DOCTYPE html>')
+      printWindow.document.write('<html><head>')
+      printWindow.document.write('<title>Hóa Đơn Khách Sạn</title>')
+      printWindow.document.write('<meta charset="UTF-8">')
+      printWindow.document.write('<style>')
+      printWindow.document.write('body { font-family: monospace; font-size: 12px; margin: 20px; }')
+      printWindow.document.write('.bill { white-space: pre-wrap; }')
+      printWindow.document.write('@media print { body { margin: 0; } }')
+      printWindow.document.write('</style>')
+      printWindow.document.write('</head><body>')
+      printWindow.document.write('<div class="bill">')
+      printWindow.document.write(data.thermal_bill)
+      printWindow.document.write('</div>')
+      setTimeout(function () { printWindow.print(); }, 500)
+      printWindow.document.write('</body></html>')
 
-            printWindow.document.close()
+      printWindow.document.close()
 
         } else {
             throw new Error(data.error || 'Không thể tạo hóa đơn')
@@ -992,16 +1039,11 @@ const printThermalBill = async (bookingId) => {
 const addFoodToBooking = async (bookingId) => {
     selectedBookingId.value = bookingId
 
-    try {
-        // Fetch existing foods for this booking
-        const response = await axios.get(`http://127.0.0.1:8000/api/admin/booking/${bookingId}/foods`)
-        const existingFoods = response.data.foods || []
 
-        // Create a map of existing food quantities
-        const existingFoodMap = {}
-        existingFoods.forEach(food => {
-            existingFoodMap[food.id_food] = food.amount
-        })
+  try {
+    // Fetch existing foods for this booking
+    const response = await axios.get(`${apiUrl}/api/admin/booking/${bookingId}/foods`)
+    const existingFoods = response.data.foods || []
 
         // Initialize food items with existing quantities or 0
         selectedFoodItems.value = foods.value.map(food => ({
@@ -1049,10 +1091,11 @@ const submitFoodToBooking = async () => {
             return
         }
 
-        const response = await axios.post('http://127.0.0.1:8000/api/admin/update-invoice-foods', {
-            id_booking: selectedBookingId.value,
-            foods: foodsToUpdate
-        })
+    const response = await axios.post(`${apiUrl}/api/admin/update-invoice-foods`, {
+      id_booking: selectedBookingId.value,
+      foods: foodsToUpdate
+    })
+
 
         if (response.data.success) {
             console.log(`${response.data.message}\nTổng tiền thức ăn: ${formatCurrency(response.data.total_food_cost)}\nTổng hóa đơn mới: ${formatCurrency(response.data.new_grand_total)}`)

@@ -107,6 +107,7 @@
 
 <script>
 import { ref, computed } from 'vue'
+import { apiUrl } from '@/environment'
 
 export default {
   name: 'ForgotPasswordModal',
@@ -190,7 +191,7 @@ export default {
       errorMessage.value = ''
 
       try {
-        const response = await fetch('http://127.0.0.1:8000/api/forgot-password', {
+        const response = await fetch(`${apiUrl}/api/forgot-password`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -220,7 +221,7 @@ export default {
       errorMessage.value = ''
 
       try {
-        const response = await fetch('http://127.0.0.1:8000/api/verify-code', {
+        const response = await fetch(`${apiUrl}/api/verify-code`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -262,7 +263,7 @@ export default {
       errorMessage.value = ''
 
       try {
-        const response = await fetch('http://127.0.0.1:8000/api/reset-password', {
+        const response = await fetch(`${apiUrl}/api/reset-password`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

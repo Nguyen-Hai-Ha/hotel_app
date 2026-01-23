@@ -117,6 +117,7 @@
 import { ref, onMounted, nextTick } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import axios from 'axios'
+import { apiUrl } from '@/environment'
 
 const customers = ref([])
 const customer = ref({
@@ -159,7 +160,7 @@ const formatDate = (date) => {
 const fetchCustomers = async () => {
   try {
     // For now, we'll use booking data and transform it to customer format
-    const response = await axios.get('http://127.0.0.1:8000/api/admin/bookings-customer')
+    const response = await axios.get(`${apiUrl}/api/admin/bookings-customer`)
     customers.value = response.data.map(booking => ({
       id: booking.id,
       id_room: booking.id_room,
@@ -210,7 +211,7 @@ const getCurrentTimestamp = () => {
 const addTax = async (customer) => {
   if (confirm(`Xác nhận thêm thuế cho khách hàng ${customer.name}?`)) {
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/admin/add-tax-for-booking-hour/' + customer.id)
+      const response = await axios.post(`${apiUrl}/api/admin/add-tax-for-booking-hour/` + customer.id)
       if (response.status === 200) {
         console.log('Thêm thuế thành công')
         await fetchCustomers()
@@ -227,7 +228,7 @@ const checkInCustomer = async (customer) => {
     const formData = new FormData()
     formData.append('status', 'checked_in')
     formData.append('timestamp', timestamp)
-    const response = await axios.post('http://127.0.0.1:8000/api/admin/change-status-room/' + customer.id_room, formData)
+    const response = await axios.post(`${apiUrl}/api/admin/change-status-room/` + customer.id_room, formData)
 
     if (response.status === 200) {
       // Cập nhật trạng thái trực tiếp trong mảng customers
@@ -248,7 +249,7 @@ const checkOutCustomer = async (customer) => {
     const formData = new FormData()
     formData.append('status', 'checked_out')
     formData.append('timestamp', timestamp)
-    const response = await axios.post(`http://127.0.0.1:8000/api/admin/change-status-room/` + customer.id_room, formData)
+    const response = await axios.post(`${apiUrl}/api/admin/change-status-room/` + customer.id_room, formData)
 
     if (response.status === 200) {
       // Cập nhật trạng thái trực tiếp trong mảng customers
@@ -265,7 +266,7 @@ const markRoomCleaned = async (customer) => {
   try {
     const formData = new FormData()
     formData.append('status', 'available')
-    const response = await axios.post('http://127.0.0.1:8000/api/admin/change-status-room/' + customer.id_room, formData)
+    const response = await axios.post(`${apiUrl}/api/admin/change-status-room/` + customer.id_room, formData)
 
     if (response.status === 200) {
       // Cập nhật trạng thái trực tiếp trong mảng customers
@@ -296,7 +297,7 @@ const addSubCharge = async (customer) => {
   try {
     const formData = new FormData()
     formData.append('sub_charge', sub_charge.value)
-    const response = await fetch(`http://127.0.0.1:8000/api/admin/add-sub-charge/${customer.id}`, {
+    const response = await fetch(`${apiUrl}/api/admin/add-sub-charge/${customer.id}`, {
       method: 'POST',
       body: formData
     })

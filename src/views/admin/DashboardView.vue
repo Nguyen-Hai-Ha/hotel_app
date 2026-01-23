@@ -48,6 +48,7 @@
 import { ref, onMounted } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import axios from 'axios'
+import { apiUrl } from '@/environment'
 
 const stats = ref({
     totalRooms: 0,
@@ -65,7 +66,7 @@ const formatCurrency = (amount) => {
 
 const fetchStats = async () => {
     try {
-        const response = await axios.get('http://127.0.0.1:8000/api/admin/stats')
+        const response = await axios.get(`${apiUrl}/api/admin/stats`)
         stats.value = response.data
     } catch (error) {
         console.error('Error fetching stats:', error)

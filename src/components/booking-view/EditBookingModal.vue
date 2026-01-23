@@ -184,8 +184,10 @@ import axios from 'axios'
 import { computed, onMounted, ref, watch } from 'vue'
 import EditBookingFee from './EditBookingFee.vue'
 import EditBookingFeeNotNewCost from './EditBookingFeeNotNewCost.vue'
+import { apiUrl } from '@/environment'
 import EditBookingFeeChangeRoom from './EditBookingFeeChangeRoom.vue'
 import EditBookingFeeEarly from './EditBookingFeeEarly.vue'
+
 
 // Props
 const props = defineProps({
@@ -505,7 +507,7 @@ const calculateTimeDiff = (day1) => {
 
 const fetchBookingDetail = async (bookingId) => {
   try {
-    const response = await axios.get(`http://127.0.0.1:8000/api/admin/bookings/${bookingId}`)
+    const response = await axios.get(`${apiUrl}/api/admin/bookings/${bookingId}`)
     return response.data
   } catch (error) {
     console.error('Error fetching booking detail:', error)
@@ -514,7 +516,7 @@ const fetchBookingDetail = async (bookingId) => {
 
 const fetchRoomTypes = async () => {
   try {
-    const response = await axios.get('http://127.0.0.1:8000/api/admin/room-types')
+    const response = await axios.get(`${apiUrl}/api/admin/room-types`)
     roomTypes.value = response.data
   } catch (error) {
     console.error('Error fetching room types:', error)
@@ -523,7 +525,7 @@ const fetchRoomTypes = async () => {
 
 const fetchServices = async () => {
   try {
-    const response = await axios.get('http://127.0.0.1:8000/api/services')
+    const response = await axios.get(`${apiUrl}/api/services`)
     services.value = response.data
   } catch (error) {
     console.error('Error fetching services:', error)
@@ -543,7 +545,9 @@ const onRoomTypeChange = async () => {
   if (editBookings.value.roomTypeId) {
     try {
       // Fetch room type details and available rooms using the show endpoint
-      const response = await axios.get(`http://127.0.0.1:8000/api/rooms/${editBookings.value.roomTypeId}`)
+      const response = await axios.get(`${apiUrl}/api/rooms/${editBookings.value.roomTypeId}`)
+      console.log('Room type response:', response.data)
+
 
       // Extract available rooms from the response
       if (response.data && response.data.available_rooms) {
@@ -568,7 +572,7 @@ const onRoomTypeChange = async () => {
       // Fallback: filter from all rooms using admin endpoint
       try {
         console.log('Trying fallback: filtering from admin rooms')
-        const allRoomsResponse = await axios.get('http://127.0.0.1:8000/api/admin/rooms')
+        const allRoomsResponse = await axios.get(`${apiUrl}/api/admin/rooms`)
         const allRooms = Array.isArray(allRoomsResponse.data) ? allRoomsResponse.data : allRoomsResponse.data.data || []
 
         // Filter rooms by room type and status
@@ -632,9 +636,8 @@ const submitEditBooking = async () => {
       room_price: editBookings.value.roomPrice,
     }
 
-    console.log("DATA TRẢ VỀ API: ", bookingData);
+    await axios.post(`${apiUrl}/api/admin/update-booking/${editBookings.value.id}`, bookingData)
 
-    await axios.post(`http://127.0.0.1:8000/api/admin/update-booking/${editBookings.value.id}`, bookingData)
 
     emit('refresh')
     closeEditBookingModal()

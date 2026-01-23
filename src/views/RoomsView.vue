@@ -24,6 +24,7 @@ import LoginModal from '@/components/LoginModal.vue';
 import SignUpModal from '@/components/SignUpModal.vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+import { apiUrl } from '@/environment';
 
 export default {
   name: 'RoomsView',
@@ -47,7 +48,7 @@ export default {
 
     onMounted(async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/rooms');
+        const response = await axios.get(`${apiUrl}/api/rooms`);
         rooms.value = response.data;
       } catch (error) {
         console.error('Error loading rooms:', error);

@@ -28,6 +28,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import { apiUrl } from '@/environment'
 
 const users = ref([])
 
@@ -38,7 +39,7 @@ const formatDate = (date) => {
 
 const fetchUsers = async () => {
     try {
-        const response = await axios.get('http://127.0.0.1:8000/api/admin/users')
+        const response = await axios.get(`${apiUrl}/api/admin/users`)
         users.value = response.data
     } catch (error) {
         console.error('Error fetching users:', error)
