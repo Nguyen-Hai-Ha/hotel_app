@@ -38,6 +38,18 @@ const props = defineProps({
   isHourlyRental: {
     type: Boolean,
     default: false
+  },
+  subtotal: {
+    type: Number,
+    default: 0
+  },
+  roomCost: {
+    type: Number,
+    default: 0
+  },
+  taxAmount: {
+    type: Number,
+    default: 0
   }
 })
 
@@ -52,17 +64,17 @@ const formatCurrency = (amount) => {
 <template>
   <div class="form-section cost-breakdown">
     <h4>Chi tiết chi phí</h4>
+
     <div class="cost-item">
       <span>Tiền phòng ({{ countLastChange + bookingNightChange }} đêm):</span>
       <p style="margin-bottom: 0;">
         {{ formatCurrency(bookingDetail.invoice?.subtotal ?? 0) }}
         <span style="color: #38a169; font-weight: 700;">
-          + {{ formatCurrency((bookingNightChange * (bookingDetail.roomType?.base_price ?? 0)) +
-            ((bookingNightChange *
-              (bookingDetail.roomType?.base_price ?? 0)) * (bookingDetail.tax?.rate ?? 0) / 100)) }}
+          + {{ formatCurrency(roomCost) }}
         </span>
       </p>
     </div>
+
     <div class="cost-item" v-if="!isHourlyRental">
       <span>Dịch vụ:</span>
       <p style="margin-bottom: 0;">
@@ -72,16 +84,21 @@ const formatCurrency = (amount) => {
         </span>
       </p>
     </div>
+
     <div class="cost-item" v-if="!isHourlyRental">
       <span>Tổng phụ:</span>
       <span>
-        {{ formatCurrency((bookingDetail.invoice?.subtotal ?? 0) + newCost) }}
+        {{ formatCurrency(bookingDetail.invoice?.subtotal + (subtotal ?? 0) ) }}
       </span>
     </div>
-    <!-- <div class="cost-item">
-            <span>Thuế:</span>
-            <span>{{ formatCurrency(taxAmount) }}</span>
-          </div> -->
+
+    <div class="cost-item">
+      <span>Thuế:</span>
+      <p>{{ formatCurrency(bookingDetail.invoiceTax?.amount ?? 0) }} +
+        <span style="color: #38a169; font-weight: 700;" v-if="taxAmount > 0">{{ formatCurrency(taxAmount) }}</span>
+      </p>
+    </div>
+
     <div class="cost-item total">
       <span><strong>Tổng cộng:</strong></span>
       <span v-if="finalGrandTotal > 0" style="display: flex; flex-direction: column; align-items: flex-end;">

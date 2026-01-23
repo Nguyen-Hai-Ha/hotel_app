@@ -58,6 +58,22 @@ const props = defineProps({
   subtotal: {
     type: Number,
     default: 0
+  },
+  daysStayed: {
+    type: Number,
+    default: 0
+  },
+  daysRemaining: {
+    type: Number,
+    default: 0
+  },
+  newCostToChange: {
+    type: Number,
+    default: 0
+  },
+  oldRoomCostStayed: {
+    type: Number,
+    default: 0
   }
 })
 // Helper function để format tiền tệ
@@ -73,15 +89,15 @@ console.log("Phòng đã đổi:", props.selectedRoomType);
 <template>
   <div class="form-section cost-breakdown">
     <h4>Chi tiết chi phí</h4>
-
     <div class="cost-item">
-      <span>Tiền phòng ({{ roomTypeChanged ? bookingNights : (countLastChange + bookingNightChange) }} đêm):</span>
-      <span v-if="roomTypeChanged && selectedRoomType">{{ formatCurrency(subtotal)
-      }}</span>
-      <span v-else>{{ formatCurrency(subtotal) }}</span>
+      <span>Tiền phòng đã ở ({{ daysStayed }} đêm):</span>
+      <span>{{ formatCurrency(oldRoomCostStayed) }}</span>
     </div>
-
-    <div class="cost-item" >
+    <div class="cost-item">
+      <span>Tiền phòng mới ({{ daysRemaining }} đêm):</span>
+      <span>{{ formatCurrency(newCostToChange) }}</span>
+    </div>
+    <div class="cost-item">
       <span>Dịch vụ:</span>
       <p style="margin-bottom: 0;">
         {{ formatCurrency(bookingDetail.invoice?.service_charge ?? 0) }}
@@ -91,20 +107,10 @@ console.log("Phòng đã đổi:", props.selectedRoomType);
       </p>
     </div>
 
-    <div class="cost-item" >
+    <div class="cost-item">
       <span>Tổng phụ:</span>
       <span v-if="roomTypeChanged && selectedRoomType">{{ formatCurrency(subtotal) }}</span>
       <span v-else>{{ formatCurrency(subtotal ?? 0) }}</span>
-    </div>
-
-    <div class="cost-item" v-if="bookingDetail.invoice?.discount_total > 0">
-      <span>Giảm giá:</span>
-      <span>{{ formatCurrency(bookingDetail.invoice?.discount_total) }}</span>
-    </div>
-
-    <div class="cost-item" v-if="bookingDetail.invoiceTax?.amount > 0 && roomTypeChanged === false">
-      <span>Thuế:</span>
-      <span>{{ formatCurrency(bookingDetail.invoiceTax?.amount) }}</span>
     </div>
 
     <div class="cost-item" v-if="roomTypeChanged && selectedRoomType">
