@@ -38,6 +38,7 @@ const submitAddExcel = async () => {
   }
 
   excelStore.name = excelName.value
+  excelStore.blank = true
   const slug = generateSlug(excelName.value)
   console.log('slug: ', slug);
   router.push({ name: 'excel-current', params: { slug } })
