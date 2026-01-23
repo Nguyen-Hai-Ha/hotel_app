@@ -435,6 +435,7 @@
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import axios from 'axios'
+import { apiUrl } from '@/environment'
 
 import EditBookingModal from '@/components/booking-view/EditBookingModal.vue'
 
@@ -614,7 +615,7 @@ const grandTotal = computed(() => {
 
 const fetchBookings = async () => {
   try {
-    const response = await axios.get('http://127.0.0.1:8000/api/admin/bookings')
+    const response = await axios.get(`${apiUrl}/api/admin/bookings`)
     bookings.value = response.data
   } catch (error) {
     console.error('Error fetching bookings:', error)
@@ -623,7 +624,7 @@ const fetchBookings = async () => {
 
 const fetchServices = async () => {
   try {
-    const response = await axios.get('http://127.0.0.1:8000/api/services')
+    const response = await axios.get(`${apiUrl}/api/services`)
     services.value = response.data
   } catch (error) {
     console.error('Error fetching services:', error)
@@ -632,7 +633,7 @@ const fetchServices = async () => {
 
 const fetchFoods = async () => {
   try {
-    const response = await axios.get('http://127.0.0.1:8000/api/foods')
+    const response = await axios.get(`${apiUrl}/api/foods`)
     foods.value = response.data
   } catch (error) {
     console.error('Error fetching foods:', error)
@@ -641,7 +642,7 @@ const fetchFoods = async () => {
 
 const fetchRoomTypes = async () => {
   try {
-    const response = await axios.get('http://127.0.0.1:8000/api/admin/room-types')
+    const response = await axios.get(`${apiUrl}/api/admin/room-types`)
     roomTypes.value = response.data
   } catch (error) {
     console.error('Error fetching room types:', error)
@@ -650,7 +651,7 @@ const fetchRoomTypes = async () => {
 
 const fetchTaxes = async () => {
   try {
-    const response = await axios.get('http://127.0.0.1:8000/api/taxes')
+    const response = await axios.get(`${apiUrl}/api/taxes`)
     taxes.value = response.data
   } catch (error) {
     console.error('Error fetching taxes:', error)
@@ -659,7 +660,7 @@ const fetchTaxes = async () => {
 
 const fetchRooms = async () => {
   try {
-    const response = await axios.get('http://127.0.0.1:8000/api/admin/rooms')
+    const response = await axios.get(`${apiUrl}/api/admin/rooms`)
     rooms.value = response.data
     console.log('Admin rooms data:', rooms.value)
   } catch (error) {
@@ -673,7 +674,7 @@ const changeBookingStatus = async (booking, newStatus) => {
   try {
     const formData = new FormData()
     formData.append('status', newStatus)
-    const response = await fetch(`http://127.0.0.1:8000/api/admin/change-status-booking/${booking.id}`, {
+    const response = await fetch(`${apiUrl}/api/admin/change-status-booking/${booking.id}`, {
       method: 'POST',
       body: formData
     })
@@ -695,7 +696,7 @@ const onRoomTypeChange = async () => {
   if (roomTypeId) {
     try {
       // Fetch room type details and available rooms using the show endpoint
-      const response = await axios.get(`http://127.0.0.1:8000/api/rooms/${roomTypeId}`)
+      const response = await axios.get(`${apiUrl}/api/rooms/${roomTypeId}`)
       console.log('Room type response:', response.data)
 
       // Extract available rooms from the response
@@ -716,7 +717,7 @@ const onRoomTypeChange = async () => {
       // Fallback: filter from all rooms using admin endpoint
       try {
         console.log('Trying fallback: filtering from admin rooms')
-        const allRoomsResponse = await axios.get('http://127.0.0.1:8000/api/admin/rooms')
+        const allRoomsResponse = await axios.get(`${apiUrl}/api/admin/rooms`)
         const allRooms = Array.isArray(allRoomsResponse.data) ? allRoomsResponse.data : allRoomsResponse.data.data || []
 
         // Filter rooms by room type and status
@@ -814,7 +815,7 @@ const submitAddBooking = async () => {
 
     console.log('Sending booking data:', bookingData)
 
-    const response = await axios.post('http://127.0.0.1:8000/api/admin/bookings', bookingData)
+    const response = await axios.post(`${apiUrl}/api/admin/bookings`, bookingData)
     console.log('Success response:', response.data)
 
     await fetchBookings()
@@ -877,7 +878,7 @@ const submitAddBookingAdmin = async () => {
       booking_type: 'daily'
     }
 
-    const response = await axios.post('http://127.0.0.1:8000/api/admin/bookings', booking)
+    const response = await axios.post(`${apiUrl}/api/admin/bookings`, booking)
     console.log('Success response:', response.data)
 
     await fetchBookings()
@@ -920,7 +921,7 @@ const submitAddBookingAdmin = async () => {
 const deleteeBooking = async (bookingId) => {
   if (confirm('Bạn có chắc muốn xóa đặt phòng này?')) {
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/admin/bookings/${bookingId}`)
+      await axios.delete(`${apiUrl}/api/admin/bookings/${bookingId}`)
       await fetchBookings()
     } catch (error) {
       console.error('Error deleting booking:', error)
@@ -938,8 +939,8 @@ const openEditBookingModal = async (bookingId) => {
 
 const printThermalBill = async (bookingId) => {
   try {
-    const apiUrl = 'http://127.0.0.1:8000/api/booking/' + bookingId + '/thermal-bill'
-    const response = await fetch(apiUrl)
+    const api = `${apiUrl}/api/booking/` + bookingId + '/thermal-bill'
+    const response = await fetch(api)
     const data = await response.json()
 
     if (data.success) {
@@ -978,7 +979,7 @@ const addFoodToBooking = async (bookingId) => {
 
   try {
     // Fetch existing foods for this booking
-    const response = await axios.get(`http://127.0.0.1:8000/api/admin/booking/${bookingId}/foods`)
+    const response = await axios.get(`${apiUrl}/api/admin/booking/${bookingId}/foods`)
     const existingFoods = response.data.foods || []
 
     // Create a map of existing food quantities
@@ -1033,7 +1034,7 @@ const submitFoodToBooking = async () => {
       return
     }
 
-    const response = await axios.post('http://127.0.0.1:8000/api/admin/update-invoice-foods', {
+    const response = await axios.post(`${apiUrl}/api/admin/update-invoice-foods`, {
       id_booking: selectedBookingId.value,
       foods: foodsToUpdate
     })

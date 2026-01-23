@@ -164,6 +164,7 @@
 import { ref, onMounted, computed, nextTick } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import axios from 'axios'
+import { apiUrl } from '@/environment'
 
 const services = ref([])
 const itemsPerPage = 12
@@ -211,7 +212,7 @@ const formatCurrency = (amount) => {
 
 const fetchServices = async () => {
     try {
-        const response = await axios.get('http://127.0.0.1:8000/api/services')
+        const response = await axios.get(`${apiUrl}/api/services`)
         services.value = response.data
     } catch (error) {
         console.error('Error fetching services:', error)
@@ -237,7 +238,7 @@ const editService = (service) => {
 const deleteService = async (serviceId) => {
     if (confirm('Bạn có chắc muốn xóa dịch vụ này?')) {
         try {
-            await axios.delete(`http://127.0.0.1:8000/api/services/${serviceId}`)
+            await axios.delete(`${apiUrl}/api/services/${serviceId}`)
             await fetchServices()
         } catch (error) {
             console.error('Error deleting service:', error)
@@ -280,7 +281,7 @@ const submitAddService = async () => {
 
         console.log('Sending add service data:', serviceData)
 
-        const response = await axios.post('http://127.0.0.1:8000/api/services', serviceData)
+        const response = await axios.post(`${apiUrl}/api/services`, serviceData)
         console.log('Success response:', response.data)
 
         await fetchServices()
@@ -334,7 +335,7 @@ const submitEditService = async () => {
 
         console.log('Sending edit service data:', serviceData)
 
-        const response = await axios.put(`http://127.0.0.1:8000/api/services/${editingService.value.id}`, serviceData)
+        const response = await axios.put(`${apiUrl}/api/services/${editingService.value.id}`, serviceData)
         console.log('Success response:', response.data)
 
         await fetchServices()

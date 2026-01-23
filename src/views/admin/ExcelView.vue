@@ -84,9 +84,9 @@ const renderFile = async (file: any) => {
   }
 }
 
-const getData = () => {
+const getData = async () => {
   if (univerRef.value) {
-    const result = univerRef.value.getData();
+    const result = await univerRef.value.getData();
     // Log details about snapshot
     if (result?.sheets) {
       Object.keys(result.sheets).forEach(sheetId => {
@@ -137,7 +137,11 @@ const save = async () => {
     isLoading.value = true; // Hiển thị loading overlay
 
     // Lấy dữ liệu hiện tại từ UniverJS (bao gồm tất cả chỉnh sửa của user)
-    const currentData = getData();
+    // Lấy dữ liệu hiện tại từ UniverJS (bao gồm tất cả chỉnh sửa của user)
+    const currentData = await getData();
+
+    // return console.log('currentData: ', currentData);
+
 
     if (!currentData) {
       console.error('Không thể lấy dữ liệu từ Univer');
@@ -160,9 +164,14 @@ const save = async () => {
 
     // Gửi lên server
     const endpoint = excelStore.blank ? 'blank' : excelStore.id;
-    await axios.post(`${apiUrl}/api/admin/excel/save/${endpoint}`, formData, {
+    const res = await axios.post(`${apiUrl}/api/admin/excel/save/${endpoint}`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
+
+    if (excelStore.blank) {
+      excelStore.blank = false;
+      excelStore.id = res.data.data.id
+    }
 
     console.log('✅ Lưu thành công!');
   } catch (error) {

@@ -34,6 +34,7 @@ export interface ExcelCellData {
     rowspan?: number;
     colspan?: number;
   };
+  formula?: string;
 }
 
 export interface MergeRange {
@@ -235,6 +236,11 @@ export const parseExcelFile = (file: File): Promise<ParsedExcelData> => {
                 if (cellStyle?.numFmt) {
                   cellData.style = cellData.style || {};
                   cellData.style.numFmt = cellStyle.numFmt;
+                }
+
+                // Extract formula
+                if (cell.formula) {
+                   cellData.formula = cell.formula;
                 }
 
                 rowData.push(cellData);

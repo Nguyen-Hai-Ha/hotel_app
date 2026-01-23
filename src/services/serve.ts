@@ -1,5 +1,5 @@
-import type { ICellData, IStyleData, BooleanNumber } from "@univerjs/core";
-import type { ExcelCellData, ParsedExcelData } from "./importExcel";
+import type { ICellData, IStyleData } from "@univerjs/core";
+import type {ParsedExcelSheet } from "./importExcel";
 import slugify from "slugify";
 
 // Định nghĩa lại interface cho rõ ràng
@@ -53,7 +53,7 @@ const convertVerticalAlign = (align?: string): number => {
  * Convert parsed Excel data với styling thành cấu trúc cellData của Univer
  * @param parsedData Parsed Excel data với cell data và merge ranges
  */
-export const convertToDataUniver = (parsedData: ParsedExcelData): IWorkbookCellData => {
+export const convertToDataUniver = (parsedData: ParsedExcelSheet): IWorkbookCellData => {
   const result: IWorkbookCellData = {};
   const data = parsedData.cellData;
 
@@ -67,6 +67,11 @@ export const convertToDataUniver = (parsedData: ParsedExcelData): IWorkbookCellD
       const cellData: ICellData = {
         v: excelCell.value?.toString() || "",
       };
+
+      // Map formula if present
+      if (excelCell.formula) {
+        cellData.f = "=" + excelCell.formula;
+      }
 
       // Xử lý style nếu có
       if (excelCell.style) {
@@ -151,6 +156,13 @@ export const convertToDataUniver = (parsedData: ParsedExcelData): IWorkbookCellD
           if (Object.keys(borderData).length > 0) {
             univerStyle.bd = borderData;
           }
+        }
+
+        // Number Format
+        if (style.numFmt) {
+          univerStyle.n = {
+            pattern: style.numFmt,
+          };
         }
 
         // Apply style to cell if any

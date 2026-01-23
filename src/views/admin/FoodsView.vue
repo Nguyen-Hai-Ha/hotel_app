@@ -149,6 +149,7 @@
 import { ref, nextTick, onMounted, computed } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import axios from 'axios'
+import { apiUrl } from '@/environment'
 
 const foods = ref([])
 
@@ -180,7 +181,7 @@ const formatCurrency = (amount) => {
 
 const fetchFoods = async () => {
     try {
-        const response = await axios.get('http://127.0.0.1:8000/api/foods')
+        const response = await axios.get(`${apiUrl}/api/foods`)
         foods.value = response.data
     } catch (error) {
         console.error('Error fetching foods:', error)
@@ -211,7 +212,7 @@ const editFood = (food) => {
 
 const addFood = async () => {
     try {
-        const response = await axios.post('http://127.0.0.1:8000/api/foods', {
+        const response = await axios.post(`${apiUrl}/api/foods`, {
             name: newFood.value.name,
             price: newFood.value.price
         })
@@ -231,7 +232,7 @@ const addFood = async () => {
 
 const updateFood = async () => {
     try {
-        const response = await axios.put(`http://127.0.0.1:8000/api/foods/${editingFood.value.id}`, {
+        const response = await axios.put(`${apiUrl}/api/foods/${editingFood.value.id}`, {
             name: editingFood.value.name,
             price: parseFloat(editingFood.value.price)
         })
@@ -260,7 +261,7 @@ const submitEditFood = async () => {
 const deleteFood = async (id) => {
     if (confirm('Bạn có chắc chắn muốn xóa thức ăn này?')) {
         try {
-            const response = await axios.delete(`http://127.0.0.1:8000/api/foods/${id}`)
+            const response = await axios.delete(`${apiUrl}/api/foods/${id}`)
 
             if (response.data.success) {
                 console.log(response.data.message || 'Xóa thức ăn thành công!')

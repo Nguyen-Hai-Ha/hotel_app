@@ -108,6 +108,7 @@
 
 <script>
 import axios from 'axios'
+import { apiUrl } from '@/environment'
 
 export default {
   name: 'LoginAdmin',
@@ -140,7 +141,7 @@ export default {
       this.successMessage = ''
 
       try {
-        const response = await axios.post('http://127.0.0.1:8000/api/admin/login', {
+        const response = await axios.post(`${apiUrl}/api/admin/login`, {
           email: this.loginForm.email,
           password: this.loginForm.password,
         })
@@ -220,7 +221,7 @@ export default {
       }
 
       try {
-        await axios.post('http://127.0.0.1:8000/api/admin/forgot-password', {
+        await axios.post(`${apiUrl}/api/admin/forgot-password`, {
           email: this.forgotEmail
         })
 

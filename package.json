@@ -6,7 +6,8 @@
   "private": true,
   "main": "electron/main.js",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --open",
+    "start": "vite",
     "build": "vite build",
     "preview": "vite preview",
     "lint:oxlint": "oxlint . --fix -D correctness --ignore-path .gitignore",
@@ -36,6 +37,7 @@
     "@univerjs/sheets": "^0.1.13",
     "@univerjs/sheets-formula": "^0.1.13",
     "@univerjs/sheets-ui": "^0.1.13",
+    "@univerjs/sheets-numfmt": "^0.1.13",
     "@univerjs/ui": "^0.1.13",
     "axios": "^1.11.0",
     "buffer": "^6.0.3",

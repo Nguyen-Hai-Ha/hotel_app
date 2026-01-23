@@ -44,6 +44,7 @@ import { ref, onMounted } from 'vue';
 import RoomCard from '@/components/RoomCard.vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+import { apiUrl } from '@/environment';
 
 export default {
   name: 'HomeView',
@@ -56,7 +57,7 @@ export default {
 
     onMounted(async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/rooms');
+        const response = await axios.get(`${apiUrl}/api/rooms`);
         rooms.value = response.data.slice(0, 3);
       } catch (error) {
         console.error('Error loading rooms:', error);

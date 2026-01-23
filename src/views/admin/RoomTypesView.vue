@@ -34,8 +34,8 @@
                             'Không có' }}</td>
                         <td>
                             <div v-if="roomType.image" class="room-image">
-                                <img :src="'https://thesecret-hotel.com/hotelBE/public/' + roomType.image"
-                                    alt="Room thumbnail" class="room-image">
+                                <img :src="`${apiUrl}/hotelBE/public/` + roomType.image" alt="Room thumbnail"
+                                    class="room-image">
                             </div>
                             <div v-else>Không có hình ảnh</div>
                         </td>
@@ -254,8 +254,7 @@
                     </div>
                     <div v-else-if="editingRoomType.image" class="current-image">
                         <p>Hình ảnh hiện tại:</p>
-                        <img :src="'https://thesecret-hotel.com/hotelBE/public/' + editingRoomType.image"
-                            alt="Current image" />
+                        <img :src="`${apiUrl}/hotelBE/public/` + editingRoomType.image" alt="Current image" />
                     </div>
                 </div>
 
@@ -278,6 +277,7 @@
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import axios from 'axios'
+import { apiUrl } from '@/environment'
 
 const roomTypes = ref([])
 
@@ -367,7 +367,7 @@ const formatCurrency = (amount) => {
 
 const fetchRoomTypes = async () => {
     try {
-        const response = await axios.get('http://127.0.0.1:8000/api/admin/room-types')
+        const response = await axios.get(`${apiUrl}/api/admin/room-types`)
         roomTypes.value = response.data
     } catch (error) {
         console.error('Error fetching room types:', error)
@@ -440,7 +440,7 @@ const submitAddRoomType = async () => {
 
         console.log('Sending room type data:', formData)
 
-        const response = await axios.post('http://127.0.0.1:8000/api/room_types', formData, {
+        const response = await axios.post(`${apiUrl}/api/room_types`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
@@ -564,7 +564,7 @@ const submitEditRoomType = async () => {
 
         console.log('Sending edit room type data:', formData)
 
-        const response = await axios.post(`http://127.0.0.1:8000/api/room_types/${editingRoomType.value.id}`, formData, {
+        const response = await axios.post(`${apiUrl}/api/room_types/${editingRoomType.value.id}`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
@@ -657,7 +657,7 @@ const editRoomType = (roomType) => {
 const deleteRoomType = async (roomTypeId) => {
     if (confirm('Bạn có chắc muốn xóa thể loại phòng này?')) {
         try {
-            await axios.delete(`http://127.0.0.1:8000/api/room_types/${roomTypeId}`)
+            await axios.delete(`${apiUrl}/api/room_types/${roomTypeId}`)
             await fetchRoomTypes()
         } catch (error) {
             console.error('Error deleting room type:', error)

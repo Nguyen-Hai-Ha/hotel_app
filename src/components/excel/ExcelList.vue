@@ -25,13 +25,37 @@ const editExcel = (excel: Excel) => {
   router.push({ name: 'excel-current', params: { slug } })
 }
 
-const deleteExcel = (id: number | string) => {
-  if (confirm('Bạn có chắc chắn muốn xóa file Excel này?')) {
-    const index = excelFiles.value.findIndex(f => f.id === id)
-    if (index !== -1) {
+// State for delete modal
+const showDeleteModal = ref(false)
+const deleteTarget = ref<Excel | null>(null)
+
+const handleDelete = (excel: Excel) => {
+  deleteTarget.value = excel
+  showDeleteModal.value = true
+}
+
+const cancelDelete = () => {
+  showDeleteModal.value = false
+  deleteTarget.value = null
+}
+
+const confirmDelete = async () => {
+  if (deleteTarget.value) {
+    await deleteExcel(deleteTarget.value.id)
+    cancelDelete()
+  }
+}
+
+const deleteExcel = async (id: number | string) => {
+  try {
+    await axios.delete(`${apiUrl}/api/admin/excel/${id}`)
+    const index = excelFiles.value.findIndex(f => f.id == id)
+    if (index > -1) {
       excelFiles.value.splice(index, 1)
       console.log('Đã xóa file Excel ID:', id)
     }
+  } catch (error) {
+    console.log(error);
   }
 }
 
@@ -117,7 +141,7 @@ onMounted(async () => {
               <button @click="downloadExcel(excel)" class="btn btn-download" title="Tải về">
                 <FontAwesomeIcon :icon="['fas', 'download']" />
               </button>
-              <button @click="deleteExcel(excel.id)" class="btn btn-delete" title="Xóa file">
+              <button @click="handleDelete(excel)" class="btn btn-delete" title="Xóa file">
                 <FontAwesomeIcon :icon="['fas', 'trash']" />
               </button>
             </div>
@@ -126,7 +150,33 @@ onMounted(async () => {
       </tbody>
     </table>
   </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div v-if="showDeleteModal" class="modal-overlay" @click.self="cancelDelete">
+    <div class="custom-modal-content">
+      <button @click="cancelDelete" class="close-btn">
+        <FontAwesomeIcon :icon="['fas', 'times']" />
+      </button>
+
+      <div class="modal-body">
+        <p class="modal-message">
+          Bạn có chắc chắn muốn xóa file <br>
+          <strong style="color: #2d3748;">{{ deleteTarget?.name }}</strong> không?
+        </p>
+
+        <div class="modal-actions">
+          <button @click="cancelDelete" class="btn-custom btn-cancel">
+            Hủy
+          </button>
+          <button @click="confirmDelete" class="btn-custom btn-confirm">
+            Xóa
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
+
 <style scoped>
 @import '@/assets/admin-global.css';
 
@@ -198,5 +248,117 @@ onMounted(async () => {
 .btn-download:active,
 .btn-delete:active {
   transform: translateY(0);
+}
+
+/* Custom Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.custom-modal-content {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 400px;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 5px;
+  transition: color 0.2s;
+}
+
+.close-btn:hover {
+  color: #4b5563;
+}
+
+.modal-body {
+  text-align: center;
+  padding-top: 1rem;
+}
+
+.modal-message {
+  font-size: 1.1rem;
+  color: #374151;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.btn-custom {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  min-width: 100px;
+}
+
+.btn-cancel {
+  background-color: #f3f4f6;
+  color: #1f2937;
+}
+
+.btn-cancel:hover {
+  background-color: #e5e7eb;
+}
+
+.btn-confirm {
+  background-color: #f87171;
+  color: white;
+}
+
+.btn-confirm:hover {
+  background-color: #ef4444;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 </style>

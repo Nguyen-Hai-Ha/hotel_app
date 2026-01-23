@@ -55,6 +55,15 @@ export const exportExcel = async (data: any) => {
 
   try {
     const workbook = new ExcelJS.Workbook();
+    const globalStyles = data.styles || {};
+
+    // Helper to get style object whether it's an ID or object
+    const getStyle = (s: any) => {
+      if (typeof s === 'string') {
+        return globalStyles[s];
+      }
+      return s;
+    };
 
     // Duyệt qua tất cả các sheet trong snapshot
     Object.keys(data.sheets).forEach((sheetId) => {
@@ -75,14 +84,32 @@ export const exportExcel = async (data: any) => {
           if (univerCell) {
             const excelCell = row.getCell(colIdx); // Use row object
             
-            // Set cell value
-            if (univerCell.v !== undefined) {
-              excelCell.value = univerCell.v;
+            // 1. Determine Cell Value
+            // Check for rich text first (p.body.dataStream)
+            let cellValue = univerCell.v;
+            if (univerCell.p && univerCell.p.body && univerCell.p.body.dataStream) {
+               // Univer often includes a trailing \r\n or \n in dataStream, trim explicitly if needed
+               // or keep provided it doesn't break excel layout. Excel accounts for \n.
+               // Usually better to remove the very last newline if it's structural
+               cellValue = univerCell.p.body.dataStream.replace(/\r\n$/, '').replace(/\n$/, '');
             }
 
-            // Apply styles if they exist
-            if (univerCell.s) {
-              const style = univerCell.s;
+            if (univerCell.f) {
+              const formula = univerCell.f.startsWith('=') ? univerCell.f.substring(1) : univerCell.f;
+              excelCell.value = {
+                formula: formula,
+                result: cellValue
+              };
+            } else if (cellValue !== undefined) {
+              excelCell.value = cellValue;
+            }
+
+            // 2. Apply styles
+            const rawStyle = univerCell.s;
+            const style = getStyle(rawStyle);
+
+            if (style) {
+              // const style = univerCell.s; // Old logic
               const cellStyle: Partial<ExcelJS.Style> = {};
               let hasStyles = false;
 
@@ -175,8 +202,14 @@ export const exportExcel = async (data: any) => {
                 // Apply border directly to cell
                 if (Object.keys(borderStyle).length > 0) {
                   excelCell.border = borderStyle;
-                  console.log(`      ✓ Applied border directly to cell [${rowIdx},${colIdx}]:`, Object.keys(borderStyle));
+                  // console.log(`      ✓ Applied border directly to cell [${rowIdx},${colIdx}]:`, Object.keys(borderStyle));
                 }
+              }
+
+              // Number Format
+              if (style.n?.pattern) {
+                excelCell.numFmt = style.n.pattern;
+                hasStyles = true;
               }
 
               // Apply styles separately to ensure they're all saved
