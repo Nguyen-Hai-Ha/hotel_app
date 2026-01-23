@@ -832,78 +832,40 @@ const submitAddBooking = async () => {
     const response = await axios.post(`${apiUrl}/api/admin/bookings`, bookingData)
     console.log('Success response:', response.data)
 
-        // Validate dates
-        const checkIn = new Date(newBooking.value.checkIn)
-        const checkOut = new Date(newBooking.value.checkOut)
-        if (checkOut <= checkIn) {
-            console.error('Ngày trả phòng phải sau ngày nhận phòng')
-            return
-        }
-        const booking_type = selectedRoomType.value.type
+    await fetchBookings()
+    await fetchRooms() // Refresh rooms to update availability
+    closeAddBookingModal()
 
-        const effectiveGrandTotal = finalGrandTotal.value > 0 ? finalGrandTotal.value : grandTotal.value
-        const discountAmount = grandTotal.value - effectiveGrandTotal
+  } catch (error) {
+    console.error('Error adding booking:', error)
 
-        // Prepare booking data
-        const bookingData = {
-            customer_name: newBooking.value.customerName.trim(),
-            customer_phone: newBooking.value.customerPhone.trim(),
-            customer_email: newBooking.value.customerEmail.trim() || null,
-            customer_passport: newBooking.value.customerPassport.trim(),
-            id_room: newBooking.value.roomId,
-            check_in: newBooking.value.checkIn,
-            check_out: newBooking.value.checkOut,
-            tax_amount: taxAmount.value,
-            subtotal: subtotal.value,
-            grand_total: effectiveGrandTotal,
-            discount_total: discountAmount,
-            service_charge: (servicesCost.value * bookingNights.value) || 0,
-            id_tax: newBooking.value.selectedTaxes.length > 0 ? String(newBooking.value.selectedTaxes[0]) : '1',
-            status: 'check-in',
-            id_user: '4',
-            booking_type: booking_type,
-            room_price: newBooking.value.roomPrice || 0,
-        }
+    if (error.response) {
+      console.error('Error response:', error.response.data)
+      console.error('Error status:', error.response.status)
 
-        console.log('Sending booking data:', bookingData)
+      if (error.response.status === 422) {
+        const validationErrors = error.response.data.errors || error.response.data
+        let errorMessage = 'Lỗi validation:\n'
 
-        const response = await axios.post('http://127.0.0.1:8000/api/admin/bookings', bookingData)
-        console.log('Success response:', response.data)
-
-        await fetchBookings()
-        await fetchRooms() // Refresh rooms to update availability
-        closeAddBookingModal()
-
-    } catch (error) {
-        console.error('Error adding booking:', error)
-
-        if (error.response) {
-            console.error('Error response:', error.response.data)
-            console.error('Error status:', error.response.status)
-
-            if (error.response.status === 422) {
-                const validationErrors = error.response.data.errors || error.response.data
-                let errorMessage = 'Lỗi validation:\n'
-
-                if (typeof validationErrors === 'object') {
-                    Object.keys(validationErrors).forEach(key => {
-                        errorMessage += `- ${key}: ${validationErrors[key].join(', ')}\n`
-                    })
-                } else {
-                    errorMessage += JSON.stringify(validationErrors, null, 2)
-                }
-
-                console.error(errorMessage)
-            } else {
-                console.error(`Lỗi: ${error.response.data.message || 'Không thể tạo đặt phòng'}`)
-            }
-        } else if (error.request) {
-            console.error('Error request:', error.request)
-            console.error('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.')
+        if (typeof validationErrors === 'object') {
+          Object.keys(validationErrors).forEach(key => {
+            errorMessage += `- ${key}: ${validationErrors[key].join(', ')}\n`
+          })
         } else {
-            console.error('Error message:', error.message)
-            console.error(`Lỗi: ${error.message}`)
+          errorMessage += JSON.stringify(validationErrors, null, 2)
         }
+
+        console.error(errorMessage)
+      } else {
+        console.error(`Lỗi: ${error.response.data.message || 'Không thể tạo đặt phòng'}`)
+      }
+    } else if (error.request) {
+      console.error('Error request:', error.request)
+      console.error('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.')
+    } else {
+      console.error('Error message:', error.message)
+      console.error(`Lỗi: ${error.message}`)
+    }
     }
 }
 
@@ -940,44 +902,34 @@ const submitAddBookingAdmin = async () => {
   } catch (error) {
     console.error('Error adding booking:', error)
 
-        const response = await axios.post('http://127.0.0.1:8000/api/admin/bookings', booking)
-        console.log('Success response:', response.data)
+    if (error.response) {
+      console.error('Error response:', error.response.data)
+      console.error('Error status:', error.response.status)
 
-        await fetchBookings()
-        await fetchRooms()
-        closeAddBookingForAdminModal()
+      if (error.response.status === 422) {
+        const validationErrors = error.response.data.errors || error.response.data
+        let errorMessage = 'Lỗi validation:\n'
 
-    } catch (error) {
-        console.error('Error adding booking:', error)
-
-        if (error.response) {
-            console.error('Error response:', error.response.data)
-            console.error('Error status:', error.response.status)
-
-            if (error.response.status === 422) {
-                const validationErrors = error.response.data.errors || error.response.data
-                let errorMessage = 'Lỗi validation:\n'
-
-                if (typeof validationErrors === 'object') {
-                    Object.keys(validationErrors).forEach(key => {
-                        errorMessage += `- ${key}: ${validationErrors[key].join(', ')}\n`
-                    })
-                } else {
-                    errorMessage += JSON.stringify(validationErrors, null, 2)
-                }
-
-                console.error(errorMessage)
-            } else {
-                console.error(`Lỗi: ${error.response.data.message || 'Không thể tạo đặt phòng'}`)
-            }
-        } else if (error.request) {
-            console.error('Error request:', error.request)
-            console.error('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.')
+        if (typeof validationErrors === 'object') {
+          Object.keys(validationErrors).forEach(key => {
+            errorMessage += `- ${key}: ${validationErrors[key].join(', ')}\n`
+          })
         } else {
-            console.error('Error message:', error.message)
-            console.error(`Lỗi: ${error.message}`)
+          errorMessage += JSON.stringify(validationErrors, null, 2)
         }
+
+        console.error(errorMessage)
+      } else {
+        console.error(`Lỗi: ${error.response.data.message || 'Không thể tạo đặt phòng'}`)
+      }
+    } else if (error.request) {
+      console.error('Error request:', error.request)
+      console.error('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.')
+    } else {
+      console.error('Error message:', error.message)
+      console.error(`Lỗi: ${error.message}`)
     }
+  }
 }
 
 const deleteeBooking = async (bookingId) => {
