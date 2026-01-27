@@ -1,6 +1,13 @@
 <template>
   <div class="customers-management">
     <div class="section-header">
+      <h2>Quản lý khách hàng</h2>
+    </div>
+    <!-- Search Bar -->
+    <div class="search-container" style="margin-bottom: 16px;">
+      <input type="text" v-model="searchQuery" placeholder="Tìm theo tên khách hàng hoặc số phòng..."
+        class="search-input"
+        style="width: 100%; max-width: 400px; padding: 10px 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;" />
     </div>
     <div class="table-container">
       <table>
@@ -20,21 +27,23 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-if="customers.length === 0">
+          <tr v-if="filteredCustomers.length === 0">
             <td colspan="8" style="text-align: center; color: #999;">
               Không có khách hàng nào
             </td>
           </tr>
-          <tr v-for="customer in customers" :key="customer.id">
+          <tr v-for="customer in filteredCustomers" :key="customer.id">
             <td>{{ customer.id }}</td>
             <td>{{ customer.name }}</td>
             <td>{{ customer.phone }}</td>
             <td>{{ customer.room_number }}</td>
 
-            <td v-if="customer.payment_status === 'deposited'">Đã đặt cọc</td>
-            <td v-else-if="customer.payment_status === 'success' || customer.payment_status === 'done'">Đã
-              Thanh Toán</td>
-            <td v-else>Chưa thanh toán</td>
+            <td>
+              <span v-if="customer.payment_status === 'deposited'" class="badge badge-warning">Đã đặt cọc</span>
+              <span v-else-if="customer.payment_status === 'success' || customer.payment_status === 'done'"
+                class="badge badge-success">Đã Thanh Toán</span>
+              <span v-else class="badge badge-danger">Chưa thanh toán</span>
+            </td>
 
             <td v-if="customer.payment_status === 'deposited'">{{ formatCurrency(customer.grand_total -
               customer.deposited_amount) }}</td>
@@ -44,7 +53,7 @@
             </td>
 
             <td>{{ formatDate(customer.checkin_date) }}</td>
-            <td>{{ formatDate(customer.checkout_date) }}</td>
+            <td>{{ customer.checkout_date == null ? 'Chưa có' : formatDate(customer.checkout_date)}}</td>
             <td>
               <button @click="addTax(customer)"
                 v-if="customer.booking_type === 'hourly' && customer.tax_amount === 0 && customer.status === 'checked_out' && customer.id_user != 1"
@@ -114,7 +123,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import axios from 'axios'
 import { apiUrl } from '@/environment'
@@ -122,24 +131,24 @@ import { apiUrl } from '@/environment'
 const customers = ref([])
 const customer = ref({
   id: null,
-  // name: '',
-  // phone: '',
-  // room_number: '',
-  // checkin_date: '',
-  // checkout_date: '',
-  // booking_type: '',
-  // status: '',
-  // payment_status: '',
-  // grand_total: 0,
-  // deposited_amount: 0,
-  // booking_id: null,
-  // amount: 0,
-  // over_time: 0,
-  // sub_charse: 0,
 })
 const sub_charge = ref('')
 const SubChargeInput = ref(null)
 const showAddOverTimeModal = ref(false)
+const searchQuery = ref('')
+
+// Computed property để lọc khách hàng theo tìm kiếm
+const filteredCustomers = computed(() => {
+  if (!searchQuery.value.trim()) {
+    return customers.value
+  }
+  const query = searchQuery.value.toLowerCase().trim()
+  return customers.value.filter(customer => {
+    const name = (customer.name || '').toLowerCase()
+    const roomNumber = (customer.room_number || '').toString().toLowerCase()
+    return name.includes(query) || roomNumber.includes(query)
+  })
+})
 
 const formatCurrency = (amount) => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount)
@@ -168,7 +177,7 @@ const fetchCustomers = async () => {
       phone: booking.phone || 'Không có',
       room_number: booking.room_number,
       checkin_date: booking.check_in,
-      checkout_date: booking.check_out,
+      checkout_date: booking.check_out || null,
       booking_type: booking.booking_type,
       status: booking.status_room,
       payment_status: booking.payment_status,
@@ -322,4 +331,78 @@ onMounted(() => {
 
 <style scoped>
 @import '@/assets/admin-global.css';
+
+/* Table Improvements */
+.table-container {
+  overflow-x: auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  background: white;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+th {
+  background-color: #f8fafc;
+  color: #475569;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  padding: 12px 16px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+  vertical-align: middle;
+}
+
+tr:hover td {
+  background-color: #f8fafc;
+}
+
+/* Badge Styles */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.badge-warning {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.badge-success {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.badge-danger {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.badge-info {
+  background-color: #e0f2fe;
+  color: #075985;
+}
+
+/* Action Buttons Grid */
+.action-buttons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
 </style>

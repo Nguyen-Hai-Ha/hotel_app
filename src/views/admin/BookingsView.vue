@@ -31,8 +31,6 @@
                         <th>Ngày đi</th>
                         <th>Tổng tiền</th>
                         <th>Trạng thái</th>
-                        <th>In hóa đơn</th>
-                        <th>Thêm thức ăn</th>
                         <th>Thao tác</th>
                     </tr>
                 </thead>
@@ -46,52 +44,52 @@
                         <td>{{ formatDate(booking.check_out) }}</td>
                         <td>{{ formatCurrency(booking.grand_total) }}</td>
                         <td>
+                            <span v-if="booking.status === 'pending'" class="badge badge-warning">
+                                <FontAwesomeIcon :icon="['fas', 'clock']" /> Đang chờ
+                            </span>
+                            <span v-else-if="booking.status === 'confirmed'" class="badge badge-info">
+                                <FontAwesomeIcon :icon="['fas', 'check']" /> Đã xác nhận
+                            </span>
+                            <span v-else-if="booking.status === 'done'" class="badge badge-success">
+                                <FontAwesomeIcon :icon="['fas', 'check-circle']" /> Hoàn thành
+                            </span>
+                            <span v-else class="badge badge-secondary">{{ booking.status }}</span>
+                        </td>
+                        <td>
                             <div class="action-buttons">
+                                <!-- Status Actions -->
                                 <button v-if="booking.status === 'pending'"
-                                    @click="changeBookingStatus(booking, 'confirmed')" class="btn btn-sm btn-warning"
-                                    title="Xác nhận đặt phòng">
+                                    @click="changeBookingStatus(booking, 'confirmed')"
+                                    class="btn btn-icon btn-sm btn-warning" title="Xác nhận">
                                     <FontAwesomeIcon :icon="['fas', 'check']" />
-                                    Xác nhận
                                 </button>
                                 <button v-if="booking.status === 'confirmed'"
-                                    @click="changeBookingStatus(booking, 'done')" class="btn btn-sm btn-success"
-                                    title="Hoàn thành">
+                                    @click="changeBookingStatus(booking, 'done')"
+                                    class="btn btn-icon btn-sm btn-success" title="Hoàn thành">
                                     <FontAwesomeIcon :icon="['fas', 'check-double']" />
-                                    Hoàn thành
                                 </button>
-                                <span v-if="booking.status === 'done'" class="status-done">
-                                    <FontAwesomeIcon :icon="['fas', 'check-circle']" />
-                                    Đã hoàn thành
-                                </span>
+
+                                <!-- Food & Bill Actions -->
+                                <button v-if="booking.id_user != 1" @click="addFoodToBooking(booking.id)"
+                                    class="btn btn-icon btn-sm btn-primary" title="Thêm thức ăn">
+                                    <FontAwesomeIcon :icon="['fas', 'utensils']" />
+                                </button>
+                                <button v-if="booking.status === 'done' && booking.id_user != 1"
+                                    @click="printThermalBill(booking.id)" class="btn btn-icon btn-sm btn-info"
+                                    title="In hóa đơn">
+                                    <FontAwesomeIcon :icon="['fas', 'receipt']" />
+                                </button>
+
+                                <!-- Edit/Delete Actions -->
+                                <button v-if="booking.status !== 'done'" @click="openEditBookingModal(booking.id)"
+                                    class="btn btn-icon btn-sm btn-secondary" title="Sửa">
+                                    <FontAwesomeIcon :icon="['fas', 'edit']" />
+                                </button>
+                                <button v-if="booking.status !== 'done'" @click="deleteeBooking(booking.id)"
+                                    class="btn btn-icon btn-sm btn-danger" title="Xóa">
+                                    <FontAwesomeIcon :icon="['fas', 'times']" />
+                                </button>
                             </div>
-                        </td>
-                        <td>
-                            <button v-if="booking.status === 'done' && booking.id_user != 1"
-                                @click="printThermalBill(booking.id)" class="btn btn-sm btn-info"
-                                title="In hóa đơn nhiệt">
-                                <FontAwesomeIcon :icon="['fas', 'receipt']"></FontAwesomeIcon>
-                                In Bill
-                            </button>
-                        </td>
-                        <td>
-                            <button v-if="booking.id_user != 1" @click="addFoodToBooking(booking.id)"
-                                class="btn btn-sm btn-primary" title="Thêm thức ăn">
-                                <FontAwesomeIcon :icon="['fas', 'utensils']"></FontAwesomeIcon>
-                                Thêm thức ăn
-                            </button>
-                        </td>
-                        <td>
-                            <button v-if="booking.status !== 'done'" @click="deleteeBooking(booking.id)"
-                                class="btn btn-sm btn-danger" title="Xóa đặt phòng">
-                                <FontAwesomeIcon :icon="['fas', 'times']" />
-                            </button>
-                            <button v-if="booking.status !== 'done'" @click="openEditBookingModal(booking.id)"
-                                class="btn btn-sm btn-warning" title="Sửa đặt phòng">
-                                <FontAwesomeIcon :icon="['fas', 'edit']" />
-                            </button>
-                            <span v-else class="text-muted" style="font-size: 0.75rem;">
-                                Không thể xóa
-                            </span>
                         </td>
                     </tr>
                 </tbody>
@@ -454,6 +452,9 @@ import { apiUrl } from '@/environment'
 
 import EditBookingModal from '@/components/booking-view/EditBookingModal.vue'
 
+import { useEditBookingStore } from '@/stores/EditBookingStore'
+import { storeToRefs } from 'pinia'
+const { editBookingNameInput } = storeToRefs(useEditBookingStore())
 const bookings = ref([])
 const services = ref([])
 const taxes = ref([])
@@ -516,7 +517,6 @@ const openAddBookingModal = async () => {
 }
 
 const openAddBookingForAdmin = async () => {
-    ``
     showAddBookingForAdminModal.value = true
 }
 
@@ -630,73 +630,71 @@ const grandTotal = computed(() => {
 })
 
 const fetchBookings = async () => {
-  try {
-    const response = await axios.get(`${apiUrl}/api/admin/bookings`)
-    bookings.value = response.data
-  } catch (error) {
-    console.error('Error fetching bookings:', error)
-  }
+    try {
+        const response = await axios.get(`${apiUrl}/api/admin/bookings`)
+        bookings.value = response.data
+    } catch (error) {
+        console.error('Error fetching bookings:', error)
+    }
 }
 
 const fetchServices = async () => {
-  try {
-    const response = await axios.get(`${apiUrl}/api/services`)
-    services.value = response.data
-  } catch (error) {
-    console.error('Error fetching services:', error)
-  }
+    try {
+        const response = await axios.get(`${apiUrl}/api/services`)
+        services.value = response.data
+    } catch (error) {
+        console.error('Error fetching services:', error)
+    }
 }
 
 const fetchFoods = async () => {
-  try {
-    const response = await axios.get(`${apiUrl}/api/foods`)
-    foods.value = response.data
-  } catch (error) {
-    console.error('Error fetching foods:', error)
-  }
+    try {
+        const response = await axios.get(`${apiUrl}/api/foods`)
+        foods.value = response.data
+    } catch (error) {
+        console.error('Error fetching foods:', error)
+    }
 }
 
 const fetchRoomTypes = async () => {
-  try {
-    const response = await axios.get(`${apiUrl}/api/admin/room-types`)
-    roomTypes.value = response.data
-  } catch (error) {
-    console.error('Error fetching room types:', error)
-  }
+    try {
+        const response = await axios.get(`${apiUrl}/api/admin/room-types`)
+        roomTypes.value = response.data
+    } catch (error) {
+        console.error('Error fetching room types:', error)
+    }
 }
 
 const fetchTaxes = async () => {
-  try {
-    const response = await axios.get(`${apiUrl}/api/taxes`)
-    taxes.value = response.data
-  } catch (error) {
-    console.error('Error fetching taxes:', error)
-  }
+    try {
+        const response = await axios.get(`${apiUrl}/api/taxes`)
+        taxes.value = response.data
+    } catch (error) {
+        console.error('Error fetching taxes:', error)
+    }
 }
 
 const fetchRooms = async () => {
-  try {
-    const response = await axios.get(`${apiUrl}/api/admin/rooms`)
-    rooms.value = response.data
-    console.log('Admin rooms data:', rooms.value)
-  } catch (error) {
-    console.error('Error fetching rooms:', error)
-  }
+    try {
+        const response = await axios.get(`${apiUrl}/api/admin/rooms`)
+        rooms.value = response.data
+        console.log('Admin rooms data:', rooms.value)
+    } catch (error) {
+        console.error('Error fetching rooms:', error)
+    }
 }
 
 
 
 const changeBookingStatus = async (booking, newStatus) => {
 
-  try {
-    const formData = new FormData()
-    formData.append('status', newStatus)
-    const response = await fetch(`${apiUrl}/api/admin/change-status-booking/${booking.id}`, {
-      method: 'POST',
-      body: formData
-    })
-
-
+    try {
+        const formData = new FormData()
+        formData.append('status', newStatus)
+        const response = await fetch(`${apiUrl}/api/admin/change-status-booking/${booking.id}`, {
+            method: 'POST',
+            body: formData
+        })
         if (response.status === 200) {
             await fetchBookings()
         } else {
@@ -709,48 +707,51 @@ const changeBookingStatus = async (booking, newStatus) => {
 
 const onRoomTypeChange = async () => {
 
-  const roomTypeId = newBooking.value.roomTypeId || newBookingForAdmin.value.roomTypeId;
+    const roomTypeId = newBooking.value.roomTypeId || newBookingForAdmin.value.roomTypeId;
 
-  if (roomTypeId) {
-    try {
-      // Fetch room type details and available rooms using the show endpoint
-      const response = await axios.get(`${apiUrl}/api/rooms/${roomTypeId}`)
-      console.log('Room type response:', response.data)
+    if (roomTypeId) {
+        try {
+            // Fetch room type details and available rooms using the show endpoint
+            const response = await axios.get(`${apiUrl}/api/rooms/${roomTypeId}`)
+            console.log('Room type response:', response.data)
 
-      // Extract available rooms from the response
-      if (response.data && response.data.available_rooms) {
-        // Filter only available rooms
-        availableRooms.value = response.data.available_rooms.filter(room =>
-          room.status === 'available' || room.status === 'Available'
-        )
-      } else {
-        console.warn('No available_rooms in response:', response.data)
-        availableRooms.value = []
-      }
+            // Extract available rooms from the response
+            if (response.data && response.data.available_rooms) {
+                // Filter only available rooms
+                availableRooms.value = response.data.available_rooms.filter(room =>
+                    room.status === 'available' || room.status === 'Available'
+                )
+            } else {
+                console.warn('No available_rooms in response:', response.data)
+                availableRooms.value = []
+            }
 
-      console.log('Available rooms set to:', availableRooms.value)
-    } catch (error) {
-      console.error('Error fetching available rooms:', error)
+            console.log('Available rooms set to:', availableRooms.value)
+        } catch (error) {
+            console.error('Error fetching available rooms:', error)
 
-      // Fallback: filter from all rooms using admin endpoint
-      try {
-        console.log('Trying fallback: filtering from admin rooms')
-        const allRoomsResponse = await axios.get(`${apiUrl}/api/admin/rooms`)
-        const allRooms = Array.isArray(allRoomsResponse.data) ? allRoomsResponse.data : allRoomsResponse.data.data || []
+            // Fallback: filter from all rooms using admin endpoint
+            try {
+                console.log('Trying fallback: filtering from admin rooms')
+                const allRoomsResponse = await axios.get(`${apiUrl}/api/admin/rooms`)
+                const allRooms = Array.isArray(allRoomsResponse.data) ? allRoomsResponse.data : allRoomsResponse.data.data || []
 
-        // Filter rooms by room type and status
-        availableRooms.value = allRooms.filter(room =>
-          room.id_room_type == roomTypeId &&
-          (room.status === 'available' || room.status === 'Available')
-        )
+                // Filter rooms by room type and status
+                availableRooms.value = allRooms.filter(room =>
+                    room.id_room_type == roomTypeId &&
+                    (room.status === 'available' || room.status === 'Available')
+                )
 
-        console.log('Fallback available rooms:', availableRooms.value)
-      } catch (fallbackError) {
-        console.error('Fallback also failed:', fallbackError)
-        availableRooms.value = []
+                console.log('Fallback available rooms:', availableRooms.value)
+            } catch (fallbackError) {
+                console.error('Fallback also failed:', fallbackError)
+                availableRooms.value = []
+            }
+        }
+        newBooking.value.roomId = ''
     }
-    newBooking.value.roomId = ''
 }
+
 
 const closeAddBookingModal = () => {
     showAddBookingModal.value = false
@@ -776,207 +777,236 @@ const closeEditBookingModal = () => {
 }
 
 const submitAddBooking = async () => {
-  try {
-    // Validate required fields
-    if (selectedRoomType.value?.type === 'daily') {
-      if (!newBooking.value.customerName || !newBooking.value.customerPhone ||
-        !newBooking.value.roomId || !newBooking.value.checkIn || !newBooking.value.checkOut
-        || !newBooking.value.customerPassport) {
-        alert('Vui lòng điền đầy đủ thông tin bắt buộc')
-        return
-      }
-    } else {
-      if (!newBooking.value.customerName || !newBooking.value.customerPhone ||
-        !newBooking.value.roomId || !newBooking.value.checkIn
-        || !newBooking.value.customerPassport) {
-        alert('Vui lòng điền đầy đủ thông tin bắt buộc')
-        return
-      }
-    }
-
-    // Validate dates
-    const checkIn = new Date(newBooking.value.checkIn)
-    const checkOut = new Date(newBooking.value.checkOut)
-    if (checkOut <= checkIn) {
-      console.error('Ngày trả phòng phải sau ngày nhận phòng')
-      return
-    }
-    const booking_type = selectedRoomType.value.type
-
-    const effectiveGrandTotal = finalGrandTotal.value > 0 ? finalGrandTotal.value : grandTotal.value
-    const discountAmount = grandTotal.value - effectiveGrandTotal
-
-    // Prepare booking data
-    const bookingData = {
-      customer_name: newBooking.value.customerName.trim(),
-      customer_phone: newBooking.value.customerPhone.trim(),
-      customer_email: newBooking.value.customerEmail.trim() || null,
-      customer_passport: newBooking.value.customerPassport.trim(),
-      id_room: newBooking.value.roomId,
-      check_in: newBooking.value.checkIn,
-      check_out: newBooking.value.checkOut,
-      tax_amount: taxAmount.value,
-      subtotal: subtotal.value,
-      grand_total: effectiveGrandTotal,
-      discount_total: discountAmount,
-      service_charge: (servicesCost.value * bookingNights.value) || 0,
-      id_tax: newBooking.value.selectedTaxes.length > 0 ? String(newBooking.value.selectedTaxes[0]) : '1',
-      status: 'check-in',
-      id_user: '4',
-      booking_type: booking_type,
-      room_price: newBooking.value.roomPrice || 0,
-    }
-
-    console.log('Sending booking data:', bookingData)
-
-    const response = await axios.post(`${apiUrl}/api/admin/bookings`, bookingData)
-    console.log('Success response:', response.data)
-
-    await fetchBookings()
-    await fetchRooms() // Refresh rooms to update availability
-    closeAddBookingModal()
-
-  } catch (error) {
-    console.error('Error adding booking:', error)
-
-    if (error.response) {
-      console.error('Error response:', error.response.data)
-      console.error('Error status:', error.response.status)
-
-      if (error.response.status === 422) {
-        const validationErrors = error.response.data.errors || error.response.data
-        let errorMessage = 'Lỗi validation:\n'
-
-        if (typeof validationErrors === 'object') {
-          Object.keys(validationErrors).forEach(key => {
-            errorMessage += `- ${key}: ${validationErrors[key].join(', ')}\n`
-          })
+    try {
+        // Validate required fields
+        if (selectedRoomType.value?.type === 'daily') {
+            if (!newBooking.value.customerName || !newBooking.value.customerPhone ||
+                !newBooking.value.roomId || !newBooking.value.checkIn || !newBooking.value.checkOut
+                || !newBooking.value.customerPassport) {
+                alert('Vui lòng điền đầy đủ thông tin bắt buộc')
+                return
+            }
         } else {
-          errorMessage += JSON.stringify(validationErrors, null, 2)
+            if (!newBooking.value.customerName || !newBooking.value.customerPhone ||
+                !newBooking.value.roomId || !newBooking.value.checkIn
+                || !newBooking.value.customerPassport) {
+                alert('Vui lòng điền đầy đủ thông tin bắt buộc')
+                return
+            }
         }
 
-        console.error(errorMessage)
-      } else {
-        console.error(`Lỗi: ${error.response.data.message || 'Không thể tạo đặt phòng'}`)
-      }
-    } else if (error.request) {
-      console.error('Error request:', error.request)
-      console.error('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.')
-    } else {
-      console.error('Error message:', error.message)
-      console.error(`Lỗi: ${error.message}`)
-    }
+        // Validate dates
+        const checkIn = new Date(newBooking.value.checkIn)
+        const checkOut = new Date(newBooking.value.checkOut)
+        if (checkOut <= checkIn) {
+            console.error('Ngày trả phòng phải sau ngày nhận phòng')
+            return
+        }
+        const booking_type = selectedRoomType.value.type
+
+        const effectiveGrandTotal = finalGrandTotal.value > 0 ? finalGrandTotal.value : grandTotal.value
+        const discountAmount = grandTotal.value - effectiveGrandTotal
+
+        // Prepare booking data
+        const bookingData = {
+            customer_name: newBooking.value.customerName.trim(),
+            customer_phone: newBooking.value.customerPhone.trim(),
+            customer_email: newBooking.value.customerEmail.trim() || null,
+            customer_passport: newBooking.value.customerPassport.trim(),
+            id_room: newBooking.value.roomId,
+            check_in: newBooking.value.checkIn,
+            check_out: newBooking.value.checkOut,
+            tax_amount: taxAmount.value,
+            subtotal: subtotal.value,
+            grand_total: effectiveGrandTotal,
+            discount_total: discountAmount,
+            service_charge: (servicesCost.value * bookingNights.value) || 0,
+            id_tax: newBooking.value.selectedTaxes.length > 0 ? String(newBooking.value.selectedTaxes[0]) : '1',
+            status: 'check-in',
+            id_user: '4',
+            booking_type: booking_type,
+            room_price: newBooking.value.roomPrice || 0,
+        }
+
+        console.log('Sending booking data:', bookingData)
+
+        const response = await axios.post(`${apiUrl}/api/admin/bookings`, bookingData)
+        console.log('Success response:', response.data)
+
+        await fetchBookings()
+        await fetchRooms() // Refresh rooms to update availability
+        closeAddBookingModal()
+
+    } catch (error) {
+        console.error('Error adding booking:', error)
+
+        if (error.response) {
+            console.error('Error response:', error.response.data)
+            console.error('Error status:', error.response.status)
+
+            if (error.response.status === 422) {
+                const validationErrors = error.response.data.errors || error.response.data
+                let errorMessage = 'Lỗi validation:\n'
+
+                if (typeof validationErrors === 'object') {
+                    Object.keys(validationErrors).forEach(key => {
+                        errorMessage += `- ${key}: ${validationErrors[key].join(', ')}\n`
+                    })
+                } else {
+                    errorMessage += JSON.stringify(validationErrors, null, 2)
+                }
+
+                console.error(errorMessage)
+            } else {
+                console.error(`Lỗi: ${error.response.data.message || 'Không thể tạo đặt phòng'}`)
+            }
+        } else if (error.request) {
+            console.error('Error request:', error.request)
+            console.error('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.')
+        } else {
+            console.error('Error message:', error.message)
+            console.error(`Lỗi: ${error.message}`)
+        }
     }
 }
 
 
 
 const submitAddBookingAdmin = async () => {
-  try {
-    const booking = {
-      id_room: newBookingForAdmin.value.roomId,
-      customer_name: 'admin',
-      customer_phone: '',
-      customer_email: '',
-      customer_passport: 'admin',
-      check_in: newBookingForAdmin.value.checkIn,
-      check_out: '',
-      tax_amount: '0',
-      subtotal: '0',
-      grand_total: '0',
-      discount_total: '0',
-      service_charge: '0',
-      id_tax: '1',
-      status: 'success',
-      id_user: '1',
-      booking_type: 'daily'
-    }
-
-    const response = await axios.post(`${apiUrl}/api/admin/bookings`, booking)
-    console.log('Success response:', response.data)
-
-    await fetchBookings()
-    await fetchRooms()
-    closeAddBookingForAdminModal()
-
-  } catch (error) {
-    console.error('Error adding booking:', error)
-
-    if (error.response) {
-      console.error('Error response:', error.response.data)
-      console.error('Error status:', error.response.status)
-
-      if (error.response.status === 422) {
-        const validationErrors = error.response.data.errors || error.response.data
-        let errorMessage = 'Lỗi validation:\n'
-
-        if (typeof validationErrors === 'object') {
-          Object.keys(validationErrors).forEach(key => {
-            errorMessage += `- ${key}: ${validationErrors[key].join(', ')}\n`
-          })
-        } else {
-          errorMessage += JSON.stringify(validationErrors, null, 2)
+    try {
+        const booking = {
+            id_room: newBookingForAdmin.value.roomId,
+            customer_name: 'admin',
+            customer_phone: '',
+            customer_email: '',
+            customer_passport: 'admin',
+            check_in: newBookingForAdmin.value.checkIn,
+            check_out: '',
+            tax_amount: '0',
+            subtotal: '0',
+            grand_total: '0',
+            discount_total: '0',
+            service_charge: '0',
+            id_tax: '1',
+            status: 'success',
+            id_user: '1',
+            booking_type: 'daily'
         }
 
-        console.error(errorMessage)
-      } else {
-        console.error(`Lỗi: ${error.response.data.message || 'Không thể tạo đặt phòng'}`)
-      }
-    } else if (error.request) {
-      console.error('Error request:', error.request)
-      console.error('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.')
-    } else {
-      console.error('Error message:', error.message)
-      console.error(`Lỗi: ${error.message}`)
+        const response = await axios.post(`${apiUrl}/api/admin/bookings`, booking)
+        console.log('Success response:', response.data)
+
+        await fetchBookings()
+        await fetchRooms()
+        closeAddBookingForAdminModal()
+
+    } catch (error) {
+        console.error('Error adding booking:', error)
+
+        if (error.response) {
+            console.error('Error response:', error.response.data)
+            console.error('Error status:', error.response.status)
+
+            if (error.response.status === 422) {
+                const validationErrors = error.response.data.errors || error.response.data
+                let errorMessage = 'Lỗi validation:\n'
+
+                if (typeof validationErrors === 'object') {
+                    Object.keys(validationErrors).forEach(key => {
+                        errorMessage += `- ${key}: ${validationErrors[key].join(', ')}\n`
+                    })
+                } else {
+                    errorMessage += JSON.stringify(validationErrors, null, 2)
+                }
+
+                console.error(errorMessage)
+            } else {
+                console.error(`Lỗi: ${error.response.data.message || 'Không thể tạo đặt phòng'}`)
+            }
+        } else if (error.request) {
+            console.error('Error request:', error.request)
+            console.error('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.')
+        } else {
+            console.error('Error message:', error.message)
+            console.error(`Lỗi: ${error.message}`)
+        }
     }
-  }
 }
 
 const deleteeBooking = async (bookingId) => {
 
-  if (confirm('Bạn có chắc muốn xóa đặt phòng này?')) {
-    try {
-      await axios.delete(`${apiUrl}/api/admin/bookings/${bookingId}`)
-      await fetchBookings()
-    } catch (error) {
-      console.error('Error deleting booking:', error)
+    if (confirm('Bạn có chắc muốn xóa đặt phòng này?')) {
+        try {
+            await axios.delete(`${apiUrl}/api/admin/bookings/${bookingId}`)
+            await fetchBookings()
+        } catch (error) {
+            console.error('Error deleting booking:', error)
+        }
     }
 }
 
 const openEditBookingModal = async (bookingId) => {
     selectedBookingIdForEdit.value = bookingId
     showEditBookingModal.value = true
+    await nextTick()
+    // Force focus with multiple attempts
+    const focusInput = () => {
+        const input = editBookingNameInput.value
+        if (input) {
+            // Remove any selection on body
+            window.getSelection()?.removeAllRanges()
+
+            // Blur anything that's currently focused
+            if (document.activeElement && document.activeElement !== input) {
+                document.activeElement.blur()
+            }
+
+            // Force click and focus
+            input.click()
+            input.focus()
+
+            // Verify focus worked, if not try again
+            if (document.activeElement !== input) {
+                requestAnimationFrame(() => {
+                    input.focus()
+                })
+            }
+        }
+    }
+
+    // Try multiple times with increasing delays
+    setTimeout(focusInput, 50)
+    setTimeout(focusInput, 150)
+    setTimeout(focusInput, 300)
 }
 
 
-
-
 const printThermalBill = async (bookingId) => {
-  try {
-    const api = `${apiUrl}/api/booking/` + bookingId + '/thermal-bill'
-    const response = await fetch(api)
-    const data = await response.json()
+    try {
+        const api = `${apiUrl}/api/booking/` + bookingId + '/thermal-bill'
+        const response = await fetch(api)
+        const data = await response.json()
 
-    if (data.success) {
-      const printWindow = window.open('', '_blank', 'width=1000,height=1000')
+        if (data.success) {
+            const printWindow = window.open('', '_blank', 'width=1000,height=1000')
 
-      printWindow.document.write('<!DOCTYPE html>')
-      printWindow.document.write('<html><head>')
-      printWindow.document.write('<title>Hóa Đơn Khách Sạn</title>')
-      printWindow.document.write('<meta charset="UTF-8">')
-      printWindow.document.write('<style>')
-      printWindow.document.write('body { font-family: monospace; font-size: 12px; margin: 20px; }')
-      printWindow.document.write('.bill { white-space: pre-wrap; }')
-      printWindow.document.write('@media print { body { margin: 0; } }')
-      printWindow.document.write('</style>')
-      printWindow.document.write('</head><body>')
-      printWindow.document.write('<div class="bill">')
-      printWindow.document.write(data.thermal_bill)
-      printWindow.document.write('</div>')
-      setTimeout(function () { printWindow.print(); }, 500)
-      printWindow.document.write('</body></html>')
+            printWindow.document.write('<!DOCTYPE html>')
+            printWindow.document.write('<html><head>')
+            printWindow.document.write('<title>Hóa Đơn Khách Sạn</title>')
+            printWindow.document.write('<meta charset="UTF-8">')
+            printWindow.document.write('<style>')
+            printWindow.document.write('body { font-family: monospace; font-size: 12px; margin: 20px; }')
+            printWindow.document.write('.bill { white-space: pre-wrap; }')
+            printWindow.document.write('@media print { body { margin: 0; } }')
+            printWindow.document.write('</style>')
+            printWindow.document.write('</head><body>')
+            printWindow.document.write('<div class="bill">')
+            printWindow.document.write(data.thermal_bill)
+            printWindow.document.write('</div>')
+            setTimeout(function () { printWindow.print(); }, 500)
+            printWindow.document.write('</body></html>')
 
-      printWindow.document.close()
+            printWindow.document.close()
 
         } else {
             throw new Error(data.error || 'Không thể tạo hóa đơn')
@@ -992,10 +1022,10 @@ const addFoodToBooking = async (bookingId) => {
     selectedBookingId.value = bookingId
 
 
-  try {
-    // Fetch existing foods for this booking
-    const response = await axios.get(`${apiUrl}/api/admin/booking/${bookingId}/foods`)
-    const existingFoods = response.data.foods || []
+    try {
+        // Fetch existing foods for this booking
+        const response = await axios.get(`${apiUrl}/api/admin/booking/${bookingId}/foods`)
+        const existingFoods = response.data.foods || []
 
         // Initialize food items with existing quantities or 0
         selectedFoodItems.value = foods.value.map(food => ({
@@ -1043,10 +1073,10 @@ const submitFoodToBooking = async () => {
             return
         }
 
-    const response = await axios.post(`${apiUrl}/api/admin/update-invoice-foods`, {
-      id_booking: selectedBookingId.value,
-      foods: foodsToUpdate
-    })
+        const response = await axios.post(`${apiUrl}/api/admin/update-invoice-foods`, {
+            id_booking: selectedBookingId.value,
+            foods: foodsToUpdate
+        })
 
 
         if (response.data.success) {
@@ -1141,10 +1171,104 @@ onMounted(() => {
     fetchTaxes()
     fetchRooms()
 })
-
-
 </script>
 
 <style scoped>
 @import '@/assets/admin-global.css';
+
+/* Table Improvements */
+.table-container {
+    overflow-x: auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    background: white;
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+th {
+    background-color: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    padding: 12px 16px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+    vertical-align: middle;
+}
+
+tr:hover td {
+    background-color: #f8fafc;
+}
+
+/* Badge Styles */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.badge-warning {
+    background-color: #fffbeb;
+    color: #b45309;
+    border: 1px solid #fcd34d;
+}
+
+.badge-success {
+    background-color: #f0fdf4;
+    color: #15803d;
+    border: 1px solid #86efac;
+}
+
+.badge-info {
+    background-color: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #93c5fd;
+}
+
+.badge-secondary {
+    background-color: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.btn-icon {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.btn-icon:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 </style>

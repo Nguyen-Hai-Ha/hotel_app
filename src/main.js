@@ -27,6 +27,8 @@ import {
   faEdit,
   faTrash,
   faDollarSign,
+  faCoins,
+  faCalendarWeek,
   faSignOutAlt,
   faCheck,
   faCheckDouble,
@@ -48,6 +50,8 @@ import {
   faSpinner,
   faFolderOpen,
   faDownload,
+  faSun,
+  faMoon
 } from "@fortawesome/free-solid-svg-icons";
 
 // Add icons to the library
@@ -66,6 +70,8 @@ library.add(
   faEdit,
   faTrash,
   faDollarSign,
+  faCoins,
+  faCalendarWeek,
   faSignOutAlt,
   faCheck,
   faCheckDouble,
@@ -86,7 +92,9 @@ library.add(
   faUpload,
   faSpinner,
   faFolderOpen,
-  faDownload
+  faDownload,
+  faSun,
+  faMoon
 );
 
 // // Initialize EmailJS
