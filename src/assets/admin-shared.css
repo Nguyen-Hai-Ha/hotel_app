@@ -627,6 +627,16 @@ tbody tr:last-child td {
     transform: translateY(-1px);
 }
 
+.btn-secondary {
+    background: #718096;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #4a5568;
+    transform: translateY(-1px);
+}
+
 .btn-sm {
     padding: 0.375rem 0.75rem;
     font-size: 0.75rem;

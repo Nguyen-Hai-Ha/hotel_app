@@ -7,7 +7,7 @@
       </button>
     </div>
 
-    <form @submit.prevent="submitEditBooking" class="modal-form">
+    <form @submit.prevent="handleFormSubmit" class="modal-form">
       <div class="form-section">
         <h4>Thông tin khách hàng</h4>
         <div class="form-row">
@@ -41,7 +41,7 @@
         <div class="form-row">
           <div class="form-group">
             <label for="roomType">Loại phòng *</label>
-            <select id="roomType" v-model="state.editBookings.roomTypeId" @change="onRoomTypeChange" required
+            <select id="roomType" v-model="editBookings.roomTypeId" @change="onRoomTypeChange" required
               class="form-select">
               <option value="">Chọn loại phòng</option>
               <option v-for="roomType in roomTypes" :key="roomType.id" :value="roomType.id">
@@ -67,23 +67,17 @@
         </div>
 
         <div class="form-row">
-          <div v-if="isHourlyRental" class="form-group">
-            <label for="checkIn">Giờ nhận phòng *</label>
+          <div class="form-group">
+            <label for="checkIn">Ngày nhận phòng *</label>
             <input id="checkIn" v-model="editBookings.checkIn" type="datetime-local" required />
           </div>
-          <template v-else>
-            <div class="form-group">
-              <label for="checkIn">Ngày nhận phòng *</label>
-              <input id="checkIn" v-model="editBookings.checkIn" type="datetime-local" required />
-            </div>
-            <div class="form-group">
-              <label for="checkOut">Ngày trả phòng *</label>
-              <input id="checkOut" v-model="editBookings.checkOut" type="datetime-local" required />
-            </div>
-          </template>
+          <div class="form-group">
+            <label for="checkOut">Ngày trả phòng *</label>
+            <input id="checkOut" v-model="editBookings.checkOut" type="datetime-local" required />
+          </div>
         </div>
 
-        <div class="form-group" v-if="!isHourlyRental && earlyCheckOutCost == 0">
+        <div class="form-group" v-if="earlyCheckOutCost == 0">
           <label>Số đêm: <strong>{{ countLastChange + bookingNightChange || bookingNights }}</strong></label>
         </div>
         <div class="form-group" v-else-if="earlyCheckOutCost > 0">
@@ -91,13 +85,13 @@
         </div>
       </div>
 
-      <div class="form-section" v-if="!state.isHourlyRental && state.earlyCheckOutCost == 0">
+      <div class="form-section" v-if="earlyCheckOutCost == 0">
         <h4>Dịch vụ bổ sung</h4>
         <div class="services-selection">
-          <div v-for="service in state.services" :key="service.id" class="service-item">
+          <div v-for="service in services" :key="service.id" class="service-item">
             <div class="service-info">
               <label class="service-checkbox">
-                <input type="checkbox" :value="service.id" v-model="state.editBookings.selectedServices" />
+                <input type="checkbox" :value="service.id" v-model="editBookings.selectedServices" />
                 <div class="service-details">
                   <strong>{{ service.name }}</strong>
                   <p>{{ service.description }}</p>
@@ -112,61 +106,28 @@
       <div class="form-section" v-if="roomTypeChanged">
         <h4>Thuế áp dụng</h4>
         <div class="tax-selection">
-          <div v-for="tax in state.taxes" :key="tax.id" class="tax-item">
+          <div v-for="tax in taxes" :key="tax.id" class="tax-item">
             <label class="tax-checkbox">
-              <input type="checkbox" :value="tax.id" v-model="state.editBookings.selectedTaxes" />
+              <input type="checkbox" :value="tax.id" v-model="editBookings.selectedTaxes" />
               <span>{{ tax.name }} ({{ tax.rate }}%)</span>
             </label>
           </div>
         </div>
       </div>
 
-      <div class="form-section cost-breakdown" v-if="state.isHourlyRental">
-        <h4>Chi tiết chi phí</h4>
-        <div class="cost-item">
-          <span>Tiền phòng:</span>
-          <span>{{ formatCurrency(state.roomCost) }}</span>
-        </div>
-        <div class="cost-item total">
-          <span><strong>Tổng cộng:</strong></span>
-          <span v-if="finalGrandTotal > 0" style="display: flex; flex-direction: column; align-items: flex-end;">
-            <span style="text-decoration: line-through; color: #999; font-size: 0.9em;">{{
-              formatCurrency(grandTotal)
-            }}</span>
-            <strong style="color: #27ae60; font-size: 1.1em;">{{ formatCurrency(state.finalGrandTotal)
-            }}</strong>
-          </span>
-          <span v-else><strong>{{ formatCurrency(state.grandTotal) }}</strong></span>
-        </div>
-      </div>
-
       <!-- CHI TIẾT PHÍ -->
-      <div v-else>
-        <EditBookingFee v-if="state.newCost > 0" :booking-detail="bookingDetail" :new-cost="newCost" :subtotal="subtotal"
-          :services-cost="servicesCost" :booking-night-change="bookingNightChange" :count-last-change="countLastChange"
-          :grand-total="grandTotal" :final-grand-total="finalGrandTotal" :is-hourly-rental="isHourlyRental" :room-cost="roomCost" 
-          :tax-amount="taxAmount"/>
+      <div>
+        <EditBookingFee v-if="newCost > 0 && newCostToChange <= 0 && earlyCheckOutCost <= 0" />
 
-        <EditBookingFeeNotNewCost v-else-if="state.newCost <= 0 && state.newCostToChange <= 0 && earlyCheckOutCost <= 0"
-          :booking-detail="bookingDetail" :subtotal="subtotal" :services-cost="servicesCost"
-          :count-last-change="countLastChange" :booking-nights="bookingNights" :grand-total="grandTotal"
-          :is-hourly-rental="isHourlyRental" :tax-amount="taxAmount" :room-type-changed="roomTypeChanged"
-          :selected-room-type="selectedRoomType" />
+        <EditBookingFeeNotNewCost v-else-if="newCost <= 0 && newCostToChange <= 0 && earlyCheckOutCost <= 0" />
 
-        <EditBookingFeeChangeRoom v-else-if="state.newCostToChange > 0" :booking-detail="bookingDetail" :subtotal="subtotal"
-          :services-cost="servicesCost" :count-last-change="countLastChange" :booking-nights="bookingNights"
-          :grand-total="grandTotal" :tax-amount="taxAmount" :selected-room-type="selectedRoomType"
-          :room-type-changed="roomTypeChanged" :new-cost-to-change="newCostToChange"
-          :old-room-cost-stayed="oldRoomCostStayed" :days-stayed="daysStayed" :days-remaining="daysRemaining" />
+        <EditBookingFeeChangeRoom v-else-if="newCostToChange > 0" />
 
-        <EditBookingFeeEarly v-else-if="state.earlyCheckOutCost > 0" :booking-detail="bookingDetail" :subtotal="subtotal"
-          :services-cost="servicesCost" :count-last-change="countLastChange" :booking-nights="bookingNights"
-          :grand-total="grandTotal" :tax-amount="taxAmount" :selected-room-type="selectedRoomType"
-          :room-type-changed="roomTypeChanged" :early-check-out-cost="earlyCheckOutCost" :days-stayed="daysStayed" />
+        <EditBookingFeeEarly v-else-if="earlyCheckOutCost > 0" />
       </div>
 
       <div class="modal-actions">
-        <button type="button" @click="state.closeEditBookingModal" class="btn btn-outline">
+        <button type="button" @click="closeEditBookingModal" class="btn btn-outline">
           Hủy
         </button>
         <button type="submit" class="btn btn-primary">
@@ -178,7 +139,7 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { onMounted, watch } from 'vue'
 import EditBookingFee from './EditBookingFee.vue'
@@ -195,45 +156,61 @@ const store = useEditBookingStore()
 
 
 // Destructure state/getters để giữ tính reactive (quan trọng!)
-const { 
+const {
   editBookings, availableRooms, roomTypes, bookingNightChange,
-  isHourlyRental, bookingNights, countLastChange, finalGrandTotal,
-  roomCost, taxAmount, servicesCost, subtotal, grandTotal,  bookingDetail,
-  newCost, newCostToChange, earlyCheckOutCost, roomTypeChanged,
-  selectedRoomType, editBookingNameInput // Ref từ store
+  bookingNights, countLastChange, roomTypeChanged,
+  newCost, newCostToChange, earlyCheckOutCost,
+  editBookingNameInput, selectedBookingIdForEdit,
+  showEditBookingModal, services, taxes
 } = storeToRefs(store)
 
 // Destructure actions (không cần storeToRefs)
-const { 
-  fetchRoomTypes, fetchServices, fetchTaxes, 
-  loadBookingData, closeEditBookingModal, submitEditBooking, onRoomTypeChange 
+const {
+  loadBookingData, submitEditBooking, onRoomTypeChange, closeEditBookingModal,
+  formatCurrency, fetchRoomTypes, fetchServices, fetchTaxes
 } = store
 
-// Props
-const props = defineProps({
-  showModal: {
-    type: Boolean,
-    default: false
-  },
-  bookingId: {
-    type: Number,
-    default: null
+const emit = defineEmits(['refresh'])
+
+onMounted(async () => {
+  // Chỉ fetch dữ liệu nếu trong store chưa có (tránh gọi API nhiều lần)
+  const promises = []
+
+  if (!roomTypes.value || roomTypes.value.length === 0) {
+    promises.push(fetchRoomTypes())
+  }
+
+  if (!services.value || services.value.length === 0) {
+    promises.push(fetchServices())
+  }
+
+  if (!taxes.value || taxes.value.length === 0) {
+    promises.push(fetchTaxes())
+  }
+
+  if (promises.length > 0) {
+    await Promise.all(promises)
   }
 })
 
+const handleFormSubmit = async () => {
+  try {
+    const result = await store.submitEditBooking()
+    if (result) {
+      emit('refresh')
+      closeEditBookingModal()
+    }
+  } catch (err) {
+    alert(err.message)
+  }
+}
+
 // Watchers
-watch(() => props.bookingId, async (newId) => {
-  if (newId && props.showModal) {
+watch(() => selectedBookingIdForEdit.value, async (newId) => {
+  if (newId && showEditBookingModal.value) {
     await loadBookingData(newId)
   }
 }, { immediate: true })
-
-// Lifecycle: Gọi load data master (room types, services...) khi component mount
-onMounted(async () => {
-  await fetchRoomTypes()
-  await fetchServices()
-  await fetchTaxes()
-})
 
 </script>
 

@@ -1,73 +1,15 @@
 <script setup>
-/**
-* THIS TEMPLATE USING WITH NEW COST = 0
-*/
-import { computed, onMounted } from 'vue'
-
-// Props nhận từ component cha
-const props = defineProps({
-  bookingDetail: {
-    type: Object,
-    required: true,
-    default: () => ({})
-  },
-  newCost: {
-    type: Number,
-    default: 0
-  },
-  servicesCost: {
-    type: Number,
-    default: 0
-  },
-  bookingNightChange: {
-    type: Number,
-    default: 0
-  },
-  countLastChange: {
-    type: Number,
-    default: 0
-  },
-  grandTotal: {
-    type: Number,
-    default: 0
-  },
-  finalGrandTotal: {
-    type: Number,
-    default: 0
-  },
-  isHourlyRental: {
-    type: Boolean,
-    default: false
-  },
-  roomTypeChanged: {
-    type: Boolean,
-    default: false
-  },
-  selectedRoomType: {
-    type: Object,
-    default: null
-  },
-  bookingNights: {
-    type: Number,
-    default: 0
-  },
-  taxAmount: {
-    type: Number,
-    default: 0
-  },
-  subtotal: {
-    type: Number,
-    default: 0
-  },
-  earlyCheckOutCost: {
-    type: Number,
-    default: 0
-  },
-  daysStayed: {
-    type: Number,
-    default: 0
-  }
-})
+import { useEditBookingStore } from '@/stores/EditBookingStore'
+import { storeToRefs } from 'pinia'
+const editBookingStore = useEditBookingStore()
+const { bookingDetail, 
+  servicesCost, 
+  grandTotal,
+  taxAmount, 
+  subtotal, 
+  daysStayed,
+  earlyCheckOutCost,
+} = storeToRefs(editBookingStore)
 // Helper function để format tiền tệ
 const formatCurrency = (amount) => {
   return new Intl.NumberFormat('en-US', {
@@ -88,7 +30,7 @@ const formatCurrency = (amount) => {
       </p>
     </div>
 
-    <div class="cost-item" v-if="!isHourlyRental">
+    <div class="cost-item">
       <span>Dịch vụ:</span>
       <p style="margin-bottom: 0;">
         {{ formatCurrency(bookingDetail.invoice?.service_charge ?? 0) }} ->
@@ -98,13 +40,12 @@ const formatCurrency = (amount) => {
       </p>
     </div>
 
-    <div class="cost-item" v-if="!isHourlyRental">
+    <div class="cost-item">
       <span>Tổng phụ:</span>
-      <span v-if="roomTypeChanged && selectedRoomType">{{ formatCurrency(subtotal) }}</span>
-      <span v-else>{{ formatCurrency(subtotal ?? 0) }}</span>
+      <span>{{ formatCurrency(subtotal) }}</span>
     </div>
 
-    <div class="cost-item" v-if="!isHourlyRental">
+    <div class="cost-item">
       <span>Thuế:</span>
       <p>{{ formatCurrency(bookingDetail.invoiceTax.amount ?? 0) }} ->
         <span style="color: #C53030; font-weight: 700;" v-if="taxAmount > 0">{{ formatCurrency(taxAmount) }}</span>

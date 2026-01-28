@@ -51,7 +51,9 @@ import {
   faFolderOpen,
   faDownload,
   faSun,
-  faMoon
+  faMoon,
+  faClock,
+  faMinus
 } from "@fortawesome/free-solid-svg-icons";
 
 // Add icons to the library
@@ -94,7 +96,9 @@ library.add(
   faFolderOpen,
   faDownload,
   faSun,
-  faMoon
+  faMoon,
+  faClock,
+  faMinus
 );
 
 // // Initialize EmailJS

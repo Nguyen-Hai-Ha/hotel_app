@@ -1,57 +1,16 @@
 <script setup>
-/**
- * THIS TEMPLATE USING WITH NEW COST > 0
- */
-import { computed } from 'vue'
+import { useEditBookingStore } from '@/stores/EditBookingStore'
+import { storeToRefs } from 'pinia'
 
-// Props nhận từ component cha
-const props = defineProps({
-  bookingDetail: {
-    type: Object,
-    required: true,
-    default: () => ({})
-  },
-  newCost: {
-    type: Number,
-    default: 0
-  },
-  servicesCost: {
-    type: Number,
-    default: 0
-  },
-  bookingNightChange: {
-    type: Number,
-    default: 0
-  },
-  countLastChange: {
-    type: Number,
-    default: 0
-  },
-  grandTotal: {
-    type: Number,
-    default: 0
-  },
-  finalGrandTotal: {
-    type: Number,
-    default: 0
-  },
-  isHourlyRental: {
-    type: Boolean,
-    default: false
-  },
-  subtotal: {
-    type: Number,
-    default: 0
-  },
-  roomCost: {
-    type: Number,
-    default: 0
-  },
-  taxAmount: {
-    type: Number,
-    default: 0
-  }
-})
+const store = useEditBookingStore()
+const { bookingDetail, 
+        roomCost, 
+        servicesCost, 
+        taxAmount, 
+        grandTotal,
+        countLastChange,
+        bookingNightChange,
+        subtotal } = storeToRefs(store)
 
 // Helper function để format tiền tệ
 const formatCurrency = (amount) => {
@@ -75,7 +34,7 @@ const formatCurrency = (amount) => {
       </p>
     </div>
 
-    <div class="cost-item" v-if="!isHourlyRental">
+    <div class="cost-item">
       <span>Dịch vụ:</span>
       <p style="margin-bottom: 0;">
         {{ formatCurrency(bookingDetail.invoice?.service_charge ?? 0) }}
@@ -85,11 +44,11 @@ const formatCurrency = (amount) => {
       </p>
     </div>
 
-    <div class="cost-item" v-if="!isHourlyRental">
+    <div class="cost-item">
       <span>Tổng phụ:</span>
       <span>
         {{ formatCurrency(bookingDetail.invoice?.subtotal + (subtotal ?? 0) ) }}
-      </span>
+      </span> 
     </div>
 
     <div class="cost-item">
@@ -101,14 +60,7 @@ const formatCurrency = (amount) => {
 
     <div class="cost-item total">
       <span><strong>Tổng cộng:</strong></span>
-      <span v-if="finalGrandTotal > 0" style="display: flex; flex-direction: column; align-items: flex-end;">
-        <span style="text-decoration: line-through; color: #999; font-size: 0.9em;">{{
-          formatCurrency(grandTotal)
-          }}</span>
-        <strong style="color: #27ae60; font-size: 1.1em;">{{ formatCurrency(finalGrandTotal)
-          }}</strong>
-      </span>
-      <span v-else><strong>{{ formatCurrency(grandTotal) }}</strong></span>
+      <span><strong>{{ formatCurrency(grandTotal) }}</strong></span>
     </div>
   </div>
 </template>

@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
+import { nextTick } from 'vue'
 import axios from 'axios'
 import { apiUrl } from '@/environment'
 
@@ -27,12 +28,52 @@ export const useEditBookingStore = defineStore('edit-booking-modal', () => {
     const earlyCheckOutCost = ref(0)
     const newCostToChange = ref(0)
     const taxes = ref([])
-    const finalGrandTotal = ref(0)
     const isEdit = ref(false)
     const roomTypes = ref([])
     const services = ref([])
     const originalRoomTypeId = ref(null) // Lưu room type gốc khi load lần đầu
     const roomTypeChanged = ref(false) // Flag đánh dấu khi user đổi loại phòng
+    const showEditBookingModal = ref(false)
+    const selectedBookingIdForEdit = ref(null)
+
+    const openEditBookingModal = async (bookingId) => {
+        selectedBookingIdForEdit.value = bookingId
+        showEditBookingModal.value = true
+        await nextTick()
+        // Force focus with multiple attempts
+        const focusInput = () => {
+            const input = editBookingNameInput.value
+            if (input) {
+                // Remove any selection on body
+                window.getSelection()?.removeAllRanges()
+
+                // Blur anything that's currently focused
+                if (document.activeElement && document.activeElement !== input) {
+                    document.activeElement.blur()
+                }
+
+                // Force click and focus
+                input.click()
+                input.focus()
+
+                // Verify focus worked, if not try again
+                if (document.activeElement !== input) {
+                    requestAnimationFrame(() => {
+                        input.focus()
+                    })
+                }
+            }
+        }
+        // Try multiple times with increasing delays
+        setTimeout(focusInput, 50)
+        setTimeout(focusInput, 150)
+        setTimeout(focusInput, 300)
+    }
+
+    const closeEditBookingModal = () => {
+        showEditBookingModal.value = false
+        selectedBookingIdForEdit.value = null
+    }
 
     // Computed Properties
     const selectedRoomType = computed(() => {
@@ -257,14 +298,16 @@ export const useEditBookingStore = defineStore('edit-booking-modal', () => {
 
     const grandTotal = computed(() => {
         if (isEdit.value && bookingDetail.value.invoice && bookingDetail.value.booking) {
-
+            // check out sớm
             if (earlyCheckOutCost.value > 0) {
                 return servicesCost.value + taxAmount.value + subtotal.value
             }
 
+            // gia hạn ngày
             if (editBookings.value.checkOut != bookingDetail.value.booking.check_out && newCost.value > 0) {
                 return (bookingDetail.value.invoice.grand_total ?? 0) + subtotal.value + (servicesCost.value * bookingNightChange.value) + taxAmount.value
             } else if (roomTypeChanged.value) {
+                // thay đổi phòng
                 return servicesCost.value + taxAmount.value + subtotal.value + bookingDetail.value.invoice?.service_charge
             } else {
                 return (bookingDetail.value.invoice.grand_total ?? 0) + servicesCost.value
@@ -317,16 +360,16 @@ export const useEditBookingStore = defineStore('edit-booking-modal', () => {
         } catch (error) {
             console.error('Error fetching services:', error)
         }
-    },
+    }
 
-        fetchTaxes = async () => {
-            try {
-                const response = await axios.get('http://127.0.0.1:8000/api/taxes')
-                taxes.value = response.data
-            } catch (error) {
-                console.error('Error fetching taxes:', error)
-            }
+    const fetchTaxes = async () => {
+        try {
+            const response = await axios.get(`${apiUrl}/api/taxes`)
+            taxes.value = response.data
+        } catch (error) {
+            console.error('Error fetching taxes:', error)
         }
+    }
 
     const onRoomTypeChange = async () => {
         if (editBookings.value.roomTypeId) {
@@ -379,7 +422,6 @@ export const useEditBookingStore = defineStore('edit-booking-modal', () => {
         availableRooms.value = []
         newCost.value = 0
         newCostToChange.value = 0
-        finalGrandTotal.value = 0
         isEdit.value = false
         earlyCheckOutCost.value = 0
         roomTypeChanged.value = false
@@ -414,8 +456,10 @@ export const useEditBookingStore = defineStore('edit-booking-modal', () => {
     }
 
     const loadBookingData = async (bookingId) => {
+        console.log('📥 loadBookingData called with ID:', bookingId)
         isEdit.value = true
         bookingDetail.value = await fetchBookingDetail(bookingId)
+        console.log('📥 fetchBookingDetail returned:', bookingDetail.value)
         if (bookingDetail.value) {
             editBookings.value.id = bookingDetail.value.booking.id
             editBookings.value.customerName = bookingDetail.value.customer.name
@@ -434,11 +478,14 @@ export const useEditBookingStore = defineStore('edit-booking-modal', () => {
 
             // Gọi onRoomTypeChange 1 lần duy nhất khi load dữ liệu để lấy phòng hiện tại
             await onRoomTypeChange()
+            console.log('📥 loadBookingData completed successfully')
+        } else {
+            console.log('❌ loadBookingData - no booking detail returned')
         }
     }
 
-    // Watchers
-    watch(editBookings, (newValue) => {
+    // Watchers theo dõi input checkout
+    watch(() => editBookings.value, (newValue) => {
         if (isEdit.value && bookingDetail.value.booking) {
             const dateInput = new Date(editBookings.value.checkOut)
             const checkOutDate = new Date(bookingDetail.value.booking?.check_out)
@@ -450,22 +497,19 @@ export const useEditBookingStore = defineStore('edit-booking-modal', () => {
 
             const dayDB = new Date(checkOutDate)
 
-            if (checkOutDateDB.getTime() < iputDate.getTime()) {
-                // Gia hạn thêm ngày
-                newCost.value = (bookingNightChange.value * (bookingDetail.value.roomType?.base_price ?? 0))
-            } else if (checkOutDateDB.getTime() > iputDate.getTime()) {
-                // trả phòng sớm
-                earlyCheckOutCost.value = daysStayed.value * (editBookings.value.roomPrice > 0 ? editBookings.value.roomPrice : bookingDetail.value.roomType?.base_price ?? 0)
-
-            } else if (iputDate.getTime() > checkInDateDB.getTime() && roomTypeChanged.value) {
+           if (iputDate.getTime() > checkInDateDB.getTime() && roomTypeChanged.value) {
                 // Đổi phòng giữa chừng
                 // Chi phí phòng mới cho ngày còn lại
-                if (editBookings.value?.roomPrice > 0) {
-                    newCostToChange.value = (daysRemaining.value * (editBookings.value.roomPrice))
-                } else {
-                    newCostToChange.value = (daysRemaining.value * (bookingDetail.value.roomType?.base_price ?? 0))
-                }
-            }
+                newCostToChange.value = (daysRemaining.value * (editBookings.value.roomPrice > 0 ? editBookings.value.roomPrice : bookingDetail.value.roomType?.base_price))
+            } else { 
+                if (checkOutDateDB.getTime() < iputDate.getTime()) {
+                    // Gia hạn thêm ngày
+                    newCost.value = (bookingNightChange.value * (bookingDetail.value.roomType?.base_price ?? 0))
+                } else if (checkOutDateDB.getTime() > iputDate.getTime()) {
+                    // trả phòng sớm
+                    earlyCheckOutCost.value = daysStayed.value * (editBookings.value.roomPrice > 0 ? editBookings.value.roomPrice : bookingDetail.value.roomType?.base_price ?? 0)
+                } 
+            } 
 
         }
     }, { immediate: true, deep: true })
@@ -493,12 +537,13 @@ export const useEditBookingStore = defineStore('edit-booking-modal', () => {
         earlyCheckOutCost,
         newCostToChange,
         taxes,
-        finalGrandTotal,
         isEdit,
         roomTypes,
         services,
         originalRoomTypeId,
         roomTypeChanged,
+        showEditBookingModal,
+        selectedBookingIdForEdit,
 
         // Computed
         selectedRoomType,
@@ -524,6 +569,8 @@ export const useEditBookingStore = defineStore('edit-booking-modal', () => {
         onRoomTypeChange,
         resetStore,
         submitEditBooking,
-        loadBookingData
+        loadBookingData,
+        closeEditBookingModal,
+        openEditBookingModal
     }
 })

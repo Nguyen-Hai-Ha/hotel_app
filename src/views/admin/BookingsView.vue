@@ -82,11 +82,11 @@
 
                                 <!-- Edit/Delete Actions -->
                                 <button v-if="booking.status !== 'done'" @click="openEditBookingModal(booking.id)"
-                                    class="btn btn-icon btn-sm btn-secondary" title="Sửa">
+                                    class="btn btn-sm btn-secondary" title="Sửa đặt phòng">
                                     <FontAwesomeIcon :icon="['fas', 'edit']" />
                                 </button>
                                 <button v-if="booking.status !== 'done'" @click="deleteeBooking(booking.id)"
-                                    class="btn btn-icon btn-sm btn-danger" title="Xóa">
+                                    class="btn btn-sm btn-danger" title="Xóa đặt phòng">
                                     <FontAwesomeIcon :icon="['fas', 'times']" />
                                 </button>
                             </div>
@@ -281,9 +281,9 @@
                             style="display: flex; flex-direction: column; align-items: flex-end;">
                             <span style="text-decoration: line-through; color: #999; font-size: 0.9em;">{{
                                 formatCurrency(grandTotal)
-                            }}</span>
+                                }}</span>
                             <strong style="color: #27ae60; font-size: 1.1em;">{{ formatCurrency(finalGrandTotal)
-                            }}</strong>
+                                }}</strong>
                         </span>
                         <!-- Hiển thị giá gốc khi chưa discount -->
                         <span v-else><strong>{{ formatCurrency(grandTotal) }}</strong></span>
@@ -315,9 +315,9 @@
                             style="display: flex; flex-direction: column; align-items: flex-end;">
                             <span style="text-decoration: line-through; color: #999; font-size: 0.9em;">{{
                                 formatCurrency(grandTotal)
-                            }}</span>
+                                }}</span>
                             <strong style="color: #27ae60; font-size: 1.1em;">{{ formatCurrency(finalGrandTotal)
-                            }}</strong>
+                                }}</strong>
                         </span>
                         <!-- Hiển thị giá gốc khi chưa discount -->
                         <span v-else><strong>{{ formatCurrency(grandTotal) }}</strong></span>
@@ -339,8 +339,7 @@
 
     <!-- Edit Booking Modal -->
     <div v-if="showEditBookingModal" class="modal-overlay" @click="closeEditBookingModal">
-        <EditBookingModal :show-modal="showEditBookingModal" :booking-id="selectedBookingIdForEdit"
-            @close="closeEditBookingModal" @refresh="fetchBookings" />
+        <EditBookingModal @close="closeEditBookingModal" @refresh="fetchBookings" />
     </div>
 
     <!-- Add Booking For Admin -->
@@ -454,7 +453,11 @@ import EditBookingModal from '@/components/booking-view/EditBookingModal.vue'
 
 import { useEditBookingStore } from '@/stores/EditBookingStore'
 import { storeToRefs } from 'pinia'
-const { editBookingNameInput } = storeToRefs(useEditBookingStore())
+
+const store = useEditBookingStore()
+const { showEditBookingModal } = storeToRefs(store)
+const { closeEditBookingModal, openEditBookingModal } = store
+
 const bookings = ref([])
 const services = ref([])
 const taxes = ref([])
@@ -462,13 +465,11 @@ const foods = ref([])
 const roomTypes = ref([])
 const rooms = ref([])
 const selectedBookingId = ref(null)
-const selectedBookingIdForEdit = ref(null)
 const selectedFoodItems = ref([])
 
 const showAddBookingModal = ref(false)
 const showAddFoodToBookingModal = ref(false)
 const showAddBookingForAdminModal = ref(false)
-const showEditBookingModal = ref(false)
 
 const availableRooms = ref([])
 
@@ -771,10 +772,7 @@ const closeAddBookingModal = () => {
     finalGrandTotal.value = 0
 }
 
-const closeEditBookingModal = () => {
-    showEditBookingModal.value = false
-    selectedBookingIdForEdit.value = null
-}
+
 
 const submitAddBooking = async () => {
     try {
@@ -945,42 +943,6 @@ const deleteeBooking = async (bookingId) => {
     }
 }
 
-const openEditBookingModal = async (bookingId) => {
-    selectedBookingIdForEdit.value = bookingId
-    showEditBookingModal.value = true
-    await nextTick()
-    // Force focus with multiple attempts
-    const focusInput = () => {
-        const input = editBookingNameInput.value
-        if (input) {
-            // Remove any selection on body
-            window.getSelection()?.removeAllRanges()
-
-            // Blur anything that's currently focused
-            if (document.activeElement && document.activeElement !== input) {
-                document.activeElement.blur()
-            }
-
-            // Force click and focus
-            input.click()
-            input.focus()
-
-            // Verify focus worked, if not try again
-            if (document.activeElement !== input) {
-                requestAnimationFrame(() => {
-                    input.focus()
-                })
-            }
-        }
-    }
-
-    // Try multiple times with increasing delays
-    setTimeout(focusInput, 50)
-    setTimeout(focusInput, 150)
-    setTimeout(focusInput, 300)
-}
-
-
 const printThermalBill = async (bookingId) => {
     try {
         const api = `${apiUrl}/api/booking/` + bookingId + '/thermal-bill'
@@ -1020,7 +982,6 @@ const printThermalBill = async (bookingId) => {
 // Food to Booking Methods
 const addFoodToBooking = async (bookingId) => {
     selectedBookingId.value = bookingId
-
 
     try {
         // Fetch existing foods for this booking

@@ -1,81 +1,20 @@
 <script setup>
-/**
-* THIS TEMPLATE USING WITH NEW COST = 0
-*/
-import { computed, onMounted } from 'vue'
+import { useEditBookingStore } from '@/stores/EditBookingStore'
+import { storeToRefs } from 'pinia'
 
-// Props nhận từ component cha
-const props = defineProps({
-  bookingDetail: {
-    type: Object,
-    required: true,
-    default: () => ({})
-  },
-  newCost: {
-    type: Number,
-    default: 0
-  },
-  servicesCost: {
-    type: Number,
-    default: 0
-  },
-  bookingNightChange: {
-    type: Number,
-    default: 0
-  },
-  countLastChange: {
-    type: Number,
-    default: 0
-  },
-  grandTotal: {
-    type: Number,
-    default: 0
-  },
-  finalGrandTotal: {
-    type: Number,
-    default: 0
-  },
-  isHourlyRental: {
-    type: Boolean,
-    default: false
-  },
-  roomTypeChanged: {
-    type: Boolean,
-    default: false
-  },
-  selectedRoomType: {
-    type: Object,
-    default: null
-  },
-  bookingNights: {
-    type: Number,
-    default: 0
-  },
-  taxAmount: {
-    type: Number,
-    default: 0
-  },
-  subtotal: {
-    type: Number,
-    default: 0
-  },
-  daysStayed: {
-    type: Number,
-    default: 0
-  },
-  daysRemaining: {
-    type: Number,
-    default: 0
-  },
-  newCostToChange: {
-    type: Number,
-    default: 0
-  },
-  oldRoomCostStayed: {
-    type: Number,
-    default: 0
-  }
-})
+const store = useEditBookingStore()
+const { bookingDetail,
+        servicesCost,
+        taxAmount,
+        grandTotal,
+        subtotal,
+        daysStayed,
+        daysRemaining,
+        newCostToChange,
+        oldRoomCostStayed,
+        roomTypeChanged,
+        selectedRoomType } = storeToRefs(store)
+
 // Helper function để format tiền tệ
 const formatCurrency = (amount) => {
   return new Intl.NumberFormat('en-US', {
@@ -83,7 +22,6 @@ const formatCurrency = (amount) => {
     currency: 'USD'
   }).format(amount)
 }
-console.log("Phòng đã đổi:", props.selectedRoomType);
 
 </script>
 <template>
