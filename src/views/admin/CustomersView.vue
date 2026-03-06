@@ -1,7 +1,7 @@
 <template>
   <div class="customers-management">
     <div class="section-header">
-      <h2>Quản lý khách hàng</h2>
+      <h2>Check In/Check Out</h2>
     </div>
     <!-- Search Bar -->
     <div class="search-container" style="margin-bottom: 16px;">
@@ -21,7 +21,7 @@
             <th>Số tiền phải trả</th>
             <th>Ngày check-in</th>
             <th>Ngày check-out</th>
-            <th>Thêm thuế</th>
+            <!-- <th>Thêm thuế</th> -->
             <th>Phụ thu</th>
             <th>Thao tác</th>
           </tr>
@@ -54,12 +54,12 @@
 
             <td>{{ formatDate(customer.checkin_date) }}</td>
             <td>{{ customer.checkout_date == null ? 'Chưa có' : formatDate(customer.checkout_date)}}</td>
-            <td>
+            <!-- <td>
               <button @click="addTax(customer)"
                 v-if="customer.booking_type === 'hourly' && customer.tax_amount === 0 && customer.status === 'checked_out' && customer.id_user != 1"
                 class="btn btn-sm btn-primary">Thêm thuế
               </button>
-            </td>
+            </td> -->
             <td>
               <button @click="openAddOverTimeModal(customer)" v-if="customer.id_user != 1"
                 class="btn btn-sm btn-primary">Thêm phụ thu
@@ -217,19 +217,19 @@ const getCurrentTimestamp = () => {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
 }
 
-const addTax = async (customer) => {
-  if (confirm(`Xác nhận thêm thuế cho khách hàng ${customer.name}?`)) {
-    try {
-      const response = await axios.post(`${apiUrl}/api/admin/add-tax-for-booking-hour/` + customer.id)
-      if (response.status === 200) {
-        console.log('Thêm thuế thành công')
-        await fetchCustomers()
-      }
-    } catch (error) {
-      console.error('Error adding tax:', error)
-    }
-  }
-}
+// const addTax = async (customer) => {
+//   if (confirm(`Xác nhận thêm thuế cho khách hàng ${customer.name}?`)) {
+//     try {
+//       const response = await axios.post(`${apiUrl}/api/admin/add-tax-for-booking-hour/` + customer.id)
+//       if (response.status === 200) {
+//         console.log('Thêm thuế thành công')
+//         await fetchCustomers()
+//       }
+//     } catch (error) {
+//       console.error('Error adding tax:', error)
+//     }
+//   }
+// }
 
 const checkInCustomer = async (customer) => {
   try {

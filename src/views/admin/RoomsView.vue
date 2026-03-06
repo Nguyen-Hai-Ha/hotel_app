@@ -5,8 +5,20 @@
                 <FontAwesomeIcon :icon="['fas', 'plus']" />
                 Thêm phòng
             </button>
-        </div>
 
+        </div>
+        <div class="filter-controls">
+            <div class="search-box">
+                <FontAwesomeIcon :icon="['fas', 'search']" class="search-icon" />
+                <input v-model="searchQuery" type="text" placeholder="Tìm theo số phòng..." class="search-input" />
+                </div>
+                <select v-model="sortRoomType" class="form-select sort-select">
+                    <option value="">-- Sắp xếp theo loại phòng --</option>
+                    <option v-for="rt in roomTypes" :key="rt.id" :value="rt.name">
+                        {{ rt.name }}
+                    </option>
+                </select>
+            </div>
         <div class="table-container">
             <table>
                 <thead>
@@ -48,7 +60,7 @@
         <!-- Rooms Pagination -->
         <div v-if="totalPagesRooms > 1" class="pagination-container">
             <div class="pagination-info">
-                Trang {{ currentPageRooms }} / {{ totalPagesRooms }} ({{ rooms.length }} phòng)
+                Trang {{ currentPageRooms }} / {{ totalPagesRooms }} ({{ filteredRooms.length }} phòng)
             </div>
             <div class="pagination-controls">
                 <button @click="goToFirstPage('rooms')" :disabled="currentPageRooms === 1"
@@ -197,6 +209,9 @@ const editingRoom = ref({
 })
 const showAddRoomModal = ref(false)
 const showEditRoomModal = ref(false)
+
+const searchQuery = ref('')
+const sortRoomType = ref('')
 
 const itemsPerPage = ref(10)
 const currentPageRooms = ref(1)
@@ -429,14 +444,41 @@ const deleteRoom = async (roomId) => {
     }
 }
 
+const filteredRooms = computed(() => {
+    let result = rooms.value
+
+    // Tìm kiếm theo số phòng
+    if (searchQuery.value.trim()) {
+        const q = searchQuery.value.trim().toLowerCase()
+        result = result.filter(room =>
+            room.room_number?.toLowerCase().includes(q)
+        )
+    }
+
+    // Sắp xếp theo loại phòng
+    if (sortRoomType.value) {
+        result = [...result].sort((a, b) => {
+            const typeA = (a.room_type || '').toLowerCase()
+            const typeB = (b.room_type || '').toLowerCase()
+            const target = sortRoomType.value.toLowerCase()
+            // Loại phòng được chọn lên trên
+            if (typeA === target && typeB !== target) return -1
+            if (typeB === target && typeA !== target) return 1
+            return typeA.localeCompare(typeB)
+        })
+    }
+
+    return result
+})
+
 const paginatedRooms = computed(() => {
     const start = (currentPageRooms.value - 1) * itemsPerPage.value
     const end = start + itemsPerPage.value
-    return rooms.value.slice(start, end)
+    return filteredRooms.value.slice(start, end)
 })
 
 const totalPagesRooms = computed(() => {
-    return Math.ceil(rooms.value.length / itemsPerPage.value)
+    return Math.ceil(filteredRooms.value.length / itemsPerPage.value)
 })
 
 const pageNumbersRooms = computed(() => {
@@ -511,4 +553,63 @@ onMounted(() => {
 
 <style scoped>
 @import '@/assets/admin-global.css';
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.filter-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-box {
+    position: relative;
+    display: flex;
+    height: 44px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 10px;
+    color: #888;
+    font-size: 0.85rem;
+    pointer-events: none;
+}
+
+.search-input {
+    padding: 8px 12px 8px 32px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    outline: none;
+    width: 220px;
+    transition: border-color 0.2s;
+}
+
+.search-input:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+}
+
+.sort-select {
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    outline: none;
+    max-width: 250px;
+    transition: border-color 0.2s;
+    cursor: pointer;
+}
+
+.sort-select:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+}
 </style>

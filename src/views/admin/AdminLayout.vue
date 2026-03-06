@@ -4,7 +4,7 @@
     <UpdateNotification />
     <aside class="admin-sidebar">
       <div class="sidebar-header">
-        <h2>Hotel Admin</h2>
+        <h2>Hotel Management</h2>
       </div>
       <nav class="sidebar-nav">
         <ul>
@@ -34,8 +34,8 @@
           </li>
           <li>
             <router-link to="/admin/customers" active-class="active">
-              <FontAwesomeIcon :icon="['fas', 'user-check']" />
-              Quản lý khách hàng
+              <FontAwesomeIcon :icon="['fas', 'sign-in-alt']" />
+              Check In/Check Out
             </router-link>
           </li>
           <li v-if="isAdmin">
@@ -93,9 +93,9 @@
         <div class="header-right">
           <div class="header-actions">
             <!-- Theme Toggle Button -->
-            <button class="theme-toggle-btn" @click="toggleTheme" :title="isDarkMode ? 'Chế độ sáng' : 'Chế độ tối'">
+            <!-- <button class="theme-toggle-btn" @click="toggleTheme" :title="isDarkMode ? 'Chế độ sáng' : 'Chế độ tối'">
               <FontAwesomeIcon :icon="['fas', isDarkMode ? 'sun' : 'moon']" />
-            </button>
+            </button> -->
 
             <!-- Refresh Button -->
             <button class="refresh-btn" @click="refreshPage" title="Tải lại trang">
