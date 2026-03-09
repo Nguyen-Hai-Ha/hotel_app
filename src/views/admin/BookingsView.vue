@@ -790,12 +790,10 @@ const closeAddBookingModal = () => {
     finalGrandTotal.value = 0
 }
 
-
-
 const submitAddBooking = async () => {
     try {
         // Validate required fields
-        if (selectedRoomType.value?.type === 'daily') {
+        if (rental.value === 'daily') {
             if (!newBooking.value.customerName || !newBooking.value.customerPhone ||
                 !newBooking.value.roomId || !newBooking.value.checkIn || !newBooking.value.checkOut
                 || !newBooking.value.customerPassport) {

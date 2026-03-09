@@ -61,6 +61,19 @@
             </select>
           </div>
           <div class="form-group">
+            <label>Hình thức thuê</label>
+            <div class="rental-toggle">
+              <input type="radio" name="rental_type" id="hourly" value="1" v-model="rental" class="rental-radio" />
+              <label for="hourly" class="rental-pill">
+                Theo giờ
+              </label>
+              <input type="radio" name="rental_type" id="daily" value="0" v-model="rental" class="rental-radio" />
+              <label for="daily" class="rental-pill">
+                Theo ngày
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
             <label for="roomPrice">Giá phòng (điều chỉnh)</label>
             <input id="roomPrice" v-model="editBookings.roomPrice" type="number" />
           </div>
@@ -85,7 +98,7 @@
         </div>
       </div>
 
-      <div class="form-section" v-if="earlyCheckOutCost == 0">
+      <div class="form-section" v-if="earlyCheckOutCost == 0 && services.length > 0">
         <h4>Dịch vụ bổ sung</h4>
         <div class="services-selection">
           <div v-for="service in services" :key="service.id" class="service-item">
@@ -117,12 +130,16 @@
 
       <!-- CHI TIẾT PHÍ -->
       <div>
+        <!-- Gia hạn thêm ngày -->
         <EditBookingFee v-if="newCost > 0 && newCostToChange <= 0 && earlyCheckOutCost <= 0" />
 
+        <!-- Không thay đổi gì -->
         <EditBookingFeeNotNewCost v-else-if="newCost <= 0 && newCostToChange <= 0 && earlyCheckOutCost <= 0" />
 
+        <!-- Thay đổi phòng -->
         <EditBookingFeeChangeRoom v-else-if="newCostToChange > 0" />
 
+        <!-- Trả phòng sớm -->
         <EditBookingFeeEarly v-else-if="earlyCheckOutCost > 0" />
       </div>
 
@@ -161,13 +178,13 @@ const {
   bookingNights, countLastChange, roomTypeChanged,
   newCost, newCostToChange, earlyCheckOutCost,
   editBookingNameInput, selectedBookingIdForEdit,
-  showEditBookingModal, services, taxes
+  showEditBookingModal, services, taxes, rental, isHourlyRental
 } = storeToRefs(store)
 
 // Destructure actions (không cần storeToRefs)
 const {
   loadBookingData, submitEditBooking, onRoomTypeChange, closeEditBookingModal,
-  formatCurrency, fetchRoomTypes, fetchServices, fetchTaxes
+  formatCurrency, fetchRoomTypes, fetchServices, fetchTaxes, clickToChangeRental
 } = store
 
 const emit = defineEmits(['refresh'])

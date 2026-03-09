@@ -22,6 +22,8 @@ export const useEditBookingStore = defineStore('edit-booking-modal', () => {
         checkOut: '',
         roomPrice: 0
     })
+    // const isHourlyRental = ref(false)
+    const rental = ref('')
     const bookingDetail = ref({})
     const availableRooms = ref([])
     const newCost = ref(0)
@@ -82,8 +84,8 @@ export const useEditBookingStore = defineStore('edit-booking-modal', () => {
     })
 
     const isHourlyRental = computed(() => {
-        const result = selectedRoomType.value?.type === 'hourly'
-        console.log("isHourlyRental updated:", result, "roomType:", selectedRoomType.value?.name)
+        const result = rental.value === '1'
+        console.log("isHourlyRental updated:", result, "rental:", rental.value)
         return result
     })
 
@@ -425,6 +427,7 @@ export const useEditBookingStore = defineStore('edit-booking-modal', () => {
         isEdit.value = false
         earlyCheckOutCost.value = 0
         roomTypeChanged.value = false
+        rental.value = '0'
     }
 
     const submitEditBooking = async () => {
@@ -472,13 +475,18 @@ export const useEditBookingStore = defineStore('edit-booking-modal', () => {
             editBookings.value.checkIn = bookingDetail.value.booking.check_in
             editBookings.value.checkOut = bookingDetail.value.booking.check_out
             editBookings.value.roomPrice = bookingDetail.value.invoice.room_price
+
+            // Gán rental dựa vào dữ liệu từ API (is_hourly_rental: '1' hoặc '0')
+            rental.value = bookingDetail.value.invoice.is_hourly_rental 
+
             // Lưu room type gốc và reset flag
-            originalRoomTypeId.value = bookingDetail.value.roomType.id
+            originalRoomTypeId.value = bookingDetail.value.roomType.id 
             roomTypeChanged.value = false
 
             // Gọi onRoomTypeChange 1 lần duy nhất khi load dữ liệu để lấy phòng hiện tại
             await onRoomTypeChange()
             console.log('📥 loadBookingData completed successfully')
+            console.log('rental:', rental.value)
         } else {
             console.log('❌ loadBookingData - no booking detail returned')
         }
@@ -497,19 +505,19 @@ export const useEditBookingStore = defineStore('edit-booking-modal', () => {
 
             const dayDB = new Date(checkOutDate)
 
-           if (iputDate.getTime() > checkInDateDB.getTime() && roomTypeChanged.value) {
+            if (iputDate.getTime() > checkInDateDB.getTime() && roomTypeChanged.value) {
                 // Đổi phòng giữa chừng
                 // Chi phí phòng mới cho ngày còn lại
                 newCostToChange.value = (daysRemaining.value * (editBookings.value.roomPrice > 0 ? editBookings.value.roomPrice : bookingDetail.value.roomType?.base_price))
-            } else { 
+            } else {
                 if (checkOutDateDB.getTime() < iputDate.getTime()) {
                     // Gia hạn thêm ngày
                     newCost.value = (bookingNightChange.value * (bookingDetail.value.roomType?.base_price ?? 0))
                 } else if (checkOutDateDB.getTime() > iputDate.getTime()) {
                     // trả phòng sớm
                     earlyCheckOutCost.value = daysStayed.value * (editBookings.value.roomPrice > 0 ? editBookings.value.roomPrice : bookingDetail.value.roomType?.base_price ?? 0)
-                } 
-            } 
+                }
+            }
 
         }
     }, { immediate: true, deep: true })
@@ -559,6 +567,7 @@ export const useEditBookingStore = defineStore('edit-booking-modal', () => {
         servicesCost,
         subtotal,
         grandTotal,
+        rental,
 
         // Methods
         formatCurrency,
