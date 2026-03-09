@@ -85,7 +85,7 @@ export const useEditBookingStore = defineStore('edit-booking-modal', () => {
 
     const isHourlyRental = computed(() => {
         const result = rental.value === '1'
-        console.log("isHourlyRental updated:", result, "rental:", rental.value)
+        console.log("isHourlyRental updated:", result, "rental is:", rental.value)
         return result
     })
 
@@ -178,7 +178,7 @@ export const useEditBookingStore = defineStore('edit-booking-modal', () => {
         if (isHourlyRental.value && (bookingDetail.value.invoice?.room_price ?? 0) > 0) {
             return bookingDetail.value.invoice?.room_price ?? 0
         } else if (isHourlyRental.value) {
-            return bookingDetail.value.roomType?.base_price ?? 0
+            return bookingDetail.value.roomType?.price_hour ?? 0
         }
 
         // ngày
@@ -486,7 +486,6 @@ export const useEditBookingStore = defineStore('edit-booking-modal', () => {
             // Gọi onRoomTypeChange 1 lần duy nhất khi load dữ liệu để lấy phòng hiện tại
             await onRoomTypeChange()
             console.log('📥 loadBookingData completed successfully')
-            console.log('rental:', rental.value)
         } else {
             console.log('❌ loadBookingData - no booking detail returned')
         }

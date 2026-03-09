@@ -816,7 +816,6 @@ const submitAddBooking = async () => {
             console.error('Ngày trả phòng phải sau ngày nhận phòng')
             return
         }
-        const booking_type = selectedRoomType.value.type
 
         const effectiveGrandTotal = finalGrandTotal.value > 0 ? finalGrandTotal.value : grandTotal.value
         const discountAmount = grandTotal.value - effectiveGrandTotal
@@ -838,7 +837,8 @@ const submitAddBooking = async () => {
             id_tax: newBooking.value.selectedTaxes.length > 0 ? String(newBooking.value.selectedTaxes[0]) : '1',
             status: 'check-in',
             id_user: '4',
-            booking_type: booking_type,
+            rental: rental.value,
+            // booking_type: booking_type,
             room_price: newBooking.value.roomPrice || 0,
         }
 
