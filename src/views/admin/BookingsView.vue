@@ -298,9 +298,9 @@
                             style="display: flex; flex-direction: column; align-items: flex-end;">
                             <span style="text-decoration: line-through; color: #999; font-size: 0.9em;">{{
                                 formatCurrency(grandTotal)
-                            }}</span>
+                                }}</span>
                             <strong style="color: #27ae60; font-size: 1.1em;">{{ formatCurrency(finalGrandTotal)
-                            }}</strong>
+                                }}</strong>
                         </span>
                         <!-- Hiển thị giá gốc khi chưa discount -->
                         <span v-else><strong>{{ formatCurrency(grandTotal) }}</strong></span>
@@ -332,9 +332,9 @@
                             style="display: flex; flex-direction: column; align-items: flex-end;">
                             <span style="text-decoration: line-through; color: #999; font-size: 0.9em;">{{
                                 formatCurrency(grandTotal)
-                            }}</span>
+                                }}</span>
                             <strong style="color: #27ae60; font-size: 1.1em;">{{ formatCurrency(finalGrandTotal)
-                            }}</strong>
+                                }}</strong>
                         </span>
                         <!-- Hiển thị giá gốc khi chưa discount -->
                         <span v-else><strong>{{ formatCurrency(grandTotal) }}</strong></span>
@@ -469,18 +469,18 @@ import { apiUrl } from '@/environment'
 import EditBookingModal from '@/components/booking-view/EditBookingModal.vue'
 
 import { useEditBookingStore } from '@/stores/EditBookingStore'
-import { useAddBookingStore} from '@/stores/AddBookingStore'
+import { useAddBookingStore } from '@/stores/AddBookingStore'
 import { storeToRefs } from 'pinia'
 
 const store = useEditBookingStore()
 const stores = useAddBookingStore()
 const { showEditBookingModal } = storeToRefs(store)
-const { 
+const {
     bookings, services, taxes, foods, roomTypes,
     rooms, selectedBookingId, selectedFoodItems,
     rental, showAddBookingModal, showAddFoodToBookingModal,
     showAddBookingForAdminModal, availableRooms,
-    currentPageBookings, searchQuery, 
+    currentPageBookings, searchQuery,
     finalGrandTotal } = storeToRefs(stores)
 const { closeEditBookingModal, openEditBookingModal } = store
 
@@ -495,26 +495,27 @@ const {
     submitFoodToBooking, applyDiscount, changePage, goToFirstPage, goToLastPage,
     goToPreviousPage, goToNextPage } = stores
 
-onMounted( async () => {
+onMounted(async () => {
     const promises = []
-    if(!bookings && bookings.length === 0 ){
+    if (bookings.value.length === 0) {
         promises.push(fetchBookings())
     }
-    if(!services && services.length === 0 ){
+    if (services.value.length === 0) {
         promises.push(fetchServices())
     }
-    if(!taxes && taxes.length === 0 ){
+    if (taxes.value.length === 0) {
         promises.push(fetchTaxes())
     }
-    if(!foods && foods.length === 0 ){
+    if (foods.value.length === 0) {
         promises.push(fetchFoods())
     }
-    if(!roomTypes && roomTypes.length === 0 ){
+    if (roomTypes.value.length === 0) {
         promises.push(fetchRoomTypes())
     }
-    if(!rooms && rooms.length === 0 ){
+    if (rooms.value.length === 0) {
         promises.push(fetchRooms())
     }
+    await Promise.all(promises)
 })
 </script>
 
