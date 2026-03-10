@@ -141,54 +141,7 @@
 
     <!-- Add Booking For Admin -->
     <div class="modal-overlay" v-if="showAddBookingForAdminModal" @click="closeAddBookingForAdminModal">
-        <div class="modal-content" @click.stop>
-            <div class="modal-header">
-                <h3>Thêm đặt phòng cho Admin</h3>
-                <button @click="closeAddBookingForAdminModal" class="modal-close">
-                    <FontAwesomeIcon :icon="['fas', 'times']" />
-                </button>
-            </div>
-            <form class="modal-form" @submit.prevent="submitAddBookingAdmin">
-                <div class="form-group">
-                    <label for="roomType">Loại phòng *</label>
-                    <select id="roomType" v-model="newBookingForAdmin.roomTypeId" @change="onRoomTypeChange" required
-                        class="form-select">
-                        <option value="">Chọn loại phòng</option>
-                        <option v-for="roomType in roomTypes" :key="roomType.id" :value="roomType.id">
-                            {{ roomType.name }} - {{ formatCurrency(roomType.base_price) }}/{{ roomType.type ===
-                                'hourly' ? 'giờ' : 'đêm' }}
-                        </option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="availableRooms">Phòng có sẵn *</label>
-                    <select id="availableRooms" v-model="newBookingForAdmin.roomId" required class="form-select"
-                        :disabled="!newBookingForAdmin.roomTypeId">
-                        <option value="">Chọn phòng</option>
-                        <option v-for="room in availableRooms" :key="room.id" :value="room.id">
-                            Phòng {{ room.room_number }}
-                        </option>
-                    </select>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="checkIn">Ngày nhận phòng *</label>
-                        <input id="checkIn" v-model="newBookingForAdmin.checkIn" type="datetime-local" required />
-                    </div>
-                </div>
-
-                <div class="modal-actions">
-                    <button type="button" @click="closeAddBookingForAdminModal" class="btn btn-outline">
-                        Hủy
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        <FontAwesomeIcon :icon="['fas', 'save']" />
-                        Tạo đặt phòng
-                    </button>
-                </div>
-            </form>
-        </div>
+        <AddBookingForAdminModal @close="closeAddBookingForAdminModal" @refresh="fetchBookings" />
     </div>
 
     <!-- Add Food to Booking Modal -->
@@ -246,6 +199,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import EditBookingModal from '@/components/booking-view/EditBookingModal.vue'
 import AddBookingModal from '@/components/booking-view/AddBookingModal.vue'
+import AddBookingForAdminModal from '@/components/booking-view/AddbookingForAdminModal.vue'
 
 // Stores pinia
 import { useEditBookingStore } from '@/stores/EditBookingStore'
@@ -256,44 +210,32 @@ const store = useEditBookingStore()
 const stores = useAddBookingStore()
 const { showEditBookingModal } = storeToRefs(store)
 const {
-    bookings, services, taxes, foods, roomTypes,
-    rooms, selectedBookingId, selectedFoodItems,
-    showAddBookingModal, showAddFoodToBookingModal,
-    showAddBookingForAdminModal, availableRooms,
-    currentPageBookings, searchQuery, newBookingForAdmin,
-    // computed
-    paginatedBookings, totalPagesBookings } = storeToRefs(stores)
+        bookings, foods, selectedBookingId,
+        showAddBookingModal, showAddFoodToBookingModal,
+        showAddBookingForAdminModal, selectedFoodItems,
+        currentPageBookings, searchQuery,
+        // computed
+        paginatedBookings, totalPagesBookings
+      } = storeToRefs(stores)
 const { closeEditBookingModal, openEditBookingModal } = store
 
 const {
-    openAddBookingModal, closeAddBookingModal,
-    openAddBookingForAdmin, closeAddBookingForAdminModal, formatCurrency,
-    formatDate, fetchBookings, fetchServices,
-    fetchFoods, fetchRoomTypes, fetchTaxes, fetchRooms, changeBookingStatus,
-    deleteBooking, printThermalBill, addFoodToBooking, closeAddFoodToBookingModal,
-    submitFoodToBooking, onRoomTypeChange, submitAddBookingAdmin,
-    changePage, goToFirstPage, goToLastPage,
-    goToPreviousPage, goToNextPage } = stores
+        openAddBookingModal, closeAddBookingModal, formatCurrency,
+        formatDate, fetchBookings, closeAddFoodToBookingModal,
+        fetchFoods, changeBookingStatus, submitFoodToBooking,
+        deleteBooking, printThermalBill, addFoodToBooking,
+        openAddBookingForAdmin, closeAddBookingForAdminModal,
+        changePage, goToFirstPage, goToLastPage,
+        goToPreviousPage, goToNextPage
+      } = stores
 
 onMounted(async () => {
     const promises = []
     if (bookings.value.length === 0) {
         promises.push(fetchBookings())
     }
-    if (services.value.length === 0) {
-        promises.push(fetchServices())
-    }
-    if (taxes.value.length === 0) {
-        promises.push(fetchTaxes())
-    }
     if (foods.value.length === 0) {
         promises.push(fetchFoods())
-    }
-    if (roomTypes.value.length === 0) {
-        promises.push(fetchRoomTypes())
-    }
-    if (rooms.value.length === 0) {
-        promises.push(fetchRooms())
     }
     await Promise.all(promises)
 })

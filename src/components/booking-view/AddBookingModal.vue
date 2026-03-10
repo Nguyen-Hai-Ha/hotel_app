@@ -11,7 +11,7 @@ const { newBooking, roomTypes, rooms,
       } = storeToRefs(store)
 const { fetchRoomTypes, fetchRooms, applyDiscount, fetchTaxes,
         onRoomTypeChange, clickChangeRental, formatCurrency,
-        submitAddBooking, formatDate, fetchServices
+        submitAddBooking, fetchServices, closeAddBookingModal
       } = store
 
 onMounted(async () => {
