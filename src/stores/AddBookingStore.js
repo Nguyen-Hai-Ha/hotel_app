@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, nextTick } from 'vue'
 import axios from 'axios'
 import { apiUrl } from '@/environment'
 
@@ -670,6 +670,8 @@ export const useAddBookingStore = defineStore('add-booking-modal', () => {
 
     return {
         //state
+        newBookingForAdmin,
+        newBooking,
         bookings,
         services,
         taxes,
@@ -704,6 +706,7 @@ export const useAddBookingStore = defineStore('add-booking-modal', () => {
 
         // fetch & method
         openAddBookingModal,
+        closeAddBookingModal,
         openAddBookingForAdmin,
         closeAddBookingForAdminModal,
         formatCurrency,
@@ -722,6 +725,9 @@ export const useAddBookingStore = defineStore('add-booking-modal', () => {
         closeAddFoodToBookingModal,
         submitFoodToBooking,
         applyDiscount,
+        onRoomTypeChange,
+        submitAddBooking,
+        submitAddBookingAdmin,
         changePage,
         goToFirstPage,
         goToLastPage,
