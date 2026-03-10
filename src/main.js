@@ -2,6 +2,7 @@ import "./assets/main.css";
 import "./assets/custom.css";
 import "./assets/layout-styles.css";
 
+import axios from "axios";
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
@@ -101,12 +102,14 @@ library.add(
   faMinus
 );
 
-// // Initialize EmailJS
-// (function() {
-//     emailjs.init({
-//         publicKey: "DEe-YjtvqBUzfTvm3",
-//     });
-// })();
+// Tự động gắn admin_token vào mọi axios request
+axios.interceptors.request.use((config) => {
+  const token = localStorage.getItem('admin_token')
+  if (token) {
+    config.headers['Authorization'] = `Bearer ${token}`
+  }
+  return config
+})
 
 const pinia = createPinia();
 const app = createApp(App);

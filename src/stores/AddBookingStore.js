@@ -480,7 +480,8 @@ export const useAddBookingStore = defineStore('add-booking-modal', () => {
 
         if (confirm('Bạn có chắc muốn xóa đặt phòng này?')) {
             try {
-                await axios.delete(`${apiUrl}/api/admin/bookings/${bookingId}`)
+                await axios.delete(`${apiUrl}/api/admin/bookings/${bookingId}`
+                )
                 await fetchBookings()
             } catch (error) {
                 console.error('Error deleting booking:', error)
