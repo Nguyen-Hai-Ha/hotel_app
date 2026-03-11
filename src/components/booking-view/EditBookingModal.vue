@@ -184,7 +184,7 @@ const {
 // Destructure actions (không cần storeToRefs)
 const {
   loadBookingData, submitEditBooking, onRoomTypeChange, closeEditBookingModal,
-  formatCurrency, fetchRoomTypes, fetchServices, fetchTaxes, clickToChangeRental
+  formatCurrency, fetchRoomTypes, fetchServices, fetchTaxes,
 } = store
 
 const emit = defineEmits(['refresh'])

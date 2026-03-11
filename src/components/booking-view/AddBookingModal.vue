@@ -4,13 +4,13 @@ import { useAddBookingStore } from '@/stores/AddBookingStore'
 import { storeToRefs } from 'pinia'
 
 const store = useAddBookingStore()
-const { newBooking, roomTypes, rooms,
+const { newBooking, roomTypes, rooms, rental,
         isHourlyRental, availableRooms, services, taxes, grandTotal,
         finalGrandTotal, roomCost, servicesCost, subtotal, taxAmount,
         bookingNights,
       } = storeToRefs(store)
 const { fetchRoomTypes, fetchRooms, applyDiscount, fetchTaxes,
-        onRoomTypeChange, clickChangeRental, formatCurrency,
+        onRoomTypeChange, formatCurrency,
         submitAddBooking, fetchServices, closeAddBookingModal
       } = store
 
@@ -102,13 +102,13 @@ onMounted(async () => {
                   <div class="form-group">
                       <label>Hình thức thuê</label>
                       <div class="rental-toggle">
-                          <input type="radio" name="rental_type" id="hourly" value="hourly" v-model="rental"
-                              @click="clickChangeRental" class="rental-radio" />
+                          <input type="radio" name="rental_type" id="hourly" value="1" v-model="rental"
+                              class="rental-radio" />
                           <label for="hourly" class="rental-pill">
                               Theo giờ
                           </label>
-                          <input type="radio" name="rental_type" id="daily" value="daily" v-model="rental"
-                              @click="clickChangeRental" class="rental-radio" />
+                          <input type="radio" name="rental_type" id="daily" value="0" v-model="rental"
+                              class="rental-radio" />
                           <label for="daily" class="rental-pill">
                               Theo ngày
                           </label>

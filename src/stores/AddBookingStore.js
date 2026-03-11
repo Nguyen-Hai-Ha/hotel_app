@@ -12,7 +12,7 @@ export const useAddBookingStore = defineStore('add-booking-modal', () => {
     const rooms = ref([])
     const selectedBookingId = ref(null)
     const selectedFoodItems = ref([])
-    const rental = ref('daily')
+    const rental = ref('0')
 
     const showAddBookingModal = ref(false)
     const showAddFoodToBookingModal = ref(false)
@@ -132,12 +132,11 @@ export const useAddBookingStore = defineStore('add-booking-modal', () => {
         return diffDays > 0 ? diffDays : 0
     })
 
-    const clickChangeRental = () => {
-        rental.value = rental.value === 'hourly' ? 'daily' : 'hourly'
-        console.log(rental.value)
-    }
-
-    const isHourlyRental = computed(() => rental.value === 'hourly')
+    const isHourlyRental = computed(() => {
+        const result = rental.value === '1'
+        console.log("isHourlyRental updated:", result, "rental is:", rental.value)
+        return result
+    })
 
     const roomCost = computed(() => {
         if (isHourlyRental.value && newBooking.value.roomPrice > 0) {
@@ -314,8 +313,8 @@ export const useAddBookingStore = defineStore('add-booking-modal', () => {
             selectedServices: [],
             selectedTaxes: [],
             discount: ''
-        },
-            availableRooms.value = []
+        }
+        availableRooms.value = []
         finalGrandTotal.value = 0
     }
 
@@ -433,7 +432,7 @@ export const useAddBookingStore = defineStore('add-booking-modal', () => {
                 id_tax: '1',
                 status: 'success',
                 id_user: '1',
-                booking_type: 'daily'
+                rental: '0'
             }
 
             const response = await axios.post(`${apiUrl}/api/admin/bookings`, booking)
@@ -533,6 +532,11 @@ export const useAddBookingStore = defineStore('add-booking-modal', () => {
             // Fetch existing foods for this booking
             const response = await axios.get(`${apiUrl}/api/admin/booking/${bookingId}/foods`)
             const existingFoods = response.data.foods || []
+
+            const existingFoodMap = {}
+            existingFoods.forEach(f => {
+                existingFoodMap[f.id_food || f.id] = f.amount || f.quantity || 1
+            })
 
             // Initialize food items with existing quantities or 0
             selectedFoodItems.value = foods.value.map(food => ({
@@ -711,7 +715,6 @@ export const useAddBookingStore = defineStore('add-booking-modal', () => {
         closeAddBookingForAdminModal,
         formatCurrency,
         formatDate,
-        clickChangeRental,
         fetchBookings,
         fetchServices,
         fetchFoods,

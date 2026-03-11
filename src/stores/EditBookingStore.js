@@ -198,7 +198,7 @@ export const useEditBookingStore = defineStore('edit-booking-modal', () => {
             return oldRoomCostStayed.value + newCostToChange.value
         }
 
-        // nếu trả phòng sớm 
+        // nếu trả phòng sớm
         if (earlyCheckOutCost.value > 0) {
             return earlyCheckOutCost.value
         }
@@ -224,7 +224,7 @@ export const useEditBookingStore = defineStore('edit-booking-modal', () => {
             // Thuế cho phần đã ở (phòng cũ)
             const oldTax = oldRoomCostStayed.value * oldTaxRate / 100
 
-            // Thuế cho phần còn lại (phòng mới)  
+            // Thuế cho phần còn lại (phòng mới)
             const newTax = newCostToChange.value * newTaxRate / 100
 
             return oldTax + newTax
@@ -294,7 +294,7 @@ export const useEditBookingStore = defineStore('edit-booking-modal', () => {
 
     const subtotal = computed(() => {
         if (isEdit.value && newCost.value > 0) return roomCost.value
-        if (isEdit.value && newCostToChange > 0) return roomCost.value + newCostToChange.value
+        if (isEdit.value && newCostToChange.value > 0) return roomCost.value + newCostToChange.value
         return roomCost.value
     })
 
@@ -477,10 +477,10 @@ export const useEditBookingStore = defineStore('edit-booking-modal', () => {
             editBookings.value.roomPrice = bookingDetail.value.invoice.room_price
 
             // Gán rental dựa vào dữ liệu từ API (is_hourly_rental: '1' hoặc '0')
-            rental.value = bookingDetail.value.invoice.is_hourly_rental 
+            rental.value = bookingDetail.value.invoice.is_hourly_rental
 
             // Lưu room type gốc và reset flag
-            originalRoomTypeId.value = bookingDetail.value.roomType.id 
+            originalRoomTypeId.value = bookingDetail.value.roomType.id
             roomTypeChanged.value = false
 
             // Gọi onRoomTypeChange 1 lần duy nhất khi load dữ liệu để lấy phòng hiện tại
@@ -501,8 +501,6 @@ export const useEditBookingStore = defineStore('edit-booking-modal', () => {
             const iputDate = new Date(dateInput.getFullYear(), dateInput.getMonth(), dateInput.getDate())
             const checkOutDateDB = new Date(checkOutDate.getFullYear(), checkOutDate.getMonth(), checkOutDate.getDate())
             const checkInDateDB = new Date(checkInDate.getFullYear(), checkInDate.getMonth(), checkInDate.getDate())
-
-            const dayDB = new Date(checkOutDate)
 
             if (iputDate.getTime() > checkInDateDB.getTime() && roomTypeChanged.value) {
                 // Đổi phòng giữa chừng

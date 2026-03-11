@@ -199,7 +199,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import EditBookingModal from '@/components/booking-view/EditBookingModal.vue'
 import AddBookingModal from '@/components/booking-view/AddBookingModal.vue'
-import AddBookingForAdminModal from '@/components/booking-view/AddbookingForAdminModal.vue'
+import AddBookingForAdminModal from '@/components/booking-view/AddBookingForAdminModal.vue'
 
 // Stores pinia
 import { useEditBookingStore } from '@/stores/EditBookingStore'
@@ -338,45 +338,5 @@ tr:hover td {
 .btn-icon:hover {
     transform: translateY(-1px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Rental Type Toggle */
-.rental-toggle {
-    display: inline-flex;
-    background: #f1f5f9;
-    border-radius: 10px;
-    padding: 4px;
-    gap: 4px;
-    border: 1px solid #e2e8f0;
-}
-
-.rental-radio {
-    display: none;
-}
-
-.rental-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 18px;
-    border-radius: 7px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #64748b;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    user-select: none;
-    white-space: nowrap;
-}
-
-.rental-pill:hover {
-    background: #e2e8f0;
-    color: #334155;
-}
-
-.rental-radio:checked+.rental-pill {
-    background: #4f46e5;
-    color: #ffffff;
-    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.35);
 }
 </style>
