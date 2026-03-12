@@ -5,8 +5,16 @@
                 <FontAwesomeIcon :icon="['fas', 'plus']" />
                 Thêm thức ăn
             </button>
-        </div>
 
+        </div>
+        <div class="search-box">
+            <input
+                v-model="searchQuery"
+                type="text"
+                placeholder="Tìm theo ID hoặc tên thức ăn..."
+                class="search-input"
+            />
+        </div>
         <div class="table-container">
             <table>
                 <thead>
@@ -21,6 +29,11 @@
                     <tr v-if="foods.length === 0">
                         <td colspan="4" style="text-align: center; color: #999;">
                             Đang tải dữ liệu...
+                        </td>
+                    </tr>
+                    <tr v-else-if="filteredFoods.length === 0">
+                        <td colspan="4" style="text-align: center; color: #999;">
+                            Không tìm thấy thức ăn phù hợp.
                         </td>
                     </tr>
                     <tr v-for="food in paginatedFoods" :key="food.id">
@@ -43,7 +56,7 @@
         <!-- Foods Pagination -->
         <div v-if="totalPagesFoods > 1" class="pagination-container">
             <div class="pagination-info">
-                Trang {{ currentPageFoods }} / {{ totalPagesFoods }} ({{ foods.length }} thức ăn)
+                Trang {{ currentPageFoods }} / {{ totalPagesFoods }} ({{ filteredFoods.length }} / {{ foods.length }} thức ăn)
             </div>
             <div class="pagination-controls">
                 <button @click="goToFirstPage('foods')" :disabled="currentPageFoods === 1"
@@ -146,7 +159,7 @@
 </template>
 
 <script setup>
-import { ref, nextTick, onMounted, computed } from 'vue'
+import { ref, nextTick, onMounted, computed, watch } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import axios from 'axios'
 import { apiUrl } from '@/environment'
@@ -171,6 +184,7 @@ const showEditFoodModal = ref(false)
 const foodNameInput = ref(null)
 
 const currentPageFoods = ref(1)
+const searchQuery = ref('')
 
 const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
@@ -296,11 +310,29 @@ const closeAddFoodModal = () => {
 const paginatedFoods = computed(() => {
     const start = (currentPageFoods.value - 1) * itemsPerPage
     const end = start + itemsPerPage
-    return foods.value.slice(start, end)
+    return filteredFoods.value.slice(start, end)
+})
+
+const filteredFoods = computed(() => {
+    const keyword = searchQuery.value.trim().toLowerCase()
+
+    if (!keyword) {
+        return foods.value
+    }
+
+    return foods.value.filter((food) => {
+        const foodId = String(food.id ?? '').toLowerCase()
+        const foodName = String(food.name ?? '').toLowerCase()
+        return foodId.includes(keyword) || foodName.includes(keyword)
+    })
 })
 
 const totalPagesFoods = computed(() => {
-    return Math.ceil(foods.value.length / itemsPerPage)
+    return Math.ceil(filteredFoods.value.length / itemsPerPage)
+})
+
+watch(searchQuery, () => {
+    currentPageFoods.value = 1
 })
 
 const changePage = (section, page) => {
@@ -340,4 +372,21 @@ onMounted(() => {
 
 <style scoped>
 @import '@/assets/admin-global.css';
+.search-box {
+    max-width: 250px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d9d9d9;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #1677ff;
+    box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.15);
+}
 </style>
