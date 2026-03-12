@@ -16,6 +16,8 @@
                         <th>Mô tả</th>
                         <th>Hình ảnh</th>
                         <th>Giá cơ bản</th>
+                        <th>Giá giờ cơ bản</th>
+                        <th>Giá giờ cộng thêm</th>
                         <th>Tính năng</th>
                         <th>Loại</th>
                         <th>Thao tác</th>
@@ -23,7 +25,7 @@
                 </thead>
                 <tbody>
                     <tr v-if="roomTypes.length === 0">
-                        <td colspan="6" style="text-align: center; color: #999;">
+                        <td colspan="9" style="text-align: center; color: #999;">
                             Đang tải dữ liệu...
                         </td>
                     </tr>
@@ -40,6 +42,8 @@
                             <div v-else>Không có hình ảnh</div>
                         </td>
                         <td>{{ roomType.base_price ? formatCurrency(roomType.base_price) : 'Không có' }}</td>
+                        <td>{{ roomType.price_hour ? formatCurrency(roomType.price_hour) : 'Không có' }}</td>
+                        <td>{{ roomType.extra_price ? formatCurrency(roomType.extra_price) : 'Không có' }}</td>
                         <td>
                             <div v-if="roomType.feature && (Array.isArray(roomType.feature) ? roomType.feature.length > 0 : roomType.feature.trim() !== '')"
                                 class="features-list">
@@ -128,6 +132,18 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="roomTypePriceHour">Giá giờ cơ bản (USD) *</label>
+                    <input id="roomTypePriceHour" v-model="newRoomType.price_hour" type="number" name="price_hour" required
+                        min="1" max="1000" step="0.01" placeholder="Nhập giá giờ cơ bản (USD)" />
+                </div>
+
+                <div class="form-group">
+                    <label for="roomTypeExtraPrice">Giá giờ cộng thêm (USD) *</label>
+                    <input id="roomTypeExtraPrice" v-model="newRoomType.extra_price" type="number" name="extra_price" required
+                        min="1" max="1000" step="0.01" placeholder="Nhập giá giờ cộng thêm (USD)" />
+                </div>
+
+                <div class="form-group">
                     <label for="roomTypeFeatures">Tính năng</label>
                     <div class="features-input">
                         <div class="feature-tags">
@@ -147,14 +163,6 @@
                             </button>
                         </div>
                     </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="RoomTypeTypes">Phòng thuê</label>
-                    <select name="Types" id="types" class="form-select" autocomplete="off" v-model="newRoomType.type">
-                        <option value="daily">Ngày</option>
-                        <option value="hourly">Giờ</option>
-                    </select>
                 </div>
 
                 <div class="form-group">
@@ -291,8 +299,9 @@ const newRoomType = ref({
     name: '',
     description: '',
     base_price: '',
+    price_hour: '',
+    extra_price: '',
     feature: [],
-    type: 'daily',
     image: '',
     imageFile: null,
     imagePreview: '',
@@ -306,8 +315,9 @@ const editingRoomType = ref({
     name: '',
     description: '',
     base_price: '',
+    price_hour: '',
+    extra_price: '',
     feature: [],
-    type: 'daily',
     image: '',
     imageFile: null,
     imagePreview: '',
@@ -398,6 +408,8 @@ const closeAddRoomTypeModal = () => {
         name: '',
         description: '',
         base_price: '',
+        price_hour: '',
+        extra_price: '',
         feature: [],
         type: 'daily',
         image: '',
@@ -410,7 +422,7 @@ const closeAddRoomTypeModal = () => {
 const submitAddRoomType = async () => {
     try {
         // Validate required fields
-        if (!newRoomType.value.name || !newRoomType.value.base_price) {
+        if (!newRoomType.value.name || !newRoomType.value.base_price || !newRoomType.value.price_hour || !newRoomType.value.extra_price) {
             console.error('Vui lòng điền đầy đủ thông tin bắt buộc')
             return
         }
@@ -420,6 +432,8 @@ const submitAddRoomType = async () => {
         formData.append('name', newRoomType.value.name.trim())
         formData.append('description', newRoomType.value.description.trim() || '')
         formData.append('base_price', parseInt(newRoomType.value.base_price) || 0)
+        formData.append('price_hour', parseFloat(newRoomType.value.price_hour) || 0)
+        formData.append('extra_price', parseFloat(newRoomType.value.extra_price) || 0)
 
         // Append features as array - each element separately
         const features = newRoomType.value.feature.filter(f => f.trim() !== '')
@@ -430,8 +444,6 @@ const submitAddRoomType = async () => {
         } else {
             formData.append('feature', JSON.stringify([]))
         }
-
-        formData.append('type', newRoomType.value.type || 'daily')
 
         // Only append image if a file is selected
         if (newRoomType.value.imageFile) {
@@ -544,6 +556,8 @@ const submitEditRoomType = async () => {
         formData.append('name', editingRoomType.value.name.trim())
         formData.append('description', editingRoomType.value.description.trim() || '')
         formData.append('base_price', parseInt(editingRoomType.value.base_price) || 0)
+        formData.append('price_hour', parseFloat(editingRoomType.value.price_hour) || 0)
+        formData.append('extra_price', parseFloat(editingRoomType.value.extra_price) || 0)
 
         // Append features as array - each element separately
         const features = editingRoomType.value.feature.filter(f => f.trim() !== '')
@@ -639,7 +653,6 @@ const editRoomType = (roomType) => {
         description: roomType.description,
         base_price: roomType.base_price,
         feature: parseFeatures(roomType.feature),
-        type: normalizeRoomTypeType(roomType.type),
         image: roomType.image,
         imageFile: null,
         imagePreview: null
