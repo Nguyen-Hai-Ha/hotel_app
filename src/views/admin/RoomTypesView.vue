@@ -411,7 +411,6 @@ const closeAddRoomTypeModal = () => {
         price_hour: '',
         extra_price: '',
         feature: [],
-        type: 'daily',
         image: '',
         imageFile: null,
         imagePreview: '',
