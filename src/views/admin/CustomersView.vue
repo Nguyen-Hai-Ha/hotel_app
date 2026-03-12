@@ -7,7 +7,7 @@
     <div class="search-container" style="margin-bottom: 16px;">
       <input type="text" v-model="searchQuery" placeholder="Tìm theo tên khách hàng hoặc số phòng..."
         class="search-input"
-        style="width: 100%; max-width: 400px; padding: 10px 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;" />
+        style="width: 100%; max-width: 300px; padding: 10px 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;" />
     </div>
     <div class="table-container">
       <table>
@@ -32,7 +32,7 @@
               Không có khách hàng nào
             </td>
           </tr>
-          <tr v-for="customer in filteredCustomers" :key="customer.id">
+          <tr v-for="customer in paginatedCustomers" :key="customer.id">
             <td>{{ customer.id }}</td>
             <td>{{ customer.name }}</td>
             <td>{{ customer.phone }}</td>
@@ -88,6 +88,33 @@
         </tbody>
       </table>
     </div>
+
+    <!-- Pagination -->
+    <div v-if="totalPages > 1" class="pagination-container">
+      <div class="pagination-info">
+        Trang {{ currentPage }} / {{ totalPages }} ({{ filteredCustomers.length }} / {{ customers.length }} khách hàng)
+      </div>
+      <div class="pagination-controls">
+        <button @click="goToFirstPage" :disabled="currentPage === 1" class="btn btn-sm btn-outline">
+          <FontAwesomeIcon :icon="['fas', 'angle-double-left']" />
+        </button>
+        <button @click="goToPreviousPage" :disabled="currentPage === 1" class="btn btn-sm btn-outline">
+          <FontAwesomeIcon :icon="['fas', 'angle-left']" />
+        </button>
+        <span class="page-numbers">
+          <button v-for="page in Math.min(5, totalPages)" :key="page" @click="currentPage = page"
+            :class="['btn', 'btn-sm', page === currentPage ? 'btn-primary' : 'btn-outline']">
+            {{ page }}
+          </button>
+        </span>
+        <button @click="goToNextPage" :disabled="currentPage === totalPages" class="btn btn-sm btn-outline">
+          <FontAwesomeIcon :icon="['fas', 'angle-right']" />
+        </button>
+        <button @click="goToLastPage" :disabled="currentPage === totalPages" class="btn btn-sm btn-outline">
+          <FontAwesomeIcon :icon="['fas', 'angle-double-right']" />
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Add Overtime/Surcharge Modal -->
@@ -123,7 +150,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import axios from 'axios'
 import { apiUrl } from '@/environment'
@@ -136,6 +163,8 @@ const sub_charge = ref('')
 const SubChargeInput = ref(null)
 const showAddOverTimeModal = ref(false)
 const searchQuery = ref('')
+const currentPage = ref(1)
+const itemsPerPage = 12
 
 // Computed property để lọc khách hàng theo tìm kiếm
 const filteredCustomers = computed(() => {
@@ -149,6 +178,20 @@ const filteredCustomers = computed(() => {
     return name.includes(query) || roomNumber.includes(query)
   })
 })
+
+const paginatedCustomers = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage
+  return filteredCustomers.value.slice(start, start + itemsPerPage)
+})
+
+const totalPages = computed(() => Math.ceil(filteredCustomers.value.length / itemsPerPage))
+
+watch(searchQuery, () => { currentPage.value = 1 })
+
+const goToFirstPage = () => { currentPage.value = 1 }
+const goToLastPage = () => { currentPage.value = totalPages.value }
+const goToPreviousPage = () => { if (currentPage.value > 1) currentPage.value-- }
+const goToNextPage = () => { if (currentPage.value < totalPages.value) currentPage.value++ }
 
 const formatCurrency = (amount) => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount)
