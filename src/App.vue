@@ -2,12 +2,12 @@
   <div id="app" class="app-container">
     <!-- Show header and footer only for non-admin pages -->
     <template v-if="!isAdminPage">
-      <Header 
-        @show-login-modal="showLogin = true" 
+      <Header
+        @show-login-modal="showLogin = true"
         @show-signup-modal="showSignup = true"
-        @show-booking-modal="showBookingModal = true" 
+        @show-booking-modal="showBookingModal = true"
       />
-      
+
       <main class="main-content">
         <router-view @show-quick-booking-modal-with-room="openQuickBookingModalWithRoom" />
       </main>
@@ -21,23 +21,23 @@
     </template>
 
     <!-- Login Modal -->
-    <LoginModal 
-      :isVisible="showLogin" 
+    <LoginModal
+      :isVisible="showLogin"
       @close="showLogin = false"
       @show-signup="showSignup = true; showLogin = false"
       @show-forgot-password="showForgotPassword = true; showLogin = false"
     />
 
     <!-- Sign Up Modal -->
-    <SignUpModal 
-      :isVisible="showSignup" 
+    <SignUpModal
+      :isVisible="showSignup"
       @close="showSignup = false"
       @show-login="showLogin = true; showSignup = false"
     />
 
     <!-- Quick Booking Modal -->
-    <QuickBookingModal 
-      :isVisible="showBookingModal" 
+    <QuickBookingModal
+      :isVisible="showBookingModal"
       @close="showBookingModal = false"
       :initialRoomType="quickBookingInitialData.roomType"
       :initialCheckIn="quickBookingInitialData.checkIn"
@@ -45,7 +45,7 @@
     />
 
     <!-- Forgot Password Modal -->
-    <ForgotPasswordModal 
+    <ForgotPasswordModal
       v-if="showForgotPassword"
       :isVisible="true"
       @close="showForgotPassword = false"
@@ -105,8 +105,6 @@ export default {
       quickBookingInitialData,
       isAdminPage,
       openQuickBookingModalWithRoom,
-      isAdminPage,
-      openQuickBookingModalWithRoom
     };
   }
 };
